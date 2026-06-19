@@ -1,0 +1,42 @@
+# ===========================================
+# GoalFish Backend Dependencies
+# ===========================================
+# Python 3.11+ required
+# Install: pip install -r requirements.txt
+# ===========================================
+
+# ============= 核心框架 =============
+flask>=3.0.0
+flask-cors>=6.0.0
+
+# ============= LLM 相关 =============
+# OpenAI SDK（统一使用 OpenAI 格式调用 LLM）
+openai>=1.0.0
+
+# ============= Graphiti / Neo4j 图谱后端 =============
+graphiti-core>=0.11.6
+
+# ============= 任务状态与异步执行 =============
+sqlalchemy>=2.0
+alembic>=1.13
+psycopg[binary]>=3.2
+celery>=5.4
+redis>=5.0
+penaltyblog>=1.1.0
+pandas>=2.2.0
+PyYAML>=6.0.0
+rapidfuzz>=3.0.0
+requests>=2.32.0
+
+# ============= 文件处理 =============
+PyMuPDF>=1.24.0
+# 编码检测（支持非UTF-8编码的文本文件）
+charset-normalizer>=3.0.0
+chardet>=5.0.0
+
+# ============= 工具库 =============
+# 环境变量加载
+python-dotenv>=1.0.0
+
+# 数据验证
+pydantic>=2.0.0

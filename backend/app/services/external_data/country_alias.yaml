@@ -1,0 +1,3093 @@
+AFG:
+  canonical_en: Afghanistan
+  canonical_zh: 阿富汗
+  fifa_md:
+  - Afghanistan
+  fifa_ranking:
+  - Afghanistan
+  fm:
+  - Afghanistan
+  intl_results:
+  - Afghanistan
+  national_elo:
+  - Afghanistan
+  - AF
+AIA:
+  canonical_en: Anguilla
+  canonical_zh: 安圭拉
+  fifa_md:
+  - Anguilla
+  fifa_ranking:
+  - Anguilla
+  fm:
+  - Anguilla
+  intl_results:
+  - Anguilla
+  national_elo:
+  - Anguilla
+  - AI
+ALB:
+  canonical_en: Albania
+  canonical_zh: 阿尔巴尼亚
+  fifa_md:
+  - Albania
+  fifa_ranking:
+  - Albania
+  fm:
+  - Albania
+  intl_results:
+  - Albania
+  national_elo:
+  - Albania
+  - AL
+ALG:
+  canonical_en: Algeria
+  canonical_zh: 阿尔及利亚
+  fifa_md:
+  - Algeria
+  fifa_ranking:
+  - Algeria
+  fm:
+  - Algeria
+  intl_results:
+  - Algeria
+  national_elo:
+  - Algeria
+  - DZ
+AND:
+  canonical_en: Andorra
+  canonical_zh: 安道尔
+  fifa_md:
+  - Andorra
+  fifa_ranking:
+  - Andorra
+  fm:
+  - Andorra
+  intl_results:
+  - Andorra
+  national_elo:
+  - Andorra
+  - AD
+ANG:
+  canonical_en: Angola
+  canonical_zh: 安哥拉
+  fifa_md:
+  - Angola
+  fifa_ranking:
+  - Angola
+  fm:
+  - Angola
+  intl_results:
+  - Angola
+  national_elo:
+  - Angola
+  - AO
+ARG:
+  canonical_en: Argentina
+  canonical_zh: 阿根廷
+  fifa_md:
+  - Argentina
+  fifa_ranking:
+  - Argentina
+  fm:
+  - Argentina
+  intl_results:
+  - Argentina
+  national_elo:
+  - Argentina
+  - AR
+ARM:
+  canonical_en: Armenia
+  canonical_zh: 亞美尼亞
+  fifa_md:
+  - Armenia
+  fifa_ranking:
+  - Armenia
+  fm:
+  - Armenia
+  intl_results:
+  - Armenia
+  national_elo:
+  - Armenia
+  - AM
+ARU:
+  canonical_en: Aruba
+  canonical_zh: 阿魯巴
+  fifa_md:
+  - Aruba
+  fifa_ranking:
+  - Aruba
+  fm:
+  - Aruba
+  intl_results:
+  - Aruba
+  national_elo:
+  - Aruba
+  - AW
+ASA:
+  canonical_en: American Samoa
+  canonical_zh: 美屬薩摩亞
+  fifa_md:
+  - American Samoa
+  fifa_ranking:
+  - American Samoa
+  fm:
+  - American Samoa
+  intl_results:
+  - American Samoa
+  national_elo:
+  - American Samoa
+ATG:
+  canonical_en: Antigua and Barbuda
+  canonical_zh: 安提瓜和巴布达
+  fifa_md:
+  - Antigua and Barbuda
+  fifa_ranking:
+  - Antigua and Barbuda
+  fm:
+  - Antigua and Barbuda
+  intl_results:
+  - Antigua and Barbuda
+  national_elo:
+  - Antigua and Barbuda
+  - AG
+  - Antigua/Barbuda
+  - Antigua/Barb
+AUS:
+  canonical_en: Australia
+  canonical_zh: 澳大利亚
+  fifa_md:
+  - Australia
+  fifa_ranking:
+  - Australia
+  fm:
+  - Australia
+  intl_results:
+  - Australia
+  national_elo:
+  - Australia
+  - AU
+AUT:
+  canonical_en: Austria
+  canonical_zh: 奥地利
+  fifa_md:
+  - Austria
+  fifa_ranking:
+  - Austria
+  fm:
+  - Austria
+  intl_results:
+  - Austria
+  national_elo:
+  - Austria
+  - AT
+AZE:
+  canonical_en: Azerbaijan
+  canonical_zh: 阿塞拜疆
+  fifa_md:
+  - Azerbaijan
+  fifa_ranking:
+  - Azerbaijan
+  fm:
+  - Azerbaijan
+  intl_results:
+  - Azerbaijan
+  national_elo:
+  - Azerbaijan
+  - AZ
+BAH:
+  canonical_en: Bahamas
+  canonical_zh: 巴哈马
+  fifa_md:
+  - Bahamas
+  fifa_ranking:
+  - Bahamas
+  fm:
+  - Bahamas
+  intl_results:
+  - Bahamas
+  national_elo:
+  - Bahamas
+  - BS
+BAN:
+  canonical_en: Bangladesh
+  canonical_zh: 孟加拉国
+  fifa_md:
+  - Bangladesh
+  fifa_ranking:
+  - Bangladesh
+  fm:
+  - Bangladesh
+  intl_results:
+  - Bangladesh
+  national_elo:
+  - Bangladesh
+  - BD
+BDI:
+  canonical_en: Burundi
+  canonical_zh: 蒲隆地
+  fifa_md:
+  - Burundi
+  fifa_ranking:
+  - Burundi
+  fm:
+  - Burundi
+  intl_results:
+  - Burundi
+  national_elo:
+  - Burundi
+  - BI
+BEL:
+  canonical_en: Belgium
+  canonical_zh: 比利时
+  fifa_md:
+  - Belgium
+  fifa_ranking:
+  - Belgium
+  fm:
+  - Belgium
+  intl_results:
+  - Belgium
+  national_elo:
+  - Belgium
+  - BE
+BEN:
+  canonical_en: Benin
+  canonical_zh: 贝宁
+  fifa_md:
+  - Benin
+  fifa_ranking:
+  - Benin
+  fm:
+  - Benin
+  intl_results:
+  - Benin
+  national_elo:
+  - Benin
+  - BJ
+BER:
+  canonical_en: Bermuda
+  canonical_zh: 百慕大
+  fifa_md:
+  - Bermuda
+  fifa_ranking:
+  - Bermuda
+  fm:
+  - Bermuda
+  intl_results:
+  - Bermuda
+  national_elo:
+  - Bermuda
+  - BM
+BFA:
+  canonical_en: Burkina Faso
+  canonical_zh: 布吉納法索
+  fifa_md:
+  - Burkina Faso
+  fifa_ranking:
+  - Burkina Faso
+  fm:
+  - Burkina Faso
+  intl_results:
+  - Burkina Faso
+  national_elo:
+  - Burkina Faso
+  - BF
+BHR:
+  canonical_en: Bahrain
+  canonical_zh: 巴林
+  fifa_md:
+  - Bahrain
+  fifa_ranking:
+  - Bahrain
+  fm:
+  - Bahrain
+  intl_results:
+  - Bahrain
+  national_elo:
+  - Bahrain
+  - BH
+BHU:
+  canonical_en: Bhutan
+  canonical_zh: 不丹
+  fifa_md:
+  - Bhutan
+  fifa_ranking:
+  - Bhutan
+  fm:
+  - Bhutan
+  intl_results:
+  - Bhutan
+  national_elo:
+  - Bhutan
+  - BT
+BIH:
+  canonical_en: Bosnia And Herzegovina
+  canonical_zh: 波黑
+  fifa_md:
+  - Bosnia and Herzegovina
+  fifa_ranking:
+  - Bosnia and Herzegovina
+  fm:
+  - Bosnia and Herzegovina
+  intl_results:
+  - Bosnia and Herzegovina
+  - Bosnia-Herzegovina
+  - BA
+  national_elo:
+  - Bosnia and Herzegovina
+  - Bosnia-Herzegovina
+  - BA
+  - Bosnia/Herzeg
+  - Bosnia/Herz
+BLR:
+  canonical_en: Belarus
+  canonical_zh: 白俄罗斯
+  fifa_md:
+  - Belarus
+  fifa_ranking:
+  - Belarus
+  fm:
+  - Belarus
+  intl_results:
+  - Belarus
+  national_elo:
+  - Belarus
+  - BY
+BLZ:
+  canonical_en: Belize
+  canonical_zh: 伯利兹
+  fifa_md:
+  - Belize
+  fifa_ranking:
+  - Belize
+  fm:
+  - Belize
+  intl_results:
+  - Belize
+  national_elo:
+  - Belize
+  - BZ
+BOL:
+  canonical_en: Bolivia
+  canonical_zh: 玻利維亞
+  fifa_md:
+  - Bolivia
+  fifa_ranking:
+  - Bolivia
+  fm:
+  - Bolivia
+  intl_results:
+  - Bolivia
+  national_elo:
+  - Bolivia
+  - BO
+BOT:
+  canonical_en: Botswana
+  canonical_zh: 波札那
+  fifa_md:
+  - Botswana
+  fifa_ranking:
+  - Botswana
+  fm:
+  - Botswana
+  intl_results:
+  - Botswana
+  national_elo:
+  - Botswana
+  - BW
+BRA:
+  canonical_en: Brazil
+  canonical_zh: 巴西
+  fifa_md:
+  - Brazil
+  fifa_ranking:
+  - Brazil
+  fm:
+  - Brazil
+  intl_results:
+  - Brazil
+  national_elo:
+  - Brazil
+  - BR
+BRB:
+  canonical_en: Barbados
+  canonical_zh: 巴巴多斯
+  fifa_md:
+  - Barbados
+  fifa_ranking:
+  - Barbados
+  fm:
+  - Barbados
+  intl_results:
+  - Barbados
+  national_elo:
+  - Barbados
+  - BB
+BRU:
+  canonical_en: Brunei
+  canonical_zh: 汶莱
+  fifa_md:
+  - Brunei
+  fifa_ranking:
+  - Brunei
+  fm:
+  - Brunei
+  intl_results:
+  - Brunei
+  national_elo:
+  - Brunei
+  - BN
+BUL:
+  canonical_en: Bulgaria
+  canonical_zh: 保加利亚
+  fifa_md:
+  - Bulgaria
+  fifa_ranking:
+  - Bulgaria
+  fm:
+  - Bulgaria
+  intl_results:
+  - Bulgaria
+  national_elo:
+  - Bulgaria
+  - BG
+CAM:
+  canonical_en: Cambodia
+  canonical_zh: 柬埔寨
+  fifa_md:
+  - Cambodia
+  fifa_ranking:
+  - Cambodia
+  fm:
+  - Cambodia
+  intl_results:
+  - Cambodia
+  national_elo:
+  - Cambodia
+  - KH
+CAN:
+  canonical_en: Canada
+  canonical_zh: 加拿大
+  fifa_md:
+  - Canada
+  fifa_ranking:
+  - Canada
+  fm:
+  - Canada
+  intl_results:
+  - Canada
+  national_elo:
+  - Canada
+  - CA
+CAY:
+  canonical_en: Cayman Islands
+  canonical_zh: 開曼群島
+  fifa_md:
+  - Cayman Islands
+  fifa_ranking:
+  - Cayman Islands
+  fm:
+  - Cayman Islands
+  intl_results:
+  - Cayman Islands
+  national_elo:
+  - Cayman Islands
+  - KY
+  - Cayman Isl
+CGO:
+  canonical_en: Congo
+  canonical_zh: 刚果
+  fifa_md:
+  - Congo
+  fifa_ranking:
+  - Congo
+  fm:
+  - Congo
+  intl_results:
+  - Congo
+  national_elo:
+  - Congo
+  - CG
+CHA:
+  canonical_en: Chad
+  canonical_zh: 乍得
+  fifa_md:
+  - Chad
+  fifa_ranking:
+  - Chad
+  fm:
+  - Chad
+  intl_results:
+  - Chad
+  national_elo:
+  - Chad
+  - TD
+CHI:
+  canonical_en: Chile
+  canonical_zh: 智利
+  fifa_md:
+  - Chile
+  fifa_ranking:
+  - Chile
+  fm:
+  - Chile
+  intl_results:
+  - Chile
+  national_elo:
+  - Chile
+  - CL
+CHN:
+  canonical_en: China
+  canonical_zh: 中华人民共和国
+  fifa_md:
+  - China
+  fifa_ranking:
+  - China
+  fm:
+  - China
+  intl_results:
+  - China
+  national_elo:
+  - China
+  - CN
+CIV:
+  canonical_en: Côte D'Ivoire
+  canonical_zh: 科特迪瓦
+  fifa_md:
+  - Ivory Coast
+  - Côte D'Ivoire
+  - Cote D Ivoire
+  fifa_ranking:
+  - Ivory Coast
+  - Côte D'Ivoire
+  fm:
+  - Ivory Coast
+  - Cote d'Ivoire
+  intl_results:
+  - Ivory Coast
+  - Côte D'Ivoire
+  - Cote D Ivoire
+  - CI
+  national_elo:
+  - Ivory Coast
+  - Côte d'Ivoire
+  - CI
+CMR:
+  canonical_en: Cameroon
+  canonical_zh: 喀麦隆
+  fifa_md:
+  - Cameroon
+  fifa_ranking:
+  - Cameroon
+  fm:
+  - Cameroon
+  intl_results:
+  - Cameroon
+  national_elo:
+  - Cameroon
+  - CM
+COD:
+  canonical_en: Congo DR
+  canonical_zh: 刚果（金）
+  fifa_md:
+  - DR Congo
+  - Congo DR
+  - Democratic Republic of Congo
+  - 民主刚果
+  - 刚果民主共和国
+  - 刚果（金）
+  fifa_ranking:
+  - DR Congo
+  - Congo DR
+  - Democratic Republic of Congo
+  - 民主刚果
+  - 刚果民主共和国
+  - 刚果（金）
+  fm:
+  - DR Congo
+  - Democratic Republic of Congo
+  - Congo DR
+  - 民主刚果
+  - 刚果民主共和国
+  - 刚果（金）
+  intl_results:
+  - DR Congo
+  - Congo DR
+  - Democratic Republic of Congo
+  - 民主刚果
+  - 刚果民主共和国
+  - 刚果（金）
+  - Zaire
+  - CD
+  - ZR
+  national_elo:
+  - DR Congo
+  - Congo DR
+  - Democratic Republic of Congo
+  - 民主刚果
+  - 刚果民主共和国
+  - 刚果（金）
+  - CD
+  - ZR
+  - Zaire
+COK:
+  canonical_en: Cook Islands
+  canonical_zh: 库克群岛
+  fifa_md:
+  - Cook Islands
+  fifa_ranking:
+  - Cook Islands
+  fm:
+  - Cook Islands
+  intl_results:
+  - Cook Islands
+  national_elo:
+  - Cook Islands
+  - CK
+COL:
+  canonical_en: Colombia
+  canonical_zh: 哥伦比亚
+  fifa_md:
+  - Colombia
+  fifa_ranking:
+  - Colombia
+  fm:
+  - Colombia
+  intl_results:
+  - Colombia
+  national_elo:
+  - Colombia
+  - CO
+COM:
+  canonical_en: Comoros
+  canonical_zh: 葛摩
+  fifa_md:
+  - Comoros
+  fifa_ranking:
+  - Comoros
+  fm:
+  - Comoros
+  intl_results:
+  - Comoros
+  national_elo:
+  - Comoros
+  - KM
+CPV:
+  canonical_en: Cabo Verde
+  canonical_zh: 佛得角
+  fifa_md:
+  - Cape Verde
+  - Cabo Verde
+  fifa_ranking:
+  - Cape Verde
+  - Cabo Verde
+  fm:
+  - Cape Verde
+  - Cape Verde Islands
+  intl_results:
+  - Cape Verde
+  - Cabo Verde
+  - Cape Verde Islands
+  - CV
+  national_elo:
+  - Cape Verde
+  - Cabo Verde
+  - CV
+CRC:
+  canonical_en: Costa Rica
+  canonical_zh: 哥斯达黎加
+  fifa_md:
+  - Costa Rica
+  fifa_ranking:
+  - Costa Rica
+  fm:
+  - Costa Rica
+  intl_results:
+  - Costa Rica
+  national_elo:
+  - Costa Rica
+  - CR
+CRO:
+  canonical_en: Croatia
+  canonical_zh: 克罗地亚
+  fifa_md:
+  - Croatia
+  fifa_ranking:
+  - Croatia
+  fm:
+  - Croatia
+  intl_results:
+  - Croatia
+  national_elo:
+  - Croatia
+  - HR
+CTA:
+  canonical_en: Central African Republic
+  canonical_zh: 中非共和國
+  fifa_md:
+  - Central African Republic
+  fifa_ranking:
+  - Central African Republic
+  fm:
+  - Central African Republic
+  intl_results:
+  - Central African Republic
+  national_elo:
+  - Central African Republic
+  - CF
+  - Central African Rep
+  - C African Rep
+  - C Afr Rep
+CUB:
+  canonical_en: Cuba
+  canonical_zh: 古巴
+  fifa_md:
+  - Cuba
+  fifa_ranking:
+  - Cuba
+  fm:
+  - Cuba
+  intl_results:
+  - Cuba
+  national_elo:
+  - Cuba
+  - CU
+CUW:
+  canonical_en: Curaçao
+  canonical_zh: 库拉索
+  fifa_md:
+  - Curaçao
+  fifa_ranking:
+  - Curaçao
+  fm:
+  - Curaçao
+  intl_results:
+  - Curaçao
+  - Netherlands Antilles
+  - CW
+  - AN
+  national_elo:
+  - Curaçao
+  - CW
+  - AN
+  - Netherlands Antilles
+  - Neth Antilles
+  - Nth Antilles
+CYP:
+  canonical_en: Cyprus
+  canonical_zh: 塞浦路斯
+  fifa_md:
+  - Cyprus
+  fifa_ranking:
+  - Cyprus
+  fm:
+  - Cyprus
+  intl_results:
+  - Cyprus
+  national_elo:
+  - Cyprus
+  - CY
+CZE:
+  canonical_en: Czechia
+  canonical_zh: 捷克
+  fifa_md:
+  - Czech Republic
+  - Czechia
+  fifa_ranking:
+  - Czech Republic
+  - Czechia
+  fm:
+  - Czech Republic
+  - Czechia
+  intl_results:
+  - Czech Republic
+  - Czechia
+  - Czechoslovakia
+  - CZ
+  - CS
+  national_elo:
+  - Czech Republic
+  - Czechia
+  - CZ
+  - CS
+  - Czechoslovakia
+DEN:
+  canonical_en: Denmark
+  canonical_zh: 丹麦
+  fifa_md:
+  - Denmark
+  fifa_ranking:
+  - Denmark
+  fm:
+  - Denmark
+  intl_results:
+  - Denmark
+  national_elo:
+  - Denmark
+  - DK
+DJI:
+  canonical_en: Djibouti
+  canonical_zh: 吉布提
+  fifa_md:
+  - Djibouti
+  fifa_ranking:
+  - Djibouti
+  fm:
+  - Djibouti
+  intl_results:
+  - Djibouti
+  national_elo:
+  - Djibouti
+  - DJ
+DMA:
+  canonical_en: Dominica
+  canonical_zh: 多米尼克
+  fifa_md:
+  - Dominica
+  fifa_ranking:
+  - Dominica
+  fm:
+  - Dominica
+  intl_results:
+  - Dominica
+  national_elo:
+  - Dominica
+  - DM
+DOM:
+  canonical_en: Dominican Republic
+  canonical_zh: 多明尼加
+  fifa_md:
+  - Dominican Republic
+  fifa_ranking:
+  - Dominican Republic
+  fm:
+  - Dominican Republic
+  intl_results:
+  - Dominican Republic
+  national_elo:
+  - Dominican Republic
+  - DO
+  - Dominican Rep
+  - Dominican R
+ECU:
+  canonical_en: Ecuador
+  canonical_zh: 厄瓜多尔
+  fifa_md:
+  - Ecuador
+  fifa_ranking:
+  - Ecuador
+  fm:
+  - Ecuador
+  intl_results:
+  - Ecuador
+  national_elo:
+  - Ecuador
+  - EC
+EGY:
+  canonical_en: Egypt
+  canonical_zh: 埃及
+  fifa_md:
+  - Egypt
+  fifa_ranking:
+  - Egypt
+  fm:
+  - Egypt
+  intl_results:
+  - Egypt
+  national_elo:
+  - Egypt
+  - EG
+ENG:
+  canonical_en: England
+  canonical_zh: 英格兰
+  fifa_md:
+  - England
+  fifa_ranking:
+  - England
+  fm:
+  - England
+  intl_results:
+  - England
+  - EN
+  national_elo:
+  - England
+  - EN
+EQG:
+  canonical_en: Equatorial Guinea
+  canonical_zh: 赤道几内亚
+  fifa_md:
+  - Equatorial Guinea
+  fifa_ranking:
+  - Equatorial Guinea
+  fm:
+  - Equatorial Guinea
+  intl_results:
+  - Equatorial Guinea
+  national_elo:
+  - Equatorial Guinea
+  - GQ
+  - Equat Guinea
+  - Eq Guinea
+ERI:
+  canonical_en: Eritrea
+  canonical_zh: 厄立特里亚
+  fifa_md:
+  - Eritrea
+  fifa_ranking:
+  - Eritrea
+  fm:
+  - Eritrea
+  intl_results:
+  - Eritrea
+  national_elo:
+  - Eritrea
+  - ER
+ESP:
+  canonical_en: Spain
+  canonical_zh: 西班牙
+  fifa_md:
+  - Spain
+  fifa_ranking:
+  - Spain
+  fm:
+  - Spain
+  intl_results:
+  - Spain
+  national_elo:
+  - Spain
+  - ES
+EST:
+  canonical_en: Estonia
+  canonical_zh: 爱沙尼亚
+  fifa_md:
+  - Estonia
+  fifa_ranking:
+  - Estonia
+  fm:
+  - Estonia
+  intl_results:
+  - Estonia
+  national_elo:
+  - Estonia
+  - EE
+ETH:
+  canonical_en: Ethiopia
+  canonical_zh: 埃塞俄比亚
+  fifa_md:
+  - Ethiopia
+  fifa_ranking:
+  - Ethiopia
+  fm:
+  - Ethiopia
+  intl_results:
+  - Ethiopia
+  national_elo:
+  - Ethiopia
+  - ET
+FIJ:
+  canonical_en: Fiji
+  canonical_zh: 斐濟
+  fifa_md:
+  - Fiji
+  fifa_ranking:
+  - Fiji
+  fm:
+  - Fiji
+  intl_results:
+  - Fiji
+  national_elo:
+  - Fiji
+  - FJ
+FIN:
+  canonical_en: Finland
+  canonical_zh: 芬兰
+  fifa_md:
+  - Finland
+  fifa_ranking:
+  - Finland
+  fm:
+  - Finland
+  intl_results:
+  - Finland
+  national_elo:
+  - Finland
+  - FI
+FRA:
+  canonical_en: France
+  canonical_zh: 法国
+  fifa_md:
+  - France
+  fifa_ranking:
+  - France
+  fm:
+  - France
+  intl_results:
+  - France
+  national_elo:
+  - France
+  - FR
+FRO:
+  canonical_en: Faroe Islands
+  canonical_zh: 法罗群岛
+  fifa_md:
+  - Faroe Islands
+  fifa_ranking:
+  - Faroe Islands
+  fm:
+  - Faroe Islands
+  intl_results:
+  - Faroe Islands
+  national_elo:
+  - Faroe Islands
+  - FO
+GAB:
+  canonical_en: Gabon
+  canonical_zh: 加蓬
+  fifa_md:
+  - Gabon
+  fifa_ranking:
+  - Gabon
+  fm:
+  - Gabon
+  intl_results:
+  - Gabon
+  national_elo:
+  - Gabon
+  - GA
+GAM:
+  canonical_en: Gambia
+  canonical_zh: 冈比亚
+  fifa_md:
+  - Gambia
+  fifa_ranking:
+  - Gambia
+  fm:
+  - Gambia
+  intl_results:
+  - Gambia
+  national_elo:
+  - Gambia
+  - GM
+GEO:
+  canonical_en: Georgia
+  canonical_zh: 喬治亞 (消歧義)
+  fifa_md:
+  - Georgia
+  fifa_ranking:
+  - Georgia
+  fm:
+  - Georgia
+  intl_results:
+  - Georgia
+  national_elo:
+  - Georgia
+  - GE
+GER:
+  canonical_en: Germany
+  canonical_zh: 德国
+  fifa_md:
+  - Germany
+  fifa_ranking:
+  - Germany
+  fm:
+  - Germany
+  intl_results:
+  - Germany
+  national_elo:
+  - Germany
+  - DE
+GHA:
+  canonical_en: Ghana
+  canonical_zh: 加纳
+  fifa_md:
+  - Ghana
+  fifa_ranking:
+  - Ghana
+  fm:
+  - Ghana
+  intl_results:
+  - Ghana
+  national_elo:
+  - Ghana
+  - GH
+GIB:
+  canonical_en: Gibraltar
+  canonical_zh: 直布罗陀
+  fifa_md:
+  - Gibraltar
+  fifa_ranking:
+  - Gibraltar
+  fm:
+  - Gibraltar
+  intl_results:
+  - Gibraltar
+  national_elo:
+  - Gibraltar
+  - GI
+GNB:
+  canonical_en: Guinea-Bissau
+  canonical_zh: 幾內亞比索
+  fifa_md:
+  - Guinea-Bissau
+  fifa_ranking:
+  - Guinea-Bissau
+  fm:
+  - Guinea-Bissau
+  intl_results:
+  - Guinea-Bissau
+  national_elo:
+  - Guinea-Bissau
+  - GW
+  - Guinea-Biss
+GRE:
+  canonical_en: Greece
+  canonical_zh: 希腊
+  fifa_md:
+  - Greece
+  fifa_ranking:
+  - Greece
+  fm:
+  - Greece
+  intl_results:
+  - Greece
+  national_elo:
+  - Greece
+  - GR
+GRN:
+  canonical_en: Grenada
+  canonical_zh: 格林纳达
+  fifa_md:
+  - Grenada
+  fifa_ranking:
+  - Grenada
+  fm:
+  - Grenada
+  intl_results:
+  - Grenada
+  national_elo:
+  - Grenada
+  - GD
+GUA:
+  canonical_en: Guatemala
+  canonical_zh: 危地马拉
+  fifa_md:
+  - Guatemala
+  fifa_ranking:
+  - Guatemala
+  fm:
+  - Guatemala
+  intl_results:
+  - Guatemala
+  national_elo:
+  - Guatemala
+  - GT
+GUI:
+  canonical_en: Guinea
+  canonical_zh: 几内亚
+  fifa_md:
+  - Guinea
+  fifa_ranking:
+  - Guinea
+  fm:
+  - Guinea
+  intl_results:
+  - Guinea
+  national_elo:
+  - Guinea
+  - GN
+GUM:
+  canonical_en: Guam
+  canonical_zh: 關島
+  fifa_md:
+  - Guam
+  fifa_ranking:
+  - Guam
+  fm:
+  - Guam
+  intl_results:
+  - Guam
+  national_elo:
+  - Guam
+  - GU
+GUY:
+  canonical_en: Guyana
+  canonical_zh: 圭亚那
+  fifa_md:
+  - Guyana
+  fifa_ranking:
+  - Guyana
+  fm:
+  - Guyana
+  intl_results:
+  - Guyana
+  national_elo:
+  - Guyana
+  - GY
+HAI:
+  canonical_en: Haiti
+  canonical_zh: 海地
+  fifa_md:
+  - Haiti
+  fifa_ranking:
+  - Haiti
+  fm:
+  - Haiti
+  intl_results:
+  - Haiti
+  national_elo:
+  - Haiti
+  - HT
+HKG:
+  canonical_en: Hong Kong
+  canonical_zh: 香港
+  fifa_md:
+  - Hong Kong
+  fifa_ranking:
+  - Hong Kong
+  fm:
+  - Hong Kong
+  intl_results:
+  - Hong Kong
+  national_elo:
+  - Hong Kong
+  - HK
+HON:
+  canonical_en: Honduras
+  canonical_zh: 洪都拉斯
+  fifa_md:
+  - Honduras
+  fifa_ranking:
+  - Honduras
+  fm:
+  - Honduras
+  intl_results:
+  - Honduras
+  national_elo:
+  - Honduras
+  - HN
+HUN:
+  canonical_en: Hungary
+  canonical_zh: 匈牙利
+  fifa_md:
+  - Hungary
+  fifa_ranking:
+  - Hungary
+  fm:
+  - Hungary
+  intl_results:
+  - Hungary
+  national_elo:
+  - Hungary
+  - HU
+IDN:
+  canonical_en: Indonesia
+  canonical_zh: 印度尼西亚
+  fifa_md:
+  - Indonesia
+  fifa_ranking:
+  - Indonesia
+  fm:
+  - Indonesia
+  intl_results:
+  - Indonesia
+  national_elo:
+  - Indonesia
+  - ID
+IND:
+  canonical_en: India
+  canonical_zh: 印度
+  fifa_md:
+  - India
+  fifa_ranking:
+  - India
+  fm:
+  - India
+  intl_results:
+  - India
+  national_elo:
+  - India
+  - IN
+IRL:
+  canonical_en: Republic of Ireland
+  canonical_zh: 爱尔兰
+  fifa_md:
+  - Republic of Ireland
+  - Ireland
+  fifa_ranking:
+  - Republic of Ireland
+  fm:
+  - Republic of Ireland
+  - Ireland
+  intl_results:
+  - Republic of Ireland
+  - Ireland
+  - IE
+  national_elo:
+  - Republic of Ireland
+  - Ireland
+  - IE
+IRN:
+  canonical_en: IR Iran
+  canonical_zh: 伊朗
+  fifa_md:
+  - Iran
+  - IR Iran
+  fifa_ranking:
+  - Iran
+  - IR Iran
+  fm:
+  - Iran
+  intl_results:
+  - Iran
+  - IR Iran
+  - Iran (Islamic Republic of)
+  - IR
+  national_elo:
+  - Iran
+  - IR Iran
+  - IR
+IRQ:
+  canonical_en: Iraq
+  canonical_zh: 伊拉克
+  fifa_md:
+  - Iraq
+  fifa_ranking:
+  - Iraq
+  fm:
+  - Iraq
+  intl_results:
+  - Iraq
+  national_elo:
+  - Iraq
+  - IQ
+ISL:
+  canonical_en: Iceland
+  canonical_zh: 冰岛
+  fifa_md:
+  - Iceland
+  fifa_ranking:
+  - Iceland
+  fm:
+  - Iceland
+  intl_results:
+  - Iceland
+  national_elo:
+  - Iceland
+  - IS
+ISR:
+  canonical_en: Israel
+  canonical_zh: 以色列
+  fifa_md:
+  - Israel
+  fifa_ranking:
+  - Israel
+  fm:
+  - Israel
+  intl_results:
+  - Israel
+  national_elo:
+  - Israel
+  - IL
+ITA:
+  canonical_en: Italy
+  canonical_zh: 意大利
+  fifa_md:
+  - Italy
+  fifa_ranking:
+  - Italy
+  fm:
+  - Italy
+  intl_results:
+  - Italy
+  national_elo:
+  - Italy
+  - IT
+JAM:
+  canonical_en: Jamaica
+  canonical_zh: 牙买加
+  fifa_md:
+  - Jamaica
+  fifa_ranking:
+  - Jamaica
+  fm:
+  - Jamaica
+  intl_results:
+  - Jamaica
+  national_elo:
+  - Jamaica
+  - JM
+JOR:
+  canonical_en: Jordan
+  canonical_zh: 约旦
+  fifa_md:
+  - Jordan
+  fifa_ranking:
+  - Jordan
+  fm:
+  - Jordan
+  intl_results:
+  - Jordan
+  national_elo:
+  - Jordan
+  - JO
+JPN:
+  canonical_en: Japan
+  canonical_zh: 日本
+  fifa_md:
+  - Japan
+  fifa_ranking:
+  - Japan
+  fm:
+  - Japan
+  intl_results:
+  - Japan
+  national_elo:
+  - Japan
+  - JP
+KAZ:
+  canonical_en: Kazakhstan
+  canonical_zh: 哈萨克斯坦
+  fifa_md:
+  - Kazakhstan
+  fifa_ranking:
+  - Kazakhstan
+  fm:
+  - Kazakhstan
+  intl_results:
+  - Kazakhstan
+  national_elo:
+  - Kazakhstan
+  - KZ
+KEN:
+  canonical_en: Kenya
+  canonical_zh: 肯尼亚
+  fifa_md:
+  - Kenya
+  fifa_ranking:
+  - Kenya
+  fm:
+  - Kenya
+  intl_results:
+  - Kenya
+  national_elo:
+  - Kenya
+  - KE
+KGZ:
+  canonical_en: Kyrgyzstan
+  canonical_zh: 吉尔吉斯斯坦
+  fifa_md:
+  - Kyrgyzstan
+  fifa_ranking:
+  - Kyrgyzstan
+  fm:
+  - Kyrgyzstan
+  intl_results:
+  - Kyrgyzstan
+  national_elo:
+  - Kyrgyzstan
+  - KG
+KOR:
+  canonical_en: Korea Republic
+  canonical_zh: 韩国
+  fifa_md:
+  - South Korea
+  - Korea Republic
+  fifa_ranking:
+  - South Korea
+  - Korea Republic
+  fm:
+  - South Korea
+  intl_results:
+  - South Korea
+  - Korea Republic
+  - Korea South
+  - KR
+  national_elo:
+  - South Korea
+  - Korea Republic
+  - KR
+KOS:
+  canonical_en: Kosovo
+  canonical_zh: 科索沃
+  fifa_md:
+  - Kosovo
+  fifa_ranking:
+  - Kosovo
+  fm:
+  - Kosovo
+  intl_results:
+  - Kosovo
+  national_elo:
+  - Kosovo
+  - KO
+KSA:
+  canonical_en: Saudi Arabia
+  canonical_zh: 沙特阿拉伯
+  fifa_md:
+  - Saudi Arabia
+  fifa_ranking:
+  - Saudi Arabia
+  fm:
+  - Saudi Arabia
+  intl_results:
+  - Saudi Arabia
+  - SA
+  national_elo:
+  - Saudi Arabia
+  - SA
+KUW:
+  canonical_en: Kuwait
+  canonical_zh: 科威特
+  fifa_md:
+  - Kuwait
+  fifa_ranking:
+  - Kuwait
+  fm:
+  - Kuwait
+  intl_results:
+  - Kuwait
+  national_elo:
+  - Kuwait
+  - KW
+LAO:
+  canonical_en: Laos
+  canonical_zh: 老挝
+  fifa_md:
+  - Laos
+  fifa_ranking:
+  - Laos
+  fm:
+  - Laos
+  intl_results:
+  - Laos
+  national_elo:
+  - Laos
+  - LA
+LBN:
+  canonical_en: Lebanon
+  canonical_zh: 黎巴嫩
+  fifa_md:
+  - Lebanon
+  fifa_ranking:
+  - Lebanon
+  fm:
+  - Lebanon
+  intl_results:
+  - Lebanon
+  national_elo:
+  - Lebanon
+  - LB
+LBR:
+  canonical_en: Liberia
+  canonical_zh: 利比里亚
+  fifa_md:
+  - Liberia
+  fifa_ranking:
+  - Liberia
+  fm:
+  - Liberia
+  intl_results:
+  - Liberia
+  national_elo:
+  - Liberia
+  - LR
+LBY:
+  canonical_en: Libya
+  canonical_zh: 利比亚
+  fifa_md:
+  - Libya
+  fifa_ranking:
+  - Libya
+  fm:
+  - Libya
+  intl_results:
+  - Libya
+  national_elo:
+  - Libya
+  - LY
+LCA:
+  canonical_en: Saint Lucia
+  canonical_zh: 圣卢西亚
+  fifa_md:
+  - Saint Lucia
+  fifa_ranking:
+  - Saint Lucia
+  fm:
+  - Saint Lucia
+  intl_results:
+  - Saint Lucia
+  national_elo:
+  - Saint Lucia
+  - LC
+LES:
+  canonical_en: Lesotho
+  canonical_zh: 莱索托
+  fifa_md:
+  - Lesotho
+  fifa_ranking:
+  - Lesotho
+  fm:
+  - Lesotho
+  intl_results:
+  - Lesotho
+  national_elo:
+  - Lesotho
+  - LS
+LIE:
+  canonical_en: Liechtenstein
+  canonical_zh: 列支敦斯登
+  fifa_md:
+  - Liechtenstein
+  fifa_ranking:
+  - Liechtenstein
+  fm:
+  - Liechtenstein
+  intl_results:
+  - Liechtenstein
+  national_elo:
+  - Liechtenstein
+  - LI
+LTU:
+  canonical_en: Lithuania
+  canonical_zh: 立陶宛
+  fifa_md:
+  - Lithuania
+  fifa_ranking:
+  - Lithuania
+  fm:
+  - Lithuania
+  intl_results:
+  - Lithuania
+  national_elo:
+  - Lithuania
+  - LT
+LUX:
+  canonical_en: Luxembourg
+  canonical_zh: 卢森堡
+  fifa_md:
+  - Luxembourg
+  fifa_ranking:
+  - Luxembourg
+  fm:
+  - Luxembourg
+  intl_results:
+  - Luxembourg
+  national_elo:
+  - Luxembourg
+  - LU
+LVA:
+  canonical_en: Latvia
+  canonical_zh: 拉脫維亞
+  fifa_md:
+  - Latvia
+  fifa_ranking:
+  - Latvia
+  fm:
+  - Latvia
+  intl_results:
+  - Latvia
+  national_elo:
+  - Latvia
+  - LV
+MAC:
+  canonical_en: Macau
+  canonical_zh: 澳門
+  fifa_md:
+  - Macau
+  fifa_ranking:
+  - Macau
+  fm:
+  - Macau
+  intl_results:
+  - Macau
+  national_elo:
+  - Macau
+MAD:
+  canonical_en: Madagascar
+  canonical_zh: 马达加斯加
+  fifa_md:
+  - Madagascar
+  fifa_ranking:
+  - Madagascar
+  fm:
+  - Madagascar
+  intl_results:
+  - Madagascar
+  national_elo:
+  - Madagascar
+  - MG
+MAR:
+  canonical_en: Morocco
+  canonical_zh: 摩洛哥
+  fifa_md:
+  - Morocco
+  fifa_ranking:
+  - Morocco
+  fm:
+  - Morocco
+  intl_results:
+  - Morocco
+  national_elo:
+  - Morocco
+  - MA
+MAS:
+  canonical_en: Malaysia
+  canonical_zh: 马来西亚
+  fifa_md:
+  - Malaysia
+  fifa_ranking:
+  - Malaysia
+  fm:
+  - Malaysia
+  intl_results:
+  - Malaysia
+  national_elo:
+  - Malaysia
+  - MY
+MDA:
+  canonical_en: Moldova
+  canonical_zh: 摩尔多瓦
+  fifa_md:
+  - Moldova
+  fifa_ranking:
+  - Moldova
+  fm:
+  - Moldova
+  intl_results:
+  - Moldova
+  national_elo:
+  - Moldova
+  - MD
+MDV:
+  canonical_en: Maldives
+  canonical_zh: 马尔代夫
+  fifa_md:
+  - Maldives
+  fifa_ranking:
+  - Maldives
+  fm:
+  - Maldives
+  intl_results:
+  - Maldives
+  national_elo:
+  - Maldives
+  - MV
+MEX:
+  canonical_en: Mexico
+  canonical_zh: 墨西哥
+  fifa_md:
+  - Mexico
+  fifa_ranking:
+  - Mexico
+  fm:
+  - Mexico
+  intl_results:
+  - Mexico
+  national_elo:
+  - Mexico
+  - MX
+MKD:
+  canonical_en: North Macedonia
+  canonical_zh: 北馬其頓
+  fifa_md:
+  - North Macedonia
+  fifa_ranking:
+  - North Macedonia
+  fm:
+  - North Macedonia
+  intl_results:
+  - North Macedonia
+  national_elo:
+  - North Macedonia
+  - NM
+  - N Macedonia
+MLI:
+  canonical_en: Mali
+  canonical_zh: 马里
+  fifa_md:
+  - Mali
+  fifa_ranking:
+  - Mali
+  fm:
+  - Mali
+  intl_results:
+  - Mali
+  national_elo:
+  - Mali
+  - ML
+MLT:
+  canonical_en: Malta
+  canonical_zh: 马耳他
+  fifa_md:
+  - Malta
+  fifa_ranking:
+  - Malta
+  fm:
+  - Malta
+  intl_results:
+  - Malta
+  national_elo:
+  - Malta
+  - MT
+MNE:
+  canonical_en: Montenegro
+  canonical_zh: 蒙特內哥羅
+  fifa_md:
+  - Montenegro
+  fifa_ranking:
+  - Montenegro
+  fm:
+  - Montenegro
+  intl_results:
+  - Montenegro
+  national_elo:
+  - Montenegro
+  - ME
+MNG:
+  canonical_en: Mongolia
+  canonical_zh: 蒙古国
+  fifa_md:
+  - Mongolia
+  fifa_ranking:
+  - Mongolia
+  fm:
+  - Mongolia
+  intl_results:
+  - Mongolia
+  national_elo:
+  - Mongolia
+  - MN
+MOZ:
+  canonical_en: Mozambique
+  canonical_zh: 莫桑比克
+  fifa_md:
+  - Mozambique
+  fifa_ranking:
+  - Mozambique
+  fm:
+  - Mozambique
+  intl_results:
+  - Mozambique
+  national_elo:
+  - Mozambique
+  - MZ
+MRI:
+  canonical_en: Mauritius
+  canonical_zh: 毛里求斯
+  fifa_md:
+  - Mauritius
+  fifa_ranking:
+  - Mauritius
+  fm:
+  - Mauritius
+  intl_results:
+  - Mauritius
+  national_elo:
+  - Mauritius
+  - MU
+MSR:
+  canonical_en: Montserrat
+  canonical_zh: 蒙特塞拉特
+  fifa_md:
+  - Montserrat
+  fifa_ranking:
+  - Montserrat
+  fm:
+  - Montserrat
+  intl_results:
+  - Montserrat
+  national_elo:
+  - Montserrat
+  - MS
+MTN:
+  canonical_en: Mauritania
+  canonical_zh: 毛里塔尼亚
+  fifa_md:
+  - Mauritania
+  fifa_ranking:
+  - Mauritania
+  fm:
+  - Mauritania
+  intl_results:
+  - Mauritania
+  national_elo:
+  - Mauritania
+  - MR
+MWI:
+  canonical_en: Malawi
+  canonical_zh: 马拉维
+  fifa_md:
+  - Malawi
+  fifa_ranking:
+  - Malawi
+  fm:
+  - Malawi
+  intl_results:
+  - Malawi
+  national_elo:
+  - Malawi
+  - MW
+MYA:
+  canonical_en: Myanmar
+  canonical_zh: 缅甸
+  fifa_md:
+  - Myanmar
+  fifa_ranking:
+  - Myanmar
+  fm:
+  - Myanmar
+  intl_results:
+  - Myanmar
+  national_elo:
+  - Myanmar
+  - MM
+NAM:
+  canonical_en: Namibia
+  canonical_zh: 纳米比亚
+  fifa_md:
+  - Namibia
+  fifa_ranking:
+  - Namibia
+  fm:
+  - Namibia
+  intl_results:
+  - Namibia
+  national_elo:
+  - Namibia
+  - NA
+NCA:
+  canonical_en: Nicaragua
+  canonical_zh: 尼加拉瓜
+  fifa_md:
+  - Nicaragua
+  fifa_ranking:
+  - Nicaragua
+  fm:
+  - Nicaragua
+  intl_results:
+  - Nicaragua
+  national_elo:
+  - Nicaragua
+  - NI
+NCL:
+  canonical_en: New Caledonia
+  canonical_zh: 新喀里多尼亞
+  fifa_md:
+  - New Caledonia
+  fifa_ranking:
+  - New Caledonia
+  fm:
+  - New Caledonia
+  intl_results:
+  - New Caledonia
+  national_elo:
+  - New Caledonia
+  - NC
+  - N Caledonia
+NED:
+  canonical_en: Netherlands
+  canonical_zh: 荷兰
+  fifa_md:
+  - Netherlands
+  fifa_ranking:
+  - Netherlands
+  fm:
+  - Netherlands
+  intl_results:
+  - Netherlands
+  - NL
+  - Holland
+  national_elo:
+  - Netherlands
+  - NL
+  - Holland
+NEP:
+  canonical_en: Nepal
+  canonical_zh: 尼泊尔
+  fifa_md:
+  - Nepal
+  fifa_ranking:
+  - Nepal
+  fm:
+  - Nepal
+  intl_results:
+  - Nepal
+  national_elo:
+  - Nepal
+  - NP
+NGA:
+  canonical_en: Nigeria
+  canonical_zh: 奈及利亞
+  fifa_md:
+  - Nigeria
+  fifa_ranking:
+  - Nigeria
+  fm:
+  - Nigeria
+  intl_results:
+  - Nigeria
+  national_elo:
+  - Nigeria
+  - NG
+NIG:
+  canonical_en: Niger
+  canonical_zh: 尼日尔
+  fifa_md:
+  - Niger
+  fifa_ranking:
+  - Niger
+  fm:
+  - Niger
+  intl_results:
+  - Niger
+  national_elo:
+  - Niger
+  - NE
+NIR:
+  canonical_en: Northern Ireland
+  canonical_zh: 北爱尔兰
+  fifa_md:
+  - Northern Ireland
+  fifa_ranking:
+  - Northern Ireland
+  fm:
+  - Northern Ireland
+  intl_results:
+  - Northern Ireland
+  - ND
+  national_elo:
+  - Northern Ireland
+  - ND
+  - EI
+  - North Ireland
+  - N Ireland
+NOR:
+  canonical_en: Norway
+  canonical_zh: 挪威
+  fifa_md:
+  - Norway
+  fifa_ranking:
+  - Norway
+  fm:
+  - Norway
+  intl_results:
+  - Norway
+  national_elo:
+  - Norway
+  - 'NO'
+NZL:
+  canonical_en: New Zealand
+  canonical_zh: 新西兰
+  fifa_md:
+  - New Zealand
+  fifa_ranking:
+  - New Zealand
+  fm:
+  - New Zealand
+  intl_results:
+  - New Zealand
+  national_elo:
+  - New Zealand
+  - NZ
+OMA:
+  canonical_en: Oman
+  canonical_zh: 阿曼
+  fifa_md:
+  - Oman
+  fifa_ranking:
+  - Oman
+  fm:
+  - Oman
+  intl_results:
+  - Oman
+  national_elo:
+  - Oman
+  - OM
+PAK:
+  canonical_en: Pakistan
+  canonical_zh: 巴基斯坦
+  fifa_md:
+  - Pakistan
+  fifa_ranking:
+  - Pakistan
+  fm:
+  - Pakistan
+  intl_results:
+  - Pakistan
+  national_elo:
+  - Pakistan
+  - PK
+PAN:
+  canonical_en: Panama
+  canonical_zh: 巴拿马
+  fifa_md:
+  - Panama
+  fifa_ranking:
+  - Panama
+  fm:
+  - Panama
+  intl_results:
+  - Panama
+  national_elo:
+  - Panama
+  - PA
+PAR:
+  canonical_en: Paraguay
+  canonical_zh: 巴拉圭
+  fifa_md:
+  - Paraguay
+  fifa_ranking:
+  - Paraguay
+  fm:
+  - Paraguay
+  intl_results:
+  - Paraguay
+  national_elo:
+  - Paraguay
+  - PY
+PER:
+  canonical_en: Peru
+  canonical_zh: 秘鲁
+  fifa_md:
+  - Peru
+  fifa_ranking:
+  - Peru
+  fm:
+  - Peru
+  intl_results:
+  - Peru
+  national_elo:
+  - Peru
+  - PE
+PHI:
+  canonical_en: Philippines
+  canonical_zh: 菲律宾
+  fifa_md:
+  - Philippines
+  fifa_ranking:
+  - Philippines
+  fm:
+  - Philippines
+  intl_results:
+  - Philippines
+  national_elo:
+  - Philippines
+  - PH
+PLE:
+  canonical_en: Palestine
+  canonical_zh: 巴勒斯坦國
+  fifa_md:
+  - Palestine
+  fifa_ranking:
+  - Palestine
+  fm:
+  - Palestine
+  intl_results:
+  - Palestine
+  national_elo:
+  - Palestine
+  - PS
+PNG:
+  canonical_en: Papua New Guinea
+  canonical_zh: 巴布亚新几内亚
+  fifa_md:
+  - Papua New Guinea
+  fifa_ranking:
+  - Papua New Guinea
+  fm:
+  - Papua New Guinea
+  intl_results:
+  - Papua New Guinea
+  national_elo:
+  - Papua New Guinea
+  - PG
+  - Papua N Guinea
+  - Papua N Guin
+  - Papua N G
+POL:
+  canonical_en: Poland
+  canonical_zh: 波兰
+  fifa_md:
+  - Poland
+  fifa_ranking:
+  - Poland
+  fm:
+  - Poland
+  intl_results:
+  - Poland
+  national_elo:
+  - Poland
+  - PL
+POR:
+  canonical_en: Portugal
+  canonical_zh: 葡萄牙
+  fifa_md:
+  - Portugal
+  fifa_ranking:
+  - Portugal
+  fm:
+  - Portugal
+  intl_results:
+  - Portugal
+  national_elo:
+  - Portugal
+  - PT
+PRK:
+  canonical_en: North Korea
+  canonical_zh: 朝鲜民主主义人民共和国
+  fifa_md:
+  - North Korea
+  fifa_ranking:
+  - North Korea
+  fm:
+  - North Korea
+  intl_results:
+  - North Korea
+  national_elo:
+  - North Korea
+  - KP
+PUR:
+  canonical_en: Puerto Rico
+  canonical_zh: 波多黎各
+  fifa_md:
+  - Puerto Rico
+  fifa_ranking:
+  - Puerto Rico
+  fm:
+  - Puerto Rico
+  intl_results:
+  - Puerto Rico
+  national_elo:
+  - Puerto Rico
+  - PR
+QAT:
+  canonical_en: Qatar
+  canonical_zh: 卡塔尔
+  fifa_md:
+  - Qatar
+  fifa_ranking:
+  - Qatar
+  fm:
+  - Qatar
+  intl_results:
+  - Qatar
+  national_elo:
+  - Qatar
+  - QA
+ROU:
+  canonical_en: Romania
+  canonical_zh: 羅馬尼亞
+  fifa_md:
+  - Romania
+  fifa_ranking:
+  - Romania
+  fm:
+  - Romania
+  intl_results:
+  - Romania
+  national_elo:
+  - Romania
+  - RO
+RSA:
+  canonical_en: South Africa
+  canonical_zh: 南非
+  fifa_md:
+  - South Africa
+  fifa_ranking:
+  - South Africa
+  fm:
+  - South Africa
+  intl_results:
+  - South Africa
+  - ZA
+  national_elo:
+  - South Africa
+  - ZA
+RUS:
+  canonical_en: Russia
+  canonical_zh: 俄罗斯
+  fifa_md:
+  - Russia
+  fifa_ranking:
+  - Russia
+  fm:
+  - Russia
+  intl_results:
+  - Russia
+  national_elo:
+  - Russia
+  - RU
+RWA:
+  canonical_en: Rwanda
+  canonical_zh: 卢旺达
+  fifa_md:
+  - Rwanda
+  fifa_ranking:
+  - Rwanda
+  fm:
+  - Rwanda
+  intl_results:
+  - Rwanda
+  national_elo:
+  - Rwanda
+  - RW
+SAM:
+  canonical_en: Samoa
+  canonical_zh: 萨摩亚
+  fifa_md:
+  - Samoa
+  fifa_ranking:
+  - Samoa
+  fm:
+  - Samoa
+  intl_results:
+  - Samoa
+  national_elo:
+  - Samoa
+  - WS
+SCO:
+  canonical_en: Scotland
+  canonical_zh: 苏格兰
+  fifa_md:
+  - Scotland
+  fifa_ranking:
+  - Scotland
+  fm:
+  - Scotland
+  intl_results:
+  - Scotland
+  - SF
+  national_elo:
+  - Scotland
+  - SF
+  - SQ
+SDN:
+  canonical_en: Sudan
+  canonical_zh: 苏丹
+  fifa_md:
+  - Sudan
+  fifa_ranking:
+  - Sudan
+  fm:
+  - Sudan
+  intl_results:
+  - Sudan
+  national_elo:
+  - Sudan
+  - SD
+SEN:
+  canonical_en: Senegal
+  canonical_zh: 塞内加尔
+  fifa_md:
+  - Senegal
+  fifa_ranking:
+  - Senegal
+  fm:
+  - Senegal
+  intl_results:
+  - Senegal
+  national_elo:
+  - Senegal
+  - SN
+SEY:
+  canonical_en: Seychelles
+  canonical_zh: 塞舌尔
+  fifa_md:
+  - Seychelles
+  fifa_ranking:
+  - Seychelles
+  fm:
+  - Seychelles
+  intl_results:
+  - Seychelles
+  national_elo:
+  - Seychelles
+  - SC
+SGP:
+  canonical_en: Singapore
+  canonical_zh: 新加坡
+  fifa_md:
+  - Singapore
+  fifa_ranking:
+  - Singapore
+  fm:
+  - Singapore
+  intl_results:
+  - Singapore
+  national_elo:
+  - Singapore
+  - SG
+SKN:
+  canonical_en: Saint Kitts and Nevis
+  canonical_zh: 聖克里斯多福及尼維斯
+  fifa_md:
+  - Saint Kitts and Nevis
+  fifa_ranking:
+  - Saint Kitts and Nevis
+  fm:
+  - Saint Kitts and Nevis
+  intl_results:
+  - Saint Kitts and Nevis
+  national_elo:
+  - Saint Kitts and Nevis
+  - KN
+  - St Kitts and Nevis
+  - St Kitts/Nevis
+  - St Kitts/N
+SLE:
+  canonical_en: Sierra Leone
+  canonical_zh: 塞拉利昂
+  fifa_md:
+  - Sierra Leone
+  fifa_ranking:
+  - Sierra Leone
+  fm:
+  - Sierra Leone
+  intl_results:
+  - Sierra Leone
+  national_elo:
+  - Sierra Leone
+  - SL
+SLV:
+  canonical_en: El Salvador
+  canonical_zh: 萨尔瓦多
+  fifa_md:
+  - El Salvador
+  fifa_ranking:
+  - El Salvador
+  fm:
+  - El Salvador
+  intl_results:
+  - El Salvador
+  national_elo:
+  - El Salvador
+  - SV
+SMR:
+  canonical_en: San Marino
+  canonical_zh: 圣马力诺
+  fifa_md:
+  - San Marino
+  fifa_ranking:
+  - San Marino
+  fm:
+  - San Marino
+  intl_results:
+  - San Marino
+  national_elo:
+  - San Marino
+  - SM
+SOL:
+  canonical_en: Solomon Islands
+  canonical_zh: 所罗门群岛
+  fifa_md:
+  - Solomon Islands
+  fifa_ranking:
+  - Solomon Islands
+  fm:
+  - Solomon Islands
+  intl_results:
+  - Solomon Islands
+  national_elo:
+  - Solomon Islands
+  - SB
+  - Solomon Isl
+SOM:
+  canonical_en: Somalia
+  canonical_zh: 索马里
+  fifa_md:
+  - Somalia
+  fifa_ranking:
+  - Somalia
+  fm:
+  - Somalia
+  intl_results:
+  - Somalia
+  national_elo:
+  - Somalia
+  - SO
+SRB:
+  canonical_en: Serbia
+  canonical_zh: 塞尔维亚
+  fifa_md:
+  - Serbia
+  fifa_ranking:
+  - Serbia
+  fm:
+  - Serbia
+  intl_results:
+  - Serbia
+  national_elo:
+  - Serbia
+  - RS
+SRI:
+  canonical_en: Sri Lanka
+  canonical_zh: 斯里蘭卡
+  fifa_md:
+  - Sri Lanka
+  fifa_ranking:
+  - Sri Lanka
+  fm:
+  - Sri Lanka
+  intl_results:
+  - Sri Lanka
+  national_elo:
+  - Sri Lanka
+  - LK
+SSD:
+  canonical_en: South Sudan
+  canonical_zh: 南蘇丹
+  fifa_md:
+  - South Sudan
+  fifa_ranking:
+  - South Sudan
+  fm:
+  - South Sudan
+  intl_results:
+  - South Sudan
+  national_elo:
+  - South Sudan
+  - SS
+STP:
+  canonical_en: São Tomé and Príncipe
+  canonical_zh: 圣多美和普林西比
+  fifa_md:
+  - São Tomé and Príncipe
+  fifa_ranking:
+  - São Tomé and Príncipe
+  fm:
+  - São Tomé and Príncipe
+  intl_results:
+  - São Tomé and Príncipe
+  national_elo:
+  - São Tomé and Príncipe
+  - ST
+  - Sao Tome/Principe
+  - Sao Tome/Pr
+SUI:
+  canonical_en: Switzerland
+  canonical_zh: 瑞士
+  fifa_md:
+  - Switzerland
+  fifa_ranking:
+  - Switzerland
+  fm:
+  - Switzerland
+  intl_results:
+  - Switzerland
+  national_elo:
+  - Switzerland
+  - CH
+SUR:
+  canonical_en: Suriname
+  canonical_zh: 蘇利南
+  fifa_md:
+  - Suriname
+  fifa_ranking:
+  - Suriname
+  fm:
+  - Suriname
+  intl_results:
+  - Suriname
+  national_elo:
+  - Suriname
+  - SR
+SVK:
+  canonical_en: Slovakia
+  canonical_zh: 斯洛伐克
+  fifa_md:
+  - Slovakia
+  fifa_ranking:
+  - Slovakia
+  fm:
+  - Slovakia
+  intl_results:
+  - Slovakia
+  national_elo:
+  - Slovakia
+  - SK
+SVN:
+  canonical_en: Slovenia
+  canonical_zh: 斯洛文尼亚
+  fifa_md:
+  - Slovenia
+  fifa_ranking:
+  - Slovenia
+  fm:
+  - Slovenia
+  intl_results:
+  - Slovenia
+  national_elo:
+  - Slovenia
+  - SI
+SWE:
+  canonical_en: Sweden
+  canonical_zh: 瑞典
+  fifa_md:
+  - Sweden
+  fifa_ranking:
+  - Sweden
+  fm:
+  - Sweden
+  intl_results:
+  - Sweden
+  national_elo:
+  - Sweden
+  - SE
+SWZ:
+  canonical_en: Eswatini
+  canonical_zh: 史瓦帝尼
+  fifa_md:
+  - Eswatini
+  fifa_ranking:
+  - Eswatini
+  fm:
+  - Eswatini
+  intl_results:
+  - Eswatini
+  national_elo:
+  - Eswatini
+  - SW
+SYR:
+  canonical_en: Syria
+  canonical_zh: 叙利亚
+  fifa_md:
+  - Syria
+  fifa_ranking:
+  - Syria
+  fm:
+  - Syria
+  intl_results:
+  - Syria
+  national_elo:
+  - Syria
+  - SY
+TAH:
+  canonical_en: Tahiti
+  canonical_zh: 大溪地島
+  fifa_md:
+  - Tahiti
+  fifa_ranking:
+  - Tahiti
+  fm:
+  - Tahiti
+  intl_results:
+  - Tahiti
+  national_elo:
+  - Tahiti
+  - TI
+TAN:
+  canonical_en: Tanzania
+  canonical_zh: 坦桑尼亚
+  fifa_md:
+  - Tanzania
+  fifa_ranking:
+  - Tanzania
+  fm:
+  - Tanzania
+  intl_results:
+  - Tanzania
+  national_elo:
+  - Tanzania
+  - TZ
+TCA:
+  canonical_en: Turks and Caicos Islands
+  canonical_zh: 特克斯和凯科斯群岛
+  fifa_md:
+  - Turks and Caicos Islands
+  fifa_ranking:
+  - Turks and Caicos Islands
+  fm:
+  - Turks and Caicos Islands
+  intl_results:
+  - Turks and Caicos Islands
+  national_elo:
+  - Turks and Caicos Islands
+  - TC
+  - Turks and Caicos
+  - Turks/Caicos
+TGA:
+  canonical_en: Tonga
+  canonical_zh: 東加
+  fifa_md:
+  - Tonga
+  fifa_ranking:
+  - Tonga
+  fm:
+  - Tonga
+  intl_results:
+  - Tonga
+  national_elo:
+  - Tonga
+  - TO
+THA:
+  canonical_en: Thailand
+  canonical_zh: 泰国
+  fifa_md:
+  - Thailand
+  fifa_ranking:
+  - Thailand
+  fm:
+  - Thailand
+  intl_results:
+  - Thailand
+  national_elo:
+  - Thailand
+  - TH
+TJK:
+  canonical_en: Tajikistan
+  canonical_zh: 塔吉克斯坦
+  fifa_md:
+  - Tajikistan
+  fifa_ranking:
+  - Tajikistan
+  fm:
+  - Tajikistan
+  intl_results:
+  - Tajikistan
+  national_elo:
+  - Tajikistan
+  - TJ
+TKM:
+  canonical_en: Turkmenistan
+  canonical_zh: 土库曼斯坦
+  fifa_md:
+  - Turkmenistan
+  fifa_ranking:
+  - Turkmenistan
+  fm:
+  - Turkmenistan
+  intl_results:
+  - Turkmenistan
+  national_elo:
+  - Turkmenistan
+  - TM
+TLS:
+  canonical_en: Timor-Leste
+  canonical_zh: 东帝汶
+  fifa_md:
+  - Timor-Leste
+  fifa_ranking:
+  - Timor-Leste
+  fm:
+  - Timor-Leste
+  intl_results:
+  - Timor-Leste
+  national_elo:
+  - Timor-Leste
+TOG:
+  canonical_en: Togo
+  canonical_zh: 多哥
+  fifa_md:
+  - Togo
+  fifa_ranking:
+  - Togo
+  fm:
+  - Togo
+  intl_results:
+  - Togo
+  national_elo:
+  - Togo
+  - TG
+TPE:
+  canonical_en: Chinese Taipei
+  canonical_zh: 中華台北
+  fifa_md:
+  - Chinese Taipei
+  fifa_ranking:
+  - Chinese Taipei
+  fm:
+  - Chinese Taipei
+  intl_results:
+  - Chinese Taipei
+  national_elo:
+  - Chinese Taipei
+TRI:
+  canonical_en: Trinidad and Tobago
+  canonical_zh: 千里達及托巴哥
+  fifa_md:
+  - Trinidad and Tobago
+  fifa_ranking:
+  - Trinidad and Tobago
+  fm:
+  - Trinidad and Tobago
+  intl_results:
+  - Trinidad and Tobago
+  national_elo:
+  - Trinidad and Tobago
+  - TT
+  - Trinidad/Tobago
+  - Trinidad/Tob
+TUN:
+  canonical_en: Tunisia
+  canonical_zh: 突尼斯
+  fifa_md:
+  - Tunisia
+  fifa_ranking:
+  - Tunisia
+  fm:
+  - Tunisia
+  intl_results:
+  - Tunisia
+  national_elo:
+  - Tunisia
+  - TN
+TUR:
+  canonical_en: Türkiye
+  canonical_zh: 土耳其
+  fifa_md:
+  - Turkey
+  - Türkiye
+  fifa_ranking:
+  - Turkey
+  - Türkiye
+  fm:
+  - Turkey
+  - Türkiye
+  intl_results:
+  - Turkey
+  - Türkiye
+  - TR
+  national_elo:
+  - Turkey
+  - Türkiye
+  - TR
+UAE:
+  canonical_en: United Arab Emirates
+  canonical_zh: 阿拉伯联合酋长国
+  fifa_md:
+  - United Arab Emirates
+  fifa_ranking:
+  - United Arab Emirates
+  fm:
+  - United Arab Emirates
+  intl_results:
+  - United Arab Emirates
+  national_elo:
+  - United Arab Emirates
+  - AE
+  - UAE
+UGA:
+  canonical_en: Uganda
+  canonical_zh: 乌干达
+  fifa_md:
+  - Uganda
+  fifa_ranking:
+  - Uganda
+  fm:
+  - Uganda
+  intl_results:
+  - Uganda
+  national_elo:
+  - Uganda
+  - UG
+UKR:
+  canonical_en: Ukraine
+  canonical_zh: 乌克兰
+  fifa_md:
+  - Ukraine
+  fifa_ranking:
+  - Ukraine
+  fm:
+  - Ukraine
+  intl_results:
+  - Ukraine
+  national_elo:
+  - Ukraine
+  - UA
+URU:
+  canonical_en: Uruguay
+  canonical_zh: 乌拉圭
+  fifa_md:
+  - Uruguay
+  fifa_ranking:
+  - Uruguay
+  fm:
+  - Uruguay
+  intl_results:
+  - Uruguay
+  national_elo:
+  - Uruguay
+  - UY
+USA:
+  canonical_en: USA
+  canonical_zh: 美国
+  fifa_md:
+  - United States
+  - USA
+  fifa_ranking:
+  - United States
+  - USA
+  fm:
+  - United States
+  - USA
+  intl_results:
+  - United States
+  - USA
+  - United States of America
+  - US
+  national_elo:
+  - United States
+  - USA
+  - US
+UZB:
+  canonical_en: Uzbekistan
+  canonical_zh: 乌兹别克斯坦
+  fifa_md:
+  - Uzbekistan
+  fifa_ranking:
+  - Uzbekistan
+  fm:
+  - Uzbekistan
+  intl_results:
+  - Uzbekistan
+  national_elo:
+  - Uzbekistan
+  - UZ
+VAN:
+  canonical_en: Vanuatu
+  canonical_zh: 瓦努阿图
+  fifa_md:
+  - Vanuatu
+  fifa_ranking:
+  - Vanuatu
+  fm:
+  - Vanuatu
+  intl_results:
+  - Vanuatu
+  national_elo:
+  - Vanuatu
+  - VU
+VEN:
+  canonical_en: Venezuela
+  canonical_zh: 委內瑞拉
+  fifa_md:
+  - Venezuela
+  fifa_ranking:
+  - Venezuela
+  fm:
+  - Venezuela
+  intl_results:
+  - Venezuela
+  national_elo:
+  - Venezuela
+  - VE
+VGB:
+  canonical_en: British Virgin Islands
+  canonical_zh: 英屬維爾京群島
+  fifa_md:
+  - British Virgin Islands
+  fifa_ranking:
+  - British Virgin Islands
+  fm:
+  - British Virgin Islands
+  intl_results:
+  - British Virgin Islands
+  national_elo:
+  - British Virgin Islands
+  - VG
+  - Br Virgin Islands
+  - Br Virgin Isl
+  - Br Virgin I
+VIE:
+  canonical_en: Vietnam
+  canonical_zh: 越南
+  fifa_md:
+  - Vietnam
+  fifa_ranking:
+  - Vietnam
+  fm:
+  - Vietnam
+  intl_results:
+  - Vietnam
+  national_elo:
+  - Vietnam
+  - VN
+VIN:
+  canonical_en: Saint Vincent and the Grenadines
+  canonical_zh: 圣文森特和格林纳丁斯
+  fifa_md:
+  - Saint Vincent and the Grenadines
+  fifa_ranking:
+  - Saint Vincent and the Grenadines
+  fm:
+  - Saint Vincent and the Grenadines
+  intl_results:
+  - Saint Vincent and the Grenadines
+  national_elo:
+  - Saint Vincent and the Grenadines
+  - VC
+  - St Vincent & Grenadines
+  - St Vincent/Grenadines
+  - St Vincent/Gren
+  - St Vincent/G
+VIR:
+  canonical_en: U.S. Virgin Islands
+  canonical_zh: 美屬維爾京群島
+  fifa_md:
+  - U.S. Virgin Islands
+  fifa_ranking:
+  - U.S. Virgin Islands
+  fm:
+  - U.S. Virgin Islands
+  intl_results:
+  - U.S. Virgin Islands
+  national_elo:
+  - U.S. Virgin Islands
+WAL:
+  canonical_en: Wales
+  canonical_zh: 威爾斯
+  fifa_md:
+  - Wales
+  fifa_ranking:
+  - Wales
+  fm:
+  - Wales
+  intl_results:
+  - Wales
+  - WA
+  national_elo:
+  - Wales
+  - WA
+YEM:
+  canonical_en: Yemen
+  canonical_zh: 也门
+  fifa_md:
+  - Yemen
+  fifa_ranking:
+  - Yemen
+  fm:
+  - Yemen
+  intl_results:
+  - Yemen
+  national_elo:
+  - Yemen
+  - YE
+ZAM:
+  canonical_en: Zambia
+  canonical_zh: 赞比亚
+  fifa_md:
+  - Zambia
+  fifa_ranking:
+  - Zambia
+  fm:
+  - Zambia
+  intl_results:
+  - Zambia
+  national_elo:
+  - Zambia
+  - ZM
+ZIM:
+  canonical_en: Zimbabwe
+  canonical_zh: 辛巴威
+  fifa_md:
+  - Zimbabwe
+  fifa_ranking:
+  - Zimbabwe
+  fm:
+  - Zimbabwe
+  intl_results:
+  - Zimbabwe
+  national_elo:
+  - Zimbabwe
+  - ZW

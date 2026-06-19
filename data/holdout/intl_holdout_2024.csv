@@ -1,0 +1,153 @@
+date,home_iso3,away_iso3,home_score,away_score,knockout,host_iso3,competition
+2024-09-10,CHN,KSA,1,2,false,CHN,FIFA World Cup qualification
+2024-10-09,BLZ,AIA,1,0,false,BLZ,CONCACAF Nations League
+2024-10-10,AUT,KAZ,4,0,false,AUT,UEFA Nations League
+2024-10-10,BHR,IDN,2,2,false,BHR,FIFA World Cup qualification
+2024-10-10,ENG,GRE,1,2,false,ENG,UEFA Nations League
+2024-10-10,FRO,ARM,2,2,false,FRO,UEFA Nations League
+2024-10-10,GIB,SMR,1,0,false,GIB,UEFA Nations League
+2024-10-10,IRQ,PLE,1,0,false,IRQ,FIFA World Cup qualification
+2024-10-10,ISR,FRA,1,4,false,HUN,UEFA Nations League
+2024-10-10,ITA,BEL,2,2,false,ITA,UEFA Nations League
+2024-10-10,KSA,JPN,0,2,false,KSA,FIFA World Cup qualification
+2024-10-10,LVA,MKD,0,3,false,LVA,UEFA Nations League
+2024-10-10,MDA,AND,2,0,false,MDA,UEFA Nations League
+2024-10-10,NCA,JAM,0,2,false,NCA,CONCACAF Nations League
+2024-10-10,NOR,SVN,3,0,false,NOR,UEFA Nations League
+2024-10-10,OMA,KUW,4,0,false,OMA,FIFA World Cup qualification
+2024-10-10,QAT,KGZ,3,1,false,QAT,FIFA World Cup qualification
+2024-10-10,UAE,PRK,1,1,false,UAE,FIFA World Cup qualification
+2024-10-10,UZB,IRN,0,0,false,UZB,FIFA World Cup qualification
+2024-10-10,VIN,SLV,2,3,false,VIN,CONCACAF Nations League
+2024-10-11,ARU,HAI,1,3,false,ARU,CONCACAF Nations League
+2024-10-11,BIH,GER,1,2,false,BIH,UEFA Nations League
+2024-10-11,CZE,ALB,2,0,false,CZE,UEFA Nations League
+2024-10-11,EST,AZE,3,1,false,EST,UEFA Nations League
+2024-10-11,GUY,GUA,1,3,false,GUY,CONCACAF Nations League
+2024-10-11,HUN,NED,1,1,false,HUN,UEFA Nations League
+2024-10-11,ISL,WAL,2,2,false,ISL,UEFA Nations League
+2024-10-11,SUR,CRC,1,1,false,SUR,CONCACAF Nations League
+2024-10-11,SVK,SWE,2,2,false,SVK,UEFA Nations League
+2024-10-11,TUR,MNE,1,0,false,TUR,UEFA Nations League
+2024-10-11,UKR,GEO,1,0,false,POL,UEFA Nations League
+2024-10-12,ATG,DOM,0,5,false,BER,CONCACAF Nations League
+2024-10-12,BLR,NIR,0,0,false,HUN,UEFA Nations League
+2024-10-12,BUL,LUX,0,0,false,BUL,UEFA Nations League
+2024-10-12,CRO,SCO,2,1,false,CRO,UEFA Nations League
+2024-10-12,CYP,ROU,0,3,false,CYP,UEFA Nations League
+2024-10-12,ESP,DEN,1,0,false,ESP,UEFA Nations League
+2024-10-12,LTU,KOS,1,2,false,LTU,UEFA Nations League
+2024-10-12,POL,POR,1,3,false,POL,UEFA Nations League
+2024-10-12,SRB,SUI,2,0,false,SRB,UEFA Nations League
+2024-10-13,ARM,MKD,0,2,false,ARM,UEFA Nations League
+2024-10-13,AUT,NOR,5,1,false,AUT,UEFA Nations League
+2024-10-13,FIN,ENG,1,3,false,FIN,UEFA Nations League
+2024-10-13,FRO,LVA,1,1,false,FRO,UEFA Nations League
+2024-10-13,KAZ,SVN,0,1,false,KAZ,UEFA Nations League
+2024-10-13,LIE,GIB,0,0,false,LIE,UEFA Nations League
+2024-10-13,MLT,MDA,1,0,false,MLT,UEFA Nations League
+2024-10-13,VIN,SLV,2,1,false,VIN,CONCACAF Nations League
+2024-10-14,ARU,HAI,3,5,false,ARU,CONCACAF Nations League
+2024-10-14,AZE,SVK,1,3,false,AZE,UEFA Nations League
+2024-10-14,BEL,FRA,1,2,false,BEL,UEFA Nations League
+2024-10-14,BIH,HUN,0,2,false,BIH,UEFA Nations League
+2024-10-14,EST,SWE,0,3,false,EST,UEFA Nations League
+2024-10-14,GEO,ALB,0,1,false,GEO,UEFA Nations League
+2024-10-14,GER,NED,1,0,false,GER,UEFA Nations League
+2024-10-14,ISL,TUR,2,4,false,ISL,UEFA Nations League
+2024-10-14,ITA,ISR,4,1,false,ITA,UEFA Nations League
+2024-10-14,UKR,CZE,1,1,false,POL,UEFA Nations League
+2024-10-14,WAL,MNE,1,0,false,WAL,UEFA Nations League
+2024-10-15,BLR,LUX,1,1,false,HUN,UEFA Nations League
+2024-10-15,CHN,IDN,2,1,false,CHN,FIFA World Cup qualification
+2024-10-15,CRC,GUA,3,0,false,CRC,CONCACAF Nations League
+2024-10-15,DOM,ATG,5,0,false,BER,CONCACAF Nations League
+2024-10-15,ESP,SRB,3,0,false,ESP,UEFA Nations League
+2024-10-15,IRN,QAT,4,1,false,UAE,FIFA World Cup qualification
+2024-10-15,KGZ,PRK,1,0,false,KGZ,FIFA World Cup qualification
+2024-10-15,KOR,IRQ,3,2,false,KOR,FIFA World Cup qualification
+2024-10-15,KOS,CYP,3,0,false,KOS,UEFA Nations League
+2024-10-15,KSA,BHR,0,0,false,KSA,FIFA World Cup qualification
+2024-10-15,LTU,ROU,1,2,false,LTU,UEFA Nations League
+2024-10-15,NIR,BUL,5,0,false,NIR,UEFA Nations League
+2024-10-15,PLE,KUW,2,2,false,QAT,FIFA World Cup qualification
+2024-10-15,POL,CRO,3,3,false,POL,UEFA Nations League
+2024-10-15,SCO,POR,0,0,false,SCO,UEFA Nations League
+2024-10-15,SUI,DEN,2,2,false,SUI,UEFA Nations League
+2024-10-15,SUR,GUY,5,1,false,SUR,CONCACAF Nations League
+2024-10-15,UZB,UAE,1,0,false,UZB,FIFA World Cup qualification
+2024-11-14,ARM,FRO,0,1,false,ARM,UEFA Nations League
+2024-11-14,BEL,ITA,0,1,false,BEL,UEFA Nations League
+2024-11-14,BHR,CHN,0,1,false,BHR,FIFA World Cup qualification
+2024-11-14,FRA,ISR,0,0,false,FRA,UEFA Nations League
+2024-11-14,GRE,ENG,0,3,false,GRE,UEFA Nations League
+2024-11-14,JAM,USA,0,1,false,JAM,CONCACAF Nations League
+2024-11-14,KAZ,AUT,0,2,false,KAZ,UEFA Nations League
+2024-11-14,KUW,KOR,1,3,false,KUW,FIFA World Cup qualification
+2024-11-14,MKD,LVA,1,0,false,MKD,UEFA Nations League
+2024-11-14,MSR,VIN,1,2,false,SLV,CONCACAF Nations League
+2024-11-14,OMA,PLE,1,0,false,OMA,FIFA World Cup qualification
+2024-11-14,PRK,IRN,2,3,false,LAO,FIFA World Cup qualification
+2024-11-14,QAT,UZB,3,2,false,QAT,FIFA World Cup qualification
+2024-11-14,SVN,NOR,1,4,false,SVN,UEFA Nations League
+2024-11-14,UAE,KGZ,3,0,false,UAE,FIFA World Cup qualification
+2024-11-15,CYP,LTU,2,1,false,CYP,UEFA Nations League
+2024-11-15,DEN,ESP,1,2,false,DEN,UEFA Nations League
+2024-11-15,IDN,JPN,0,4,false,IDN,FIFA World Cup qualification
+2024-11-15,LUX,BUL,0,1,false,LUX,UEFA Nations League
+2024-11-15,NIR,BLR,2,0,false,NIR,UEFA Nations League
+2024-11-15,POR,POL,5,1,false,POR,UEFA Nations League
+2024-11-15,PUR,ARU,5,1,false,PUR,CONCACAF Nations League
+2024-11-15,ROU,KOS,0,0,false,ROU,UEFA Nations League
+2024-11-15,SCO,CRO,1,0,false,SCO,UEFA Nations League
+2024-11-15,SMR,GIB,1,1,false,SMR,UEFA Nations League
+2024-11-15,SUI,SRB,1,1,false,SUI,UEFA Nations League
+2024-11-15,SUR,CAN,0,1,false,SUR,CONCACAF Nations League
+2024-11-16,ALB,CZE,0,0,false,ALB,UEFA Nations League
+2024-11-16,AND,MDA,0,1,false,AND,UEFA Nations League
+2024-11-16,AZE,EST,0,0,false,AZE,UEFA Nations League
+2024-11-16,DOM,DMA,6,1,false,DOM,CONCACAF Nations League
+2024-11-16,GEO,UKR,1,1,false,GEO,UEFA Nations League
+2024-11-16,GER,BIH,7,0,false,GER,UEFA Nations League
+2024-11-16,MNE,ISL,0,2,false,MNE,UEFA Nations League
+2024-11-16,NED,HUN,4,0,false,NED,UEFA Nations League
+2024-11-16,SWE,SVK,2,1,false,SWE,UEFA Nations League
+2024-11-16,TUR,WAL,0,0,false,TUR,UEFA Nations League
+2024-11-17,AUT,SVN,1,1,false,AUT,UEFA Nations League
+2024-11-17,FIN,GRE,0,2,false,FIN,UEFA Nations League
+2024-11-17,ISR,BEL,1,0,false,HUN,UEFA Nations League
+2024-11-17,ITA,FRA,1,3,false,ITA,UEFA Nations League
+2024-11-17,LVA,ARM,1,2,false,LVA,UEFA Nations League
+2024-11-17,MKD,FRO,1,0,false,MKD,UEFA Nations League
+2024-11-17,NOR,KAZ,5,0,false,NOR,UEFA Nations League
+2024-11-17,SLV,MSR,1,0,false,SLV,CONCACAF Nations League
+2024-11-18,BUL,BLR,1,1,false,BUL,UEFA Nations League
+2024-11-18,CRO,POR,1,1,false,CRO,UEFA Nations League
+2024-11-18,ESP,SUI,3,2,false,ESP,UEFA Nations League
+2024-11-18,KOS,LTU,1,0,false,KOS,UEFA Nations League
+2024-11-18,LCA,CUW,1,4,false,LCA,CONCACAF Nations League
+2024-11-18,LIE,SMR,1,3,false,LIE,UEFA Nations League
+2024-11-18,LUX,NIR,2,2,false,LUX,UEFA Nations League
+2024-11-18,POL,SCO,1,2,false,POL,UEFA Nations League
+2024-11-18,PUR,HAI,0,3,false,PUR,CONCACAF Nations League
+2024-11-18,ROU,CYP,4,1,false,ROU,UEFA Nations League
+2024-11-18,SRB,DEN,0,0,false,SRB,UEFA Nations League
+2024-11-18,USA,JAM,4,2,false,USA,CONCACAF Nations League
+2024-11-19,ALB,UKR,1,2,false,ALB,UEFA Nations League
+2024-11-19,ATG,DMA,0,0,false,DOM,CONCACAF Nations League
+2024-11-19,BIH,NED,1,1,false,BIH,UEFA Nations League
+2024-11-19,CAN,SUR,3,0,false,CAN,CONCACAF Nations League
+2024-11-19,CHN,JPN,1,3,false,CHN,FIFA World Cup qualification
+2024-11-19,CZE,GEO,2,1,false,CZE,UEFA Nations League
+2024-11-19,HUN,GER,1,1,false,HUN,UEFA Nations League
+2024-11-19,IDN,KSA,2,0,false,IDN,FIFA World Cup qualification
+2024-11-19,KGZ,IRN,2,3,false,KGZ,FIFA World Cup qualification
+2024-11-19,MLT,AND,0,0,false,MLT,UEFA Nations League
+2024-11-19,MNE,TUR,3,1,false,MNE,UEFA Nations League
+2024-11-19,OMA,IRQ,0,1,false,OMA,FIFA World Cup qualification
+2024-11-19,PLE,KOR,1,1,false,JOR,FIFA World Cup qualification
+2024-11-19,PRK,UZB,0,1,false,LAO,FIFA World Cup qualification
+2024-11-19,SVK,EST,1,0,false,SVK,UEFA Nations League
+2024-11-19,SWE,AZE,6,0,false,SWE,UEFA Nations League
+2024-11-19,UAE,QAT,5,0,false,UAE,FIFA World Cup qualification
+2024-11-19,WAL,ISL,4,1,false,WAL,UEFA Nations League

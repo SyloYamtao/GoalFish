@@ -1,0 +1,80 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# 环境变量（保护敏感信息）
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+backend/.venv/
+venv/
+ENV/
+.eggs/
+*.egg-info/
+dist/
+build/
+
+# Node.js
+node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 测试
+.pytest_cache/
+backend/.pytest_cache/
+.coverage
+htmlcov/
+
+# Cursor
+.cursor/
+.claude/
+
+# 文档与测试程序
+mydoc/
+mytest/
+
+# 日志文件
+logs/
+backend/logs/
+log/
+*.log
+*.log.*
+
+# 上传文件
+backend/uploads/
+frontend/dist/
+
+# Docker 数据
+data/*
+!data/wc2026_squads_cleaned.csv
+!data/wc2026_team_metadata.csv
+!data/external/
+data/external/*
+data/external/*.csv
+data/external/*.tsv
+data/external/*.meta.json
+!data/external/seeds/
+!data/external/seeds/**
+!data/holdout/
+!data/holdout/**

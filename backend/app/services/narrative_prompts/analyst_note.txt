@@ -1,0 +1,18 @@
+你要针对一个 scenario_space 写一段足球预测分析师笔记。
+
+输入 JSON:
+{payload_json}
+
+输出 JSON object，字段必须为:
+{{
+  "role": "data|tactics|risk|event_simulation|coach_review",
+  "claim": "一句核心判断",
+  "reasoning": "证据说明",
+  "confidence": 50,
+  "evidence_refs": []
+}}
+
+约束:
+- claim 不超过 60 字。
+- reasoning 不超过 150 字。
+- evidence_refs 必须引用输入中的 scenario_space 或 simulation_result。

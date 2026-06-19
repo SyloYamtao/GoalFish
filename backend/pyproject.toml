@@ -1,0 +1,56 @@
+[project]
+name = "goalfish-backend"
+version = "0.1.0"
+description = "GoalFish - 赛前情报、图谱推理与比分预测工作台"
+requires-python = ">=3.11,<3.13"
+license = { text = "AGPL-3.0" }
+authors = [
+    { name = "GoalFish Team" }
+]
+
+dependencies = [
+    # 核心框架
+    "flask>=3.0.0",
+    "flask-cors>=6.0.0",
+    # LLM 相关
+    "openai>=1.0.0",
+    # 文件处理
+    "PyMuPDF>=1.24.0",
+    # 编码检测（支持非UTF-8编码的文本文件）
+    "charset-normalizer>=3.0.0",
+    "chardet>=5.0.0",
+    # 工具库
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.0.0",
+    "graphiti-core>=0.11.6",
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    "psycopg[binary]>=3.2",
+    "celery>=5.4",
+    "redis>=5.0",
+    "penaltyblog>=1.1.0",
+    "pandas>=2.2.0",
+    "PyYAML>=6.0.0",
+    "rapidfuzz>=3.0.0",
+    "requests>=2.32.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pipreqs>=0.5.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]

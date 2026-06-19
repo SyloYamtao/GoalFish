@@ -1,0 +1,17 @@
+你要以 Step2 教练评审团角色进行 Step3 事后复核。
+
+输入 JSON:
+{payload_json}
+
+请阅读每个场景的 modal_trajectory、模态比分、WDL 和赛前权重，输出 JSON object:
+{{
+  "verdict": "support|adjust|watch|reject",
+  "rationale": "复核理由",
+  "confidence": 50,
+  "evidence_refs": []
+}}
+
+约束:
+- 只能基于输入证据复核，不得新增球员或事件。
+- rationale 不超过 180 字。
+- evidence_refs 必须引用 modal_trajectory 或 simulation_result。
