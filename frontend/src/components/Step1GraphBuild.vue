@@ -169,7 +169,7 @@
           <button
             v-if="projectData?.graph_id"
             class="action-btn secondary"
-            :disabled="regeneratingGraph"
+            :disabled="currentPhase < 2 || regeneratingGraph"
             @click="regenerateStep1"
           >
             {{ regeneratingGraph ? '回退中...' : '重新生成图谱' }}

@@ -213,7 +213,7 @@
                   </span>
                   <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
                 </div>
-                <div class="message-text" v-html="renderMarkdown(msg.content)"></div>
+                <div class="message-text" v-html="renderMessageContent(msg)"></div>
               </div>
             </div>
             <div v-if="isSending" class="chat-message assistant">
@@ -236,6 +236,7 @@
               v-model="chatInput"
               class="chat-input"
               :placeholder="$t('step5.chatInputPlaceholder')"
+              @focus="handleChatInputFocus"
               @keydown.enter.exact.prevent="sendMessage"
               :disabled="isSending"
               rows="1"
@@ -309,6 +310,8 @@ const isSending = ref(false)
 const chatMessages = ref(null)
 const chatInputRef = ref(null)
 const isRegeneratingQa = ref(false)
+const isStaticDemo = typeof window !== 'undefined' && window.__GOALFISH_STATIC_DEMO__ === true
+const staticDemoQuestion = '如果你是突尼斯新任主帅，如何对于战术和人员安排上做出合理的规划，打破赛前人们都不看好的颓势击败日本队？'
 
 // Report Data
 const reportSnapshot = ref(null)
@@ -421,9 +424,9 @@ const loadReportAgentConversation = async ({ force = false } = {}) => {
 
     if (messagesRes.success && messagesRes.data) {
       const restoredMessages = (messagesRes.data.messages || []).map(mapStoredMessage)
-      chatHistoryCache.value.report_agent = restoredMessages
+      chatHistoryCache.value.report_agent = isStaticDemo ? [] : restoredMessages
       if (chatTarget.value === 'report_agent') {
-        chatHistory.value = restoredMessages
+        chatHistory.value = isStaticDemo ? [] : restoredMessages
       }
     }
   } catch (err) {
@@ -462,13 +465,61 @@ const formatTime = (timestamp) => {
   }
 }
 
+const escapeHtml = (value) => String(value ?? '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+
+const renderPlainText = (content) => escapeHtml(content).replace(/\n/g, '<br>')
 const renderMarkdown = (content) => renderMarkdownHtml(content)
+const renderMessageContent = (message) => (
+  message?.streaming ? renderPlainText(message.content) : renderMarkdown(message?.content || '')
+)
+
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
+const handleChatInputFocus = () => {
+  if (isStaticDemo && !chatInput.value.trim()) {
+    chatInput.value = staticDemoQuestion
+  }
+}
+
+const streamAssistantMessage = async (content) => {
+  const assistantIndex = chatHistory.value.length
+  chatHistory.value.push({
+    role: 'assistant',
+    content: '',
+    timestamp: new Date().toISOString(),
+    persisted: true,
+    streaming: true
+  })
+
+  const chunks = content.match(/[\s\S]{1,18}/g) || [content]
+  let streamedContent = ''
+  for (const chunk of chunks) {
+    streamedContent += chunk
+    chatHistory.value[assistantIndex] = {
+      ...chatHistory.value[assistantIndex],
+      content: streamedContent,
+      streaming: true
+    }
+    scrollToBottom()
+    await sleep(56)
+  }
+  chatHistory.value[assistantIndex] = {
+    ...chatHistory.value[assistantIndex],
+    content: streamedContent,
+    streaming: false
+  }
+  scrollToBottom()
+}
 
 // Chat Methods
 const sendMessage = async () => {
   if (!chatInput.value.trim() || isSending.value) return
   
-  const message = chatInput.value.trim()
+  const message = isStaticDemo ? staticDemoQuestion : chatInput.value.trim()
   chatInput.value = ''
   
   // Add user message
@@ -524,10 +575,17 @@ const sendToReportAgent = async (message) => {
           }
         }
 
-        chatHistory.value.push(mapStoredMessage(res.data.assistant_message || {
+        const assistantMessage = mapStoredMessage(res.data.assistant_message || {
           role: 'assistant',
           content: res.data.response || res.data.answer || t('step5.noResponse')
-        }))
+        })
+        if (isStaticDemo) {
+          await sleep(3500)
+          isSending.value = false
+          await streamAssistantMessage(assistantMessage.content)
+        } else {
+          chatHistory.value.push(assistantMessage)
+        }
         chatHistoryCache.value.report_agent = [...chatHistory.value]
         addLog(t('log.reportAgentReplied'))
         return
@@ -554,7 +612,7 @@ const loadReportData = async () => {
   try {
     addLog(t('log.loadReportData', { id: props.reportId }))
     
-    const reportRes = await getReport(props.reportId)
+    const reportRes = await getReport(props.reportId, isStaticDemo ? { view: 'interaction' } : {})
     if (reportRes.success && reportRes.data) {
       reportSnapshot.value = reportRes.data
       reportProjectId.value = reportRes.data?.report_metadata?.evidence_package?.match?.project_id || null
@@ -564,7 +622,7 @@ const loadReportData = async () => {
       }
     }
 
-    const sectionsRes = await getReportSections(props.reportId)
+    const sectionsRes = await getReportSections(props.reportId, isStaticDemo ? { view: 'interaction' } : {})
     if (sectionsRes.success && sectionsRes.data) {
       generatedSections.value = {
         ...generatedSections.value,
@@ -582,7 +640,7 @@ const loadAgentLogs = async () => {
   if (!props.reportId) return
   
   try {
-    const res = await getAgentLog(props.reportId, 0)
+    const res = await getAgentLog(props.reportId, 0, isStaticDemo ? { view: 'interaction' } : {})
     if (res.success && res.data) {
       const logs = res.data.logs || []
       

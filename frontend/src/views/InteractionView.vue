@@ -79,6 +79,7 @@ import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 
 const route = useRoute()
 const router = useRouter()
+const isStaticDemo = typeof window !== 'undefined' && window.__GOALFISH_STATIC_DEMO__ === true
 const { t } = useI18n()
 
 // Props
@@ -155,7 +156,7 @@ const loadReportData = async () => {
     activeGraphId.value = null
     addLog(t('log.loadReportData', { id: currentReportId.value }))
 
-    const reportRes = await getReport(currentReportId.value)
+    const reportRes = await getReport(currentReportId.value, isStaticDemo ? { view: 'interaction' } : {})
     if (reportRes.success && reportRes.data) {
       const reportData = reportRes.data
       const runId = reportData.prediction_run_id || reportData.simulation_id

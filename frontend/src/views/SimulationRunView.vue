@@ -77,11 +77,12 @@ import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
+const isStaticDemo = typeof window !== 'undefined' && window.__GOALFISH_STATIC_DEMO__ === true
 
 const viewMode = ref('split')
 const currentProjectId = ref(route.params.projectId)
-const currentPredictionRunId = ref(null)
-const currentPredictionConfigId = ref(null)
+const currentPredictionRunId = ref(isStaticDemo ? (route.params.predictionRunId || null) : null)
+const currentPredictionConfigId = ref(isStaticDemo ? (route.query.prediction_config_id || null) : null)
 const projectData = ref(null)
 const graphData = ref(null)
 const graphLoading = ref(false)

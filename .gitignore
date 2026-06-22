@@ -78,3 +78,7 @@ data/external/*.meta.json
 !data/external/seeds/**
 !data/holdout/
 !data/holdout/**
+
+# 静态页面打包产物
+frontend/demo/japan-tunisia/
+frontend/demo/spec/

@@ -5,8 +5,8 @@ import service, { requestWithRetry } from './index'
  * @param {string} reportId
  * @param {number} fromLine - 从第几行开始获取
  */
-export const getAgentLog = (reportId, fromLine = 0) => {
-  return service.get(`/api/report/${reportId}/agent-log`, { params: { from_line: fromLine } })
+export const getAgentLog = (reportId, fromLine = 0, params = {}) => {
+  return service.get(`/api/report/${reportId}/agent-log`, { params: { from_line: fromLine, ...params } })
 }
 
 /**
@@ -22,16 +22,16 @@ export const getConsoleLog = (reportId, fromLine = 0) => {
  * 获取报告详情
  * @param {string} reportId
  */
-export const getReport = (reportId) => {
-  return service.get(`/api/report/${reportId}`)
+export const getReport = (reportId, params = {}) => {
+  return service.get(`/api/report/${reportId}`, { params })
 }
 
 /**
  * 获取报告已生成章节
  * @param {string} reportId
  */
-export const getReportSections = (reportId) => {
-  return service.get(`/api/report/${reportId}/sections`)
+export const getReportSections = (reportId, params = {}) => {
+  return service.get(`/api/report/${reportId}/sections`, { params })
 }
 
 /**
