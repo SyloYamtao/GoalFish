@@ -8,6 +8,11 @@
 
 [English Version](./README.md)
 
+<p>
+  <strong>在线静态演示：</strong>
+  <a href="https://syloyamtao.github.io/GoalFish/">https://syloyamtao.github.io/GoalFish/</a>
+</p>
+
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](./LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Python](https://img.shields.io/badge/Python-3.11--3.12-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)

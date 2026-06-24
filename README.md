@@ -2,11 +2,16 @@
 
 <img src="./frontend/src/assets/logo/GoalFish_logo_left.jpeg" alt="GoalFish Logo" width="45%"/>
 
-世界杯比赛预测：赛前情报、图谱推理与比分预测工作台
+World Cup Match Prediction: Pre-Match Intelligence, Graph Reasoning, and Scoreline Forecasting Workspace
 </br>
 <em>A World Cup match forecasting workspace for pre-match intelligence, knowledge-graph reasoning, and scoreline prediction</em>
 
 [中文版本](./README.zh.md)
+
+<p>
+  <strong>Static Demo:</strong>
+  <a href="https://syloyamtao.github.io/GoalFish/">https://syloyamtao.github.io/GoalFish/</a>
+</p>
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](./LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
