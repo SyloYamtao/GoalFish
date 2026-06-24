@@ -62,12 +62,28 @@ describe('step3Adapters', () => {
   })
 
   it('normalizes event labels and score arrays', () => {
-    assert.equal(eventTypeLabel('GOAL'), '进球')
-    assert.equal(eventTypeLabel('ET_GOAL'), '加时进球')
+    assert.equal(eventTypeLabel('GOAL'), 'Goal')
+    assert.equal(eventTypeLabel('ET_GOAL'), 'Extra-time goal')
     assert.equal(eventTypeLabel('VAR_CHECK'), 'VAR')
     assert.equal(eventTypeLabel('UNKNOWN'), 'UNKNOWN')
     assert.equal(scoreAfterText([2, 1]), '2-1')
     assert.equal(scoreAfterText(null), '')
+  })
+
+  it('accepts translator functions for localized Step 3 labels', () => {
+    const zh = (key, params = {}) => ({
+      'step3.event_GOAL': '进球',
+      'step3.homeLabelWithTeam': `主队 ${params.team}`,
+      'step3.awayLabelWithTeam': `客队 ${params.team}`,
+    }[key] || key)
+
+    assert.equal(eventTypeLabel('GOAL', zh), '进球')
+    const identity = matchTeamIdentity({
+      statusPayload: { home_team: '阿根廷', away_team: '法国' },
+      t: zh,
+    })
+    assert.equal(identity.homeLabel, '主队 阿根廷')
+    assert.equal(identity.awayLabel, '客队 法国')
   })
 
   it('resolves match team identity from run status', () => {
@@ -81,8 +97,8 @@ describe('step3Adapters', () => {
 
     assert.equal(identity.home, '阿根廷')
     assert.equal(identity.away, '法国')
-    assert.equal(identity.homeLabel, '主队 阿根廷')
-    assert.equal(identity.awayLabel, '客队 法国')
+    assert.equal(identity.homeLabel, 'Home 阿根廷')
+    assert.equal(identity.awayLabel, 'Away 法国')
     assert.equal(identity.matchupLabel, '阿根廷 vs 法国')
     assert.equal(identity.matchName, '阿根廷 vs 法国')
   })
@@ -102,8 +118,8 @@ describe('step3Adapters', () => {
       {
         home: '加拿大',
         away: '波黑',
-        homeLabel: '主队 加拿大',
-        awayLabel: '客队 波黑',
+        homeLabel: 'Home 加拿大',
+        awayLabel: 'Away 波黑',
         matchupLabel: '加拿大 vs 波黑',
         matchName: '加拿大 vs 波黑',
       }

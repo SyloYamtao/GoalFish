@@ -1,11 +1,11 @@
 <template>
   <div class="meter">
     <div class="meter-title">
-      <small>调用分布 (本次实际 {{ totalCalls }}/计划 {{ plannedCalls }} · cap {{ hardCap }})</small>
+      <small>{{ t('prediction.callDistributionSummary', { total: totalCalls, planned: plannedCalls, cap: hardCap }) }}</small>
       <InfoTooltip
         align="right"
-        title="调用分布"
-        text="fresh 是本次真实发生的 LLM 调用，cached 是命中缓存复用的结果，remain 是距离硬上限还剩多少调用。计划值来自当前预算配置；实际值为 0 只表示本次还没发生真实调用或该配置禁用了 LLM。"
+        :title="t('prediction.callDistributionTitle')"
+        :text="t('prediction.callDistributionTooltip')"
       />
     </div>
     <div class="meter-bar" aria-hidden="true">
@@ -23,18 +23,21 @@
         <i class="meter-dot" :class="seg.class"></i>
         {{ seg.label }} <b class="mono">{{ seg.count }}</b>
       </span>
-      <span v-if="failures.length" class="meter-failures">失败 <b class="mono">{{ failures.length }}</b></span>
+      <span v-if="failures.length" class="meter-failures">{{ t('prediction.failuresShort') }} <b class="mono">{{ failures.length }}</b></span>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import InfoTooltip from './InfoTooltip.vue'
 
 const props = defineProps({
   ledger: { type: Object, default: () => ({}) }
 })
+
+const { t } = useI18n()
 
 const totalCalls = computed(() => Number(props.ledger?.total_calls ?? props.ledger?.calls_used ?? 0))
 const cached = computed(() => Number(props.ledger?.cached ?? props.ledger?.calls_cached ?? 0))

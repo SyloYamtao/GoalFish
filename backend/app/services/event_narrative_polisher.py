@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from .coach_jury import SCENARIO_TEMPLATE
+from .content_language import build_content_language_instruction
 from .llm_budget import BudgetExceeded, LLMCallLedger, LLMBudgetProfile
 from .match_simulator import Event
 from .roster_loader import PlayerSnapshot, TeamRoster
@@ -26,11 +27,13 @@ class EventNarrativePolisher:
         ledger: LLMCallLedger,
         squads: tuple[TeamRoster, TeamRoster],
         llm_client: Any | None = None,
+        content_language_instruction: str | None = None,
     ) -> None:
         self._budget = budget
         self._ledger = ledger
         self._squads = squads
         self._llm_client = llm_client
+        self._content_language_instruction = content_language_instruction or build_content_language_instruction(None)
         self._whitelist = self._build_whitelist(squads)
 
     def polish(self, events: list[Event], scenario_key: str) -> list[dict]:
@@ -186,7 +189,10 @@ class EventNarrativePolisher:
         return [
             {
                 "role": "system",
-                "content": "你是足球比赛事件编辑。只输出一行客观中文描述，不得新增球员或事实。",
+                "content": (
+                    "你是足球比赛事件编辑。只输出一行客观描述，不得新增球员或事实。"
+                    f"\n\n{self._content_language_instruction}"
+                ),
             },
             {"role": "user", "content": content},
         ]

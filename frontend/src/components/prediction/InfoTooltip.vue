@@ -32,6 +32,7 @@
 
 <script setup>
 import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   title: { type: String, default: '' },
@@ -43,8 +44,13 @@ const props = defineProps({
   }
 })
 
+const { t } = useI18n()
 const tooltipId = `info-tip-${Math.random().toString(36).slice(2, 10)}`
-const ariaLabel = props.title ? `说明：${props.title}` : '配置说明'
+const ariaLabel = computed(() => (
+  props.title
+    ? t('prediction.infoAriaWithTitle', { title: props.title })
+    : t('prediction.infoDefaultAria')
+))
 const triggerRef = ref(null)
 const bubbleRef = ref(null)
 const visible = ref(false)

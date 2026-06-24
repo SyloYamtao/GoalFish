@@ -1,5 +1,5 @@
 <template>
-  <div class="budget-grid" role="radiogroup" aria-label="评审预算">
+  <div class="budget-grid" role="radiogroup" :aria-label="t('prediction.budgetAria')">
     <div
       v-for="(opt, index) in options"
       :key="opt.profile_key"
@@ -19,7 +19,7 @@
       @keydown.space.prevent="select(opt)"
     >
       <span class="budget-card-label">{{ opt.label }}</span>
-      <span class="budget-card-num mono">{{ opt.calls }} calls</span>
+      <span class="budget-card-num mono">{{ opt.calls }} {{ t('prediction.callsUnit') }}</span>
       <span class="budget-card-desc">{{ opt.desc }}</span>
       </button>
       <InfoTooltip
@@ -33,6 +33,8 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import InfoTooltip from './InfoTooltip.vue'
 import { MAX_LLM_HARD_CAP_CALLS } from '../../utils/llmBudget.js'
 
@@ -43,14 +45,15 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
+const { t } = useI18n()
 
-const options = [
+const options = computed(() => [
   {
     profile_key: 'max',
-    label: '深度',
+    label: t('prediction.budgetProfile_max_label'),
     calls: 113,
-    desc: '8 角色 + 全场景叙述 + 复核',
-    detail: '用于重要比赛或需要更完整解释时。启用全部教练角色、两轮讨论、全场景叙述、全部分析师笔记和事后复核，等待时间和模型费用通常最高。',
+    desc: t('prediction.budgetProfile_max_desc'),
+    detail: t('prediction.budgetProfile_max_detail'),
     coach_panel_roles: ['head_coach', 'attack', 'defense', 'transition', 'set_piece', 'goalkeeper', 'fitness', 'risk'],
     coach_deliberation_rounds: 2,
     enable_llm_data_extraction: true,
@@ -63,10 +66,10 @@ const options = [
   },
   {
     profile_key: 'custom',
-    label: '自定义',
+    label: t('prediction.budgetProfile_custom_label'),
     calls: props.preview?.calls || '—',
-    desc: '逐项配置',
-    detail: '逐项控制角色、轮数、叙述、笔记、MC 样本和硬上限。默认给出最大配置，适合在深度档基础上细调专项判断。',
+    desc: t('prediction.budgetProfile_custom_desc'),
+    detail: t('prediction.budgetProfile_custom_detail'),
     coach_panel_roles: ['head_coach', 'attack', 'defense', 'transition', 'set_piece', 'goalkeeper', 'fitness', 'risk'],
     coach_deliberation_rounds: 3,
     enable_llm_data_extraction: true,
@@ -77,7 +80,7 @@ const options = [
     enable_statsbomb: true,
     hard_cap_calls: MAX_LLM_HARD_CAP_CALLS
   }
-]
+])
 
 const select = (option) => {
   if (props.disabled) return
@@ -86,8 +89,8 @@ const select = (option) => {
 
 const selectByIndex = (index) => {
   if (props.disabled) return
-  const normalized = (index + options.length) % options.length
-  select(options[normalized])
+  const normalized = (index + options.value.length) % options.value.length
+  select(options.value[normalized])
 }
 
 const cloneProfile = (option) => {

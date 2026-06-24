@@ -31,7 +31,7 @@
           <div v-if="selectedOntologyItem" class="ontology-detail-overlay">
             <div class="detail-header">
                <div class="detail-title-group">
-                  <span class="detail-type-badge">{{ selectedOntologyItem.itemType === 'entity' ? 'ENTITY' : 'RELATION' }}</span>
+                  <span class="detail-type-badge">{{ selectedOntologyItem.itemType === 'entity' ? $t('step1.entityTypeBadge') : $t('step1.relationTypeBadge') }}</span>
                   <span class="detail-name">{{ displayOntologyName(selectedOntologyItem) }}</span>
                </div>
                <button class="close-btn" @click="selectedOntologyItem = null">×</button>
@@ -41,7 +41,7 @@
                
                <!-- Attributes -->
                <div class="detail-section" v-if="selectedOntologyItem.attributes?.length">
-                  <span class="section-label">ATTRIBUTES</span>
+                  <span class="section-label">{{ $t('step1.attributesLabel') }}</span>
                   <div class="attr-list">
                      <div v-for="attr in selectedOntologyItem.attributes" :key="attr.name" class="attr-item">
                         <span class="attr-name">{{ attr.name }}</span>
@@ -53,7 +53,7 @@
 
                <!-- Examples (Entity) -->
                <div class="detail-section" v-if="selectedOntologyItem.examples?.length">
-                  <span class="section-label">EXAMPLES</span>
+                  <span class="section-label">{{ $t('step1.examplesLabel') }}</span>
                   <div class="example-list">
                      <span v-for="ex in selectedOntologyItem.examples" :key="ex" class="example-tag">{{ ex }}</span>
                   </div>
@@ -61,7 +61,7 @@
 
                <!-- Source/Target (Relation) -->
                <div class="detail-section" v-if="selectedOntologyItem.source_targets?.length">
-                  <span class="section-label">CONNECTIONS</span>
+                  <span class="section-label">{{ $t('step1.connectionsLabel') }}</span>
                   <div class="conn-list">
                      <div v-for="(conn, idx) in selectedOntologyItem.source_targets" :key="idx" class="conn-item">
                         <span class="conn-node">{{ displayEntityType(conn.source) }}</span>
@@ -75,7 +75,7 @@
 
           <!-- Generated Entity Tags -->
           <div v-if="projectData?.ontology?.entity_types" class="tags-container" :class="{ 'dimmed': selectedOntologyItem }">
-            <span class="tag-label">GENERATED ENTITY TYPES</span>
+            <span class="tag-label">{{ $t('step1.generatedEntityTypes') }}</span>
             <div class="tags-list">
               <span 
                 v-for="entity in projectData.ontology.entity_types" 
@@ -90,7 +90,7 @@
 
           <!-- Generated Relation Tags -->
           <div v-if="ontologyEdgeTypes.length" class="tags-container" :class="{ 'dimmed': selectedOntologyItem }">
-            <span class="tag-label">GENERATED RELATION TYPES</span>
+            <span class="tag-label">{{ $t('step1.generatedRelationTypes') }}</span>
             <div class="tags-list">
               <span 
                 v-for="rel in ontologyEdgeTypes"
@@ -156,7 +156,7 @@
         </div>
         
         <div class="card-content">
-          <p class="api-note">NEXT /prediction/:projectId/setup</p>
+          <p class="api-note">{{ $t('step1.nextSetupRoute') }}</p>
           <p class="description">{{ $t('step1.buildCompleteDesc') }}</p>
           <button 
             class="action-btn" 
@@ -172,7 +172,7 @@
             :disabled="currentPhase < 2 || regeneratingGraph"
             @click="regenerateStep1"
           >
-            {{ regeneratingGraph ? '回退中...' : '重新生成图谱' }}
+            {{ regeneratingGraph ? $t('step1.regeneratingGraph') : $t('step1.regenerateGraph') }}
           </button>
         </div>
       </div>
@@ -181,8 +181,8 @@
     <!-- Bottom Info / Logs -->
     <div class="system-logs">
       <div class="log-header">
-        <span class="log-title">SYSTEM DASHBOARD</span>
-        <span class="log-id">{{ projectData?.project_id || 'NO_PROJECT' }}</span>
+        <span class="log-title">{{ $t('step1.systemDashboard') }}</span>
+        <span class="log-id">{{ projectData?.project_id || $t('step1.noProject') }}</span>
       </div>
       <div class="log-content" ref="logContent">
         <div class="log-line" v-for="(log, idx) in systemLogs" :key="idx">
@@ -198,6 +198,7 @@
 import { computed, ref, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { resolveOntologyEntityLabel, resolveOntologyLabel } from '../utils/ontologyLabels.js'
 import { regenerateStepWithConfirm } from '../utils/workflowRegenerate.js'
 
 const router = useRouter()
@@ -227,19 +228,19 @@ const entityDisplayNameMap = computed(() => {
   const map = {}
   ;(props.projectData?.ontology?.entity_types || []).forEach(entity => {
     if (entity?.name) {
-      map[entity.name] = entity.display_name || entity.name
+      map[entity.name] = resolveOntologyEntityLabel(entity, t)
     }
   })
   return map
 })
 
-const displayOntologyName = (item) => item?.display_name || item?.name || ''
+const displayOntologyName = (item) => resolveOntologyLabel(item, t)
 const displayEntityType = (name) => entityDisplayNameMap.value[name] || name
 
 // 进入预测参数建模
 const handleEnterEnvSetup = async () => {
   if (!props.projectData?.project_id || !props.projectData?.graph_id) {
-    console.error('缺少项目或图谱信息')
+    console.error(t('step1.missingProjectOrGraph'))
     return
   }
   
@@ -251,7 +252,7 @@ const handleEnterEnvSetup = async () => {
       params: { projectId: props.projectData.project_id }
     })
   } catch (err) {
-    console.error('进入预测参数建模失败:', err)
+    console.error(t('step1.enterSetupFailed'), err)
     alert(t('step1.createSimulationException', { error: err.message }))
   } finally {
     creatingSimulation.value = false
@@ -270,10 +271,11 @@ const regenerateStep1 = async () => {
       projectId: props.projectData.project_id,
       step: 1,
       reason: 'step1_graph_regenerate',
+      t,
     })
     router.replace({ name: 'Process', params: { projectId: props.projectData.project_id } }).catch(() => {})
   } catch (err) {
-    alert(err.message || '重新生成图谱失败')
+    alert(err.message || t('step1.regenerateGraphFailed'))
   } finally {
     regeneratingGraph.value = false
   }

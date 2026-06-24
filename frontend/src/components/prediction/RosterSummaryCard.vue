@@ -1,11 +1,11 @@
 <template>
   <div class="rs-card">
     <div class="rs-card-title">
-      <span>球员名册</span>
+      <span>{{ t('prediction.rosterSummaryTitle') }}</span>
       <InfoTooltip
         align="right"
-        title="球员名册"
-        text="展示当前数据集中主队和客队各自的名册覆盖、平均能力、门将最高专项分、伤停和状态存疑人数。平均能力用于球队整体和位置深度估计；门将单独展示，是因为扑救、出球、高球处理会进入独立门将维度，而不是替代平均能力。"
+        :title="t('prediction.rosterSummaryTitle')"
+        :text="t('prediction.rosterSummaryTooltip')"
       />
     </div>
 
@@ -14,24 +14,24 @@
         <div class="rs-row">
           <span class="rs-team-label">{{ team.label }}</span>
           <b :title="team.name">{{ team.name }}</b>
-          <span class="mono">{{ team.playersCount }} 人</span>
+          <span class="mono">{{ t('prediction.peopleUnit', { count: team.playersCount }) }}</span>
         </div>
 
         <dl class="rs-stats">
           <div class="rs-stat">
-            <dt>平均能力</dt>
+            <dt>{{ t('prediction.averageAbility') }}</dt>
             <dd class="mono">{{ formatNumber(team.avgOverall, 1) }}</dd>
           </div>
           <div class="rs-stat">
-            <dt>门将</dt>
+            <dt>{{ t('prediction.goalkeeper') }}</dt>
             <dd class="mono">{{ formatNumber(team.gkMax, 0) }}</dd>
           </div>
           <div class="rs-stat">
-            <dt>伤停</dt>
+            <dt>{{ t('prediction.unavailable') }}</dt>
             <dd class="mono">{{ team.unavailable }}</dd>
           </div>
           <div class="rs-stat">
-            <dt>状态存疑</dt>
+            <dt>{{ t('prediction.doubtful') }}</dt>
             <dd class="mono">{{ team.doubtful }}</dd>
           </div>
         </dl>
@@ -41,14 +41,15 @@
     <div class="rs-dataset mono">dataset: {{ datasetId || '-' }}</div>
 
     <div class="rs-actions">
-      <button class="ghost-btn ghost-btn-sm" type="button" @click="$emit('open-drawer')">查看完整名册 →</button>
-      <button class="ghost-btn ghost-btn-sm" type="button" @click="$emit('switch-dataset')">切换数据集</button>
+      <button class="ghost-btn ghost-btn-sm" type="button" @click="$emit('open-drawer')">{{ t('prediction.viewFullRoster') }}</button>
+      <button class="ghost-btn ghost-btn-sm" type="button" @click="$emit('switch-dataset')">{{ t('prediction.switchDataset') }}</button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import InfoTooltip from './InfoTooltip.vue'
 
 const props = defineProps({
@@ -58,12 +59,14 @@ const props = defineProps({
 
 defineEmits(['open-drawer', 'switch-dataset'])
 
+const { t } = useI18n()
+
 const teamRows = computed(() => {
   const home = props.summary?.home || {}
   const away = props.summary?.away || {}
   return [
-    mapTeamRow('home', '主队', home),
-    mapTeamRow('away', '客队', away)
+    mapTeamRow('home', t('prediction.homeTeam'), home),
+    mapTeamRow('away', t('prediction.awayTeam'), away)
   ]
 })
 

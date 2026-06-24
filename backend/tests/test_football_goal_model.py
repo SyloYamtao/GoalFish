@@ -6,6 +6,7 @@ import math
 import numpy as np
 import pandas as pd
 
+from app.services.external_data import IntlResults, NationalElo
 from app.services.football_goal_model import (
     ExternalDataPool,
     FitArtifacts,
@@ -420,6 +421,26 @@ def test_external_data_pool_offline_fetch_and_fit_dataframe():
     assert len(df) >= 1500
     assert {"home_iso3", "away_iso3", "home_score", "away_score"}.issubset(df.columns)
     assert "BRA" in elo
+
+
+def test_external_data_pool_degrades_when_offline_seeds_are_missing(tmp_path):
+    pool = ExternalDataPool(
+        intl_results=IntlResults(cache_dir=tmp_path),
+        elo=NationalElo(cache_dir=tmp_path),
+    ).fetch_for_match(
+        "TUN",
+        "JPN",
+        since_year=2014,
+        offline=True,
+    )
+
+    df = pool.fit_dataframe()
+
+    assert df.empty
+    assert {"home_iso3", "away_iso3", "home_score", "away_score"}.issubset(df.columns)
+    assert pool.elo_snapshot() == {}
+    assert "Missing offline seed" in pool.source_errors["intl_results"]
+    assert "Missing offline seed" in pool.source_errors["national_elo"]
 
 
 def _empty_df() -> pd.DataFrame:

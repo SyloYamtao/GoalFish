@@ -23,7 +23,7 @@
         <LanguageSwitcher />
         <div class="step-divider"></div>
         <div class="workflow-step">
-          <span class="step-num">Step 2/5</span>
+          <span class="step-num">{{ t('main.stepProgress', { step: 2, total: 5 }) }}</span>
           <span class="step-name">{{ $tm('main.stepNames')[1] }}</span>
         </div>
         <div class="step-divider"></div>
@@ -97,9 +97,9 @@ const rightPanelStyle = computed(() => {
 const statusClass = computed(() => currentStatus.value)
 
 const statusText = computed(() => {
-  if (currentStatus.value === 'error') return 'Error'
-  if (currentStatus.value === 'completed') return 'Ready'
-  return 'Preparing'
+  if (currentStatus.value === 'error') return t('common.error')
+  if (currentStatus.value === 'completed') return t('common.ready')
+  return t('main.statusPreparing')
 })
 
 const addLog = (msg) => {
@@ -138,11 +138,11 @@ const handleNextStep = ({ predictionConfigId } = {}) => {
 const loadProjectData = async () => {
   try {
     graphData.value = null
-    addLog(`加载预测项目: ${currentProjectId.value}`)
+    addLog(t('log.loadPredictionProject', { id: currentProjectId.value }))
     const projRes = await getProject(currentProjectId.value)
     if (!projRes.success || !projRes.data) {
       currentStatus.value = 'error'
-      addLog(`加载项目失败: ${projRes.error || 'unknown error'}`)
+      addLog(t('log.loadProjectFailed', { error: projRes.error || t('common.unknownError') }))
       return
     }
 
@@ -152,7 +152,7 @@ const loadProjectData = async () => {
     }
   } catch (err) {
     currentStatus.value = 'error'
-    addLog(`加载预测项目异常: ${err.message}`)
+    addLog(t('log.loadPredictionProjectException', { error: err.message }))
   }
 }
 
@@ -162,12 +162,12 @@ const loadGraph = async (graphId) => {
     const res = await getGraphData(graphId)
     if (res.success) {
       graphData.value = res.data
-      addLog('赛事图谱加载完成')
+      addLog(t('log.graphLoaded'))
     } else {
-      addLog(`图谱加载失败: ${res.error || 'unknown error'}`)
+      addLog(t('log.graphDataLoadFailed', { error: res.error || t('common.unknownError') }))
     }
   } catch (err) {
-    addLog(`图谱加载异常: ${err.message}`)
+    addLog(t('log.graphLoadFailed', { error: err.message }))
   } finally {
     graphLoading.value = false
   }

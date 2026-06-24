@@ -8,8 +8,8 @@
           <!-- Report Header -->
           <div class="report-header-block">
             <div class="report-meta">
-              <span class="report-tag">Prediction Report</span>
-              <span class="report-id">ID: {{ reportId || 'REF-2024-X92' }}</span>
+              <span class="report-tag">{{ t('step4.reportTag') }}</span>
+              <span class="report-id">{{ t('common.id') }}: {{ reportId || 'REF-2024-X92' }}</span>
             </div>
             <h1 class="main-title">{{ reportOutline.title }}</h1>
             <p class="sub-title">{{ reportOutline.summary }}</p>
@@ -55,7 +55,7 @@
                       :home="evidencePanel.widgets.lineup.home"
                       :away="evidencePanel.widgets.lineup.away"
                     />
-                    <div v-else class="lineup-widget-empty">暂无可渲染的预计首发阵型图</div>
+                    <div v-else class="lineup-widget-empty">{{ t('step4.lineupWidgetEmpty') }}</div>
                     <TacticsPanel
                       :home-team="evidencePanel.widgets.lineup.home?.team || evidencePanel.verdict.eyebrow"
                       :away-team="evidencePanel.widgets.lineup.away?.team || ''"
@@ -88,7 +88,7 @@
             <div class="waiting-ring"></div>
             <div class="waiting-ring"></div>
           </div>
-          <span class="waiting-text">Report generation failed.</span>
+          <span class="waiting-text">{{ t('step4.reportGenerationFailed') }}</span>
         </div>
 
         <div v-else-if="!reportOutline" class="waiting-placeholder">
@@ -97,7 +97,7 @@
             <div class="waiting-ring"></div>
             <div class="waiting-ring"></div>
           </div>
-          <span class="waiting-text">Waiting for prediction report...</span>
+          <span class="waiting-text">{{ t('step4.waitingPredictionReport') }}</span>
         </div>
       </div>
 
@@ -114,10 +114,10 @@
         <div class="workflow-overview evidence-overview" v-if="agentLogs.length > 0 || reportOutline">
           <div class="evidence-status-row">
             <div class="evidence-kicker">
-              <span class="metric-label">Report Context</span>
+              <span class="metric-label">{{ t('step4.reportContext') }}</span>
               <span class="metric-pill" :class="`pill--${statusClass}`">{{ statusText }}</span>
             </div>
-            <span class="metric-value mono">{{ completedSections }}/{{ totalSections }} sections</span>
+            <span class="metric-value mono">{{ t('step4.sectionsUnit', { count: `${completedSections}/${totalSections}` }) }}</span>
           </div>
 
           <div class="match-verdict">
@@ -127,7 +127,7 @@
           </div>
 
           <div v-if="isHistoricalReport" class="historical-report-notice">
-            当前查看的是历史报告，已不属于项目当前活跃流程。可以回看内容，继续问答前请重新生成 Step4。
+            {{ t('step4.historicalReportNotice') }}
           </div>
 
           <div class="evidence-grid">
@@ -164,7 +164,7 @@
             </div>
           </div>
 
-          <div class="evidence-tabs" role="tablist" aria-label="Step4 evidence dashboard">
+          <div class="evidence-tabs" role="tablist" :aria-label="t('step4.evidenceDashboardAria')">
             <button
               v-for="tab in evidencePanel.insightTabs"
               :key="tab.key"
@@ -183,7 +183,7 @@
           <div class="evidence-insight-panel">
             <template v-if="activeEvidenceTab === 'overview'">
               <div class="insight-section">
-                <div class="insight-section-title">胜平负概率</div>
+                <div class="insight-section-title">{{ t('step4.wdlProbability') }}</div>
                 <div class="probability-list">
                   <div
                     v-for="item in evidencePanel.probabilityBars"
@@ -204,7 +204,7 @@
               </div>
 
               <div class="insight-section">
-                <div class="insight-section-title">证据来源</div>
+                <div class="insight-section-title">{{ t('step4.evidenceSources') }}</div>
                 <div class="source-mini-grid">
                   <div
                     v-for="item in evidencePanel.sourceHighlights"
@@ -219,7 +219,7 @@
               </div>
 
               <div class="insight-section">
-                <div class="insight-section-title">球队快照</div>
+                <div class="insight-section-title">{{ t('step4.teamSnapshot') }}</div>
                 <div class="team-compare-list">
                   <div
                     v-for="team in evidencePanel.teamComparison"
@@ -231,10 +231,10 @@
                       <span>{{ team.formation }}</span>
                     </div>
                     <div class="team-compare-metrics">
-                      <span>攻 {{ team.attack }}</span>
-                      <span>防 {{ team.defense }}</span>
+                      <span>{{ t('step4.attackShort') }} {{ team.attack }}</span>
+                      <span>{{ t('step4.defenseShort') }} {{ team.defense }}</span>
                       <span>xG {{ team.xg }}</span>
-                      <span>可用 {{ team.availability }}</span>
+                      <span>{{ t('step4.availableShort') }} {{ team.availability }}</span>
                     </div>
                     <small>{{ team.ranking }}</small>
                   </div>
@@ -244,135 +244,135 @@
 
             <template v-else-if="activeEvidenceTab === 'scores'">
               <div class="insight-section">
-                <div class="insight-section-title">Top 比分候选</div>
+                <div class="insight-section-title">{{ t('step4.topScoreCandidates') }}</div>
                 <button
                   v-for="item in evidencePanel.scoreCandidates"
                   :key="item.key"
                   type="button"
                   class="score-candidate"
-                  @click="jumpToReportSectionByTitle('胜平负与比分预测')"
+                  @click="jumpToReportSectionByIntent('score')"
                 >
                   <span class="score-rank mono">{{ String(item.rank).padStart(2, '0') }}</span>
                   <strong>{{ item.score }}</strong>
                   <span class="score-context">{{ item.context }}</span>
                   <span class="score-prob mono">{{ item.probability }}</span>
                 </button>
-                <div v-if="!evidencePanel.scoreCandidates.length" class="insight-empty">资料未明确</div>
+                <div v-if="!evidencePanel.scoreCandidates.length" class="insight-empty">{{ t('step4.unknownMaterial') }}</div>
               </div>
 
               <div class="insight-section">
-                <div class="insight-section-title">场景权重</div>
+                <div class="insight-section-title">{{ t('step4.scenarioWeights') }}</div>
                 <button
                   v-for="item in evidencePanel.scenarioHighlights"
                   :key="item.key"
                   type="button"
                   class="scenario-row"
-                  @click="jumpToReportSectionByTitle('胜平负与比分预测')"
+                  @click="jumpToReportSectionByIntent('score')"
                 >
                   <strong>{{ item.name }}</strong>
                   <span>{{ item.summary }}</span>
                   <small class="mono">{{ item.weight }}</small>
                 </button>
-                <div v-if="!evidencePanel.scenarioHighlights.length" class="insight-empty">资料未明确</div>
+                <div v-if="!evidencePanel.scenarioHighlights.length" class="insight-empty">{{ t('step4.unknownMaterial') }}</div>
               </div>
             </template>
 
             <template v-else-if="activeEvidenceTab === 'lineups'">
               <div class="insight-section" v-if="hasLineupWidget">
-                <div class="insight-section-title">阵型图</div>
+                <div class="insight-section-title">{{ t('step4.lineupChart') }}</div>
                 <button
                   type="button"
                   class="lineup-widget-jump"
-                  @click="jumpToReportSectionByTitle('战术、阵型与预计首发')"
+                  @click="jumpToReportSectionByIntent('tactics')"
                 >
-                  <strong>{{ evidencePanel.widgets.lineup.home?.team || '主队' }} {{ evidencePanel.widgets.lineup.home?.formation || '-' }}</strong>
-                  <span>vs</span>
-                  <strong>{{ evidencePanel.widgets.lineup.away?.formation || '-' }} {{ evidencePanel.widgets.lineup.away?.team || '客队' }}</strong>
-                  <small>点击查看双方阵型球场图</small>
+                  <strong>{{ evidencePanel.widgets.lineup.home?.team || t('step4.homeTeam') }} {{ evidencePanel.widgets.lineup.home?.formation || '-' }}</strong>
+                  <span>{{ t('common.vs') }}</span>
+                  <strong>{{ evidencePanel.widgets.lineup.away?.formation || '-' }} {{ evidencePanel.widgets.lineup.away?.team || t('step4.awayTeam') }}</strong>
+                  <small>{{ t('step4.lineupJump') }}</small>
                 </button>
               </div>
 
               <div class="insight-section">
-                <div class="insight-section-title">球队强度对比</div>
+                <div class="insight-section-title">{{ t('step4.teamStrengthComparison') }}</div>
                 <div class="team-compare-list">
                   <button
                     v-for="team in evidencePanel.teamComparison"
                     :key="team.key"
                     type="button"
                     class="team-compare-row is-clickable"
-                    @click="jumpToReportSectionByTitle('战术、阵型与预计首发')"
+                    @click="jumpToReportSectionByIntent('tactics')"
                   >
                     <div class="team-compare-head">
                       <strong>{{ team.team }}</strong>
                       <span>{{ team.formation }}</span>
                     </div>
                     <div class="team-compare-metrics">
-                      <span>攻 {{ team.attack }}</span>
-                      <span>防 {{ team.defense }}</span>
-                      <span>转换 {{ team.transition }}</span>
-                      <span>门将 {{ team.goalkeeper }}</span>
+                      <span>{{ t('step4.attackShort') }} {{ team.attack }}</span>
+                      <span>{{ t('step4.defenseShort') }} {{ team.defense }}</span>
+                      <span>{{ t('step4.transitionShort') }} {{ team.transition }}</span>
+                      <span>{{ t('step4.goalkeeperShort') }} {{ team.goalkeeper }}</span>
                     </div>
-                    <small>可用 {{ team.availability }} · 可信 {{ team.confidence }}</small>
+                    <small>{{ t('step4.availableShort') }} {{ team.availability }} · {{ t('step4.confidenceShort') }} {{ team.confidence }}</small>
                   </button>
                 </div>
               </div>
 
               <div class="insight-section">
-                <div class="insight-section-title">关键球员</div>
+                <div class="insight-section-title">{{ t('step4.keyPlayers') }}</div>
                 <button
                   v-for="player in evidencePanel.keyPlayers"
                   :key="player.key"
                   type="button"
                   class="player-row"
-                  @click="jumpToReportSectionByTitle('战术、阵型与预计首发')"
+                  @click="jumpToReportSectionByIntent('tactics')"
                 >
                   <span>{{ player.team }}</span>
                   <strong>{{ player.name }}</strong>
                   <small>{{ player.position }} · {{ player.tag }} · {{ player.availability }}</small>
                 </button>
-                <div v-if="!evidencePanel.keyPlayers.length" class="insight-empty">资料未明确</div>
+                <div v-if="!evidencePanel.keyPlayers.length" class="insight-empty">{{ t('step4.unknownMaterial') }}</div>
               </div>
 
               <div class="insight-section" v-if="evidencePanel.coachNotes.length">
-                <div class="insight-section-title">教练讨论</div>
+                <div class="insight-section-title">{{ t('step4.coachDiscussions') }}</div>
                 <button
                   v-for="note in evidencePanel.coachNotes"
                   :key="note.key"
                   type="button"
                   class="coach-note-row"
-                  @click="jumpToReportSectionByTitle('战术、阵型与预计首发')"
+                  @click="jumpToReportSectionByIntent('tactics')"
                 >
                   <strong>{{ note.topic }}</strong>
                   <span>{{ note.summary }}</span>
-                  <small>共识 {{ note.consensus }}</small>
+                  <small>{{ t('step4.consensusLabel', { value: note.consensus }) }}</small>
                 </button>
               </div>
 
               <div class="insight-section" v-if="evidencePanel.widgets.matchups.length">
-                <div class="insight-section-title">关键对位</div>
+                <div class="insight-section-title">{{ t('step4.keyMatchups') }}</div>
                 <button
                   v-for="item in evidencePanel.widgets.matchups.slice(0, 3)"
                   :key="`${item.zone}-${item.home_player}-${item.away_player}`"
                   type="button"
                   class="coach-note-row"
-                  @click="jumpToReportSectionByTitle('战术、阵型与预计首发')"
+                  @click="jumpToReportSectionByIntent('tactics')"
                 >
-                  <strong>{{ item.zone || '区域' }}：{{ item.home_player || '主队球员' }} vs {{ item.away_player || '客队球员' }}</strong>
-                  <span>{{ item.why_it_matters || '资料未明确' }}</span>
-                  <small>{{ item.advantage === 'home' ? '主队占优' : item.advantage === 'away' ? '客队占优' : '接近' }}</small>
+                  <strong>{{ item.zone || t('prediction.zoneUnknown') }}: {{ item.home_player || t('prediction.homePlayerUnknown') }} vs {{ item.away_player || t('prediction.awayPlayerUnknown') }}</strong>
+                  <span>{{ item.why_it_matters || t('step4.unknownMaterial') }}</span>
+                  <small>{{ item.advantage === 'home' ? t('prediction.advantage_home') : item.advantage === 'away' ? t('prediction.advantage_away') : t('prediction.advantage_even') }}</small>
                 </button>
               </div>
             </template>
 
             <template v-else-if="activeEvidenceTab === 'events'">
               <div class="insight-section">
-                <div class="insight-section-title">比赛时间线</div>
+                <div class="insight-section-title">{{ t('step4.eventsTimeline') }}</div>
                 <button
                   v-for="item in evidencePanel.eventTimeline"
                   :key="item.key"
                   type="button"
                   class="event-bucket"
-                  @click="jumpToReportSectionByTitle('关键比赛事件剧本')"
+                  @click="jumpToReportSectionByIntent('events')"
                 >
                   <strong class="mono">{{ item.period }}</strong>
                   <span>{{ item.event }}</span>
@@ -381,33 +381,33 @@
               </div>
 
               <div class="insight-section">
-                <div class="insight-section-title">事件链样本</div>
+                <div class="insight-section-title">{{ t('step4.eventChainSamples') }}</div>
                 <button
                   v-for="item in evidencePanel.eventItems"
                   :key="item.key"
                   type="button"
                   class="event-item"
-                  @click="jumpToReportSectionByTitle('关键比赛事件剧本')"
+                  @click="jumpToReportSectionByIntent('events')"
                 >
                   <span class="mono">{{ item.minute }}</span>
                   <strong>{{ item.label }}</strong>
                   <small>{{ item.team }} · {{ item.score }}</small>
                   <em>{{ item.description }}</em>
                 </button>
-                <div v-if="!evidencePanel.eventItems.length" class="insight-empty">资料未明确</div>
+                <div v-if="!evidencePanel.eventItems.length" class="insight-empty">{{ t('step4.unknownMaterial') }}</div>
               </div>
             </template>
 
             <template v-else-if="activeEvidenceTab === 'risks'">
               <div class="insight-section">
-                <div class="insight-section-title">风险与可信度</div>
+                <div class="insight-section-title">{{ t('step4.risksCredibility') }}</div>
                 <button
                   v-for="item in evidencePanel.riskItems"
                   :key="item.key"
                   type="button"
                   class="risk-row"
                   :class="`risk-row--${item.tone}`"
-                  @click="jumpToReportSectionByTitle('风险、不确定性与可信度说明')"
+                  @click="jumpToReportSectionByIntent('risks')"
                 >
                   <span>{{ item.label }}</span>
                   <strong>{{ item.signal }}</strong>
@@ -461,7 +461,7 @@
               :disabled="isRegeneratingReport"
               @click="regenerateStep4Report"
             >
-              <span>{{ isRegeneratingReport ? '重新生成中...' : '重新生成报告' }}</span>
+              <span>{{ isRegeneratingReport ? t('step4.regeneratingReport') : t('step4.regenerateReport') }}</span>
             </button>
             <button v-if="isComplete && !isHistoricalReport" class="next-step-btn" @click="goToInteraction">
               <span>{{ $t('step4.goToInteraction') }}</span>
@@ -502,11 +502,11 @@
                   <!-- Report Start -->
                   <template v-if="log.action === 'report_start'">
                     <div class="info-row">
-                      <span class="info-key">{{ isFootballPredictionMode ? 'Prediction Run' : 'Simulation' }}</span>
+                      <span class="info-key">{{ isFootballPredictionMode ? t('step4.predictionRun') : t('step4.simulation') }}</span>
                       <span class="info-val mono">{{ log.details?.simulation_id }}</span>
                     </div>
                     <div class="info-row" v-if="log.details?.simulation_requirement">
-                      <span class="info-key">Requirement</span>
+                      <span class="info-key">{{ t('step4.requirement') }}</span>
                       <span class="info-val">{{ log.details.simulation_requirement }}</span>
                     </div>
                   </template>
@@ -518,7 +518,7 @@
                   <template v-if="log.action === 'planning_complete'">
                     <div class="status-message success">{{ log.details?.message }}</div>
                     <div class="outline-badge" v-if="log.details?.outline">
-                      {{ log.details.outline.sections?.length || 0 }} sections planned
+                      {{ t('step4.sectionsPlanned', { count: log.details.outline.sections?.length || 0 }) }}
                     </div>
                   </template>
 
@@ -643,12 +643,12 @@
                   <!-- LLM Response -->
                   <template v-if="log.action === 'llm_response'">
                     <div class="llm-meta">
-                      <span class="meta-tag">Iteration {{ log.details?.iteration }}</span>
+                      <span class="meta-tag">{{ t('step4.iterationLabel', { iteration: log.details?.iteration }) }}</span>
                       <span class="meta-tag" :class="{ active: log.details?.has_tool_calls }">
-                        Tools: {{ log.details?.has_tool_calls ? 'Yes' : 'No' }}
+                        {{ t('step4.toolsLabel') }}: {{ log.details?.has_tool_calls ? t('common.yes') : t('common.no') }}
                       </span>
                       <span class="meta-tag" :class="{ active: log.details?.has_final_answer, 'final-answer': log.details?.has_final_answer }">
-                        Final: {{ log.details?.has_final_answer ? 'Yes' : 'No' }}
+                        {{ t('step4.finalLabel') }}: {{ log.details?.has_final_answer ? t('common.yes') : t('common.no') }}
                       </span>
                     </div>
                     <!-- 当是最终答案时，显示特殊提示 -->
@@ -656,7 +656,7 @@
                       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
-                      <span>Section "{{ log.section_title }}" content generated</span>
+                      <span>{{ t('step4.sectionContentGenerated', { title: log.section_title }) }}</span>
                     </div>
                     <div v-if="expandedLogs.has(log.timestamp) && log.details?.response" class="llm-content">
                       <pre>{{ log.details.response }}</pre>
@@ -670,7 +670,7 @@
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                         <polyline points="22 4 12 14.01 9 11.01"></polyline>
                       </svg>
-                      <span>Report Generation Complete</span>
+                      <span>{{ t('step4.reportGenerationComplete') }}</span>
                     </div>
                   </template>
                 </div>
@@ -683,17 +683,17 @@
                   <div class="footer-actions">
                     <!-- Tool Call: Show/Hide Params -->
                     <button v-if="log.action === 'tool_call' && log.details?.parameters" class="action-btn" @click.stop="toggleLogExpand(log)">
-                      {{ expandedLogs.has(log.timestamp) ? 'Hide Params' : 'Show Params' }}
+                      {{ expandedLogs.has(log.timestamp) ? t('step4.hideParams') : t('step4.showParams') }}
                     </button>
                     
                     <!-- Tool Result: Raw/Structured View -->
                     <button v-if="log.action === 'tool_result'" class="action-btn" @click.stop="toggleRawResult(log.timestamp, $event)">
-                      {{ showRawResult[log.timestamp] ? 'Structured View' : 'Raw Output' }}
+                      {{ showRawResult[log.timestamp] ? t('step4.structuredView') : t('step4.rawOutput') }}
                     </button>
                     
                     <!-- LLM Response: Show/Hide Response -->
                     <button v-if="log.action === 'llm_response' && log.details?.response" class="action-btn" @click.stop="toggleLogExpand(log)">
-                      {{ expandedLogs.has(log.timestamp) ? 'Hide Response' : 'Show Response' }}
+                      {{ expandedLogs.has(log.timestamp) ? t('step4.hideResponse') : t('step4.showResponse') }}
                     </button>
                   </div>
                 </div>
@@ -704,7 +704,7 @@
           <!-- Empty State -->
           <div v-if="agentLogs.length === 0 && !isComplete" class="workflow-empty">
             <div class="empty-pulse"></div>
-            <span>Waiting for prediction report activity...</span>
+            <span>{{ t('step4.waitingActivity') }}</span>
           </div>
         </div>
       </div>
@@ -713,8 +713,8 @@
     <!-- Bottom Console Logs -->
     <div class="console-logs">
       <div class="log-header">
-        <span class="log-title">CONSOLE OUTPUT</span>
-        <span class="log-id">{{ reportId || 'NO_REPORT' }}</span>
+        <span class="log-title">{{ t('step4.consoleOutput') }}</span>
+        <span class="log-id">{{ reportId || t('step4.noReport') }}</span>
       </div>
       <div class="log-content" ref="logContent">
         <div class="log-line" v-for="(log, idx) in consoleLogs" :key="idx">
@@ -822,6 +822,24 @@ const jumpToReportSectionByTitle = (title) => {
   }
 }
 
+const SECTION_INTENT_PATTERNS = {
+  score: /胜平负|比分|score|probability|result/i,
+  tactics: /战术|阵型|首发|tactics|lineup|formation/i,
+  events: /事件|进程|event|timeline|script/i,
+  risks: /风险|不确定|可信度|risk|uncertainty|credibility/i,
+}
+
+const jumpToReportSectionByIntent = (intent) => {
+  const sections = reportOutline.value?.sections || []
+  const pattern = SECTION_INTENT_PATTERNS[intent]
+  const index = pattern
+    ? sections.findIndex(section => pattern.test(section.title || ''))
+    : -1
+  if (index >= 0) {
+    jumpToReportSection({ title: sections[index].title }, index)
+  }
+}
+
 const jumpToReportSection = (step, fallbackIndex = 0) => {
   const sections = reportOutline.value?.sections || []
   const indexFromTitle = sections.findIndex(section => section.title === step?.title)
@@ -903,39 +921,39 @@ const isLogCollapsed = (log) => {
 // Tool configurations with display names and colors
 const toolConfig = {
   'insight_forge': {
-    name: 'Deep Insight',
+    nameKey: 'step4.toolDeepInsight',
     color: 'purple',
     icon: 'lightbulb' // 灯泡图标 - 代表洞察
   },
   'panorama_search': {
-    name: 'Panorama Search',
+    nameKey: 'step4.toolPanoramaSearch',
     color: 'blue',
     icon: 'globe' // 地球图标 - 代表全景搜索
   },
   'interview_agents': {
-    name: 'Analyst Review',
+    nameKey: 'step4.toolAnalystReview',
     color: 'green',
     icon: 'users' // 用户图标 - 代表研判角色
   },
   'quick_search': {
-    name: 'Quick Search',
+    nameKey: 'step4.toolQuickSearch',
     color: 'orange',
     icon: 'zap' // 闪电图标 - 代表快速
   },
   'get_graph_statistics': {
-    name: 'Graph Stats',
+    nameKey: 'step4.toolGraphStats',
     color: 'cyan',
     icon: 'chart' // 图表图标 - 代表统计
   },
   'get_entities_by_type': {
-    name: 'Entity Query',
+    nameKey: 'step4.toolEntityQuery',
     color: 'pink',
     icon: 'database' // 数据库图标 - 代表实体
   }
 }
 
 const getToolDisplayName = (toolName) => {
-  return toolConfig[toolName]?.name || toolName
+  return toolConfig[toolName]?.nameKey ? t(toolConfig[toolName].nameKey) : toolName
 }
 
 const getToolColor = (toolName) => {
@@ -1359,30 +1377,30 @@ const InsightDisplay = {
     const formatSize = (length) => {
       if (!length) return ''
       if (length >= 1000) {
-        return `${(length / 1000).toFixed(1)}k chars`
+        return t('step4.kCharsUnit', { count: (length / 1000).toFixed(1) })
       }
-      return `${length} chars`
+      return t('step4.charsUnit', { count: length })
     }
     
     return () => h('div', { class: 'insight-display' }, [
       // Header Section - like interview header
       h('div', { class: 'insight-header' }, [
         h('div', { class: 'header-main' }, [
-          h('div', { class: 'header-title' }, 'Deep Insight'),
+          h('div', { class: 'header-title' }, t('step4.toolDeepInsight')),
           h('div', { class: 'header-stats' }, [
             h('span', { class: 'stat-item' }, [
               h('span', { class: 'stat-value' }, props.result.stats.facts || props.result.facts.length),
-              h('span', { class: 'stat-label' }, 'Facts')
+              h('span', { class: 'stat-label' }, t('step4.statFacts'))
             ]),
             h('span', { class: 'stat-divider' }, '/'),
             h('span', { class: 'stat-item' }, [
               h('span', { class: 'stat-value' }, props.result.stats.entities || props.result.entities.length),
-              h('span', { class: 'stat-label' }, 'Entities')
+              h('span', { class: 'stat-label' }, t('step4.statEntities'))
             ]),
             h('span', { class: 'stat-divider' }, '/'),
             h('span', { class: 'stat-item' }, [
               h('span', { class: 'stat-value' }, props.result.stats.relationships || props.result.relations.length),
-              h('span', { class: 'stat-label' }, 'Relations')
+              h('span', { class: 'stat-label' }, t('step4.statRelations'))
             ]),
             props.resultLength && h('span', { class: 'stat-divider' }, '·'),
             props.resultLength && h('span', { class: 'stat-size' }, formatSize(props.resultLength))
@@ -1531,25 +1549,25 @@ const PanoramaDisplay = {
     const formatSize = (length) => {
       if (!length) return ''
       if (length >= 1000) {
-        return `${(length / 1000).toFixed(1)}k chars`
+        return t('step4.kCharsUnit', { count: (length / 1000).toFixed(1) })
       }
-      return `${length} chars`
+      return t('step4.charsUnit', { count: length })
     }
     
     return () => h('div', { class: 'panorama-display' }, [
       // Header Section
       h('div', { class: 'panorama-header' }, [
         h('div', { class: 'header-main' }, [
-          h('div', { class: 'header-title' }, 'Panorama Search'),
+          h('div', { class: 'header-title' }, t('step4.toolPanoramaSearch')),
           h('div', { class: 'header-stats' }, [
             h('span', { class: 'stat-item' }, [
               h('span', { class: 'stat-value' }, props.result.stats.nodes),
-              h('span', { class: 'stat-label' }, 'Nodes')
+              h('span', { class: 'stat-label' }, t('step4.statNodes'))
             ]),
             h('span', { class: 'stat-divider' }, '/'),
             h('span', { class: 'stat-item' }, [
               h('span', { class: 'stat-value' }, props.result.stats.edges),
-              h('span', { class: 'stat-label' }, 'Edges')
+              h('span', { class: 'stat-label' }, t('step4.statEdges'))
             ]),
             props.resultLength && h('span', { class: 'stat-divider' }, '·'),
             props.resultLength && h('span', { class: 'stat-size' }, formatSize(props.resultLength))
@@ -1666,9 +1684,9 @@ const InterviewDisplay = {
     const formatSize = (length) => {
       if (!length) return ''
       if (length >= 1000) {
-        return `${(length / 1000).toFixed(1)}k chars`
+        return t('step4.kCharsUnit', { count: (length / 1000).toFixed(1) })
       }
-      return `${length} chars`
+      return t('step4.charsUnit', { count: length })
     }
     
     // Clean quote text - remove leading list numbers to avoid double numbering
@@ -1788,16 +1806,16 @@ const InterviewDisplay = {
       // Header Section
       h('div', { class: 'interview-header' }, [
         h('div', { class: 'header-main' }, [
-          h('div', { class: 'header-title' }, 'Analyst Review'),
+          h('div', { class: 'header-title' }, t('step4.toolAnalystReview')),
           h('div', { class: 'header-stats' }, [
             h('span', { class: 'stat-item' }, [
               h('span', { class: 'stat-value' }, props.result.successCount || props.result.interviews.length),
-              h('span', { class: 'stat-label' }, 'Reviewed')
+              h('span', { class: 'stat-label' }, t('step4.statReviewed'))
             ]),
             props.result.totalCount > 0 && h('span', { class: 'stat-divider' }, '/'),
             props.result.totalCount > 0 && h('span', { class: 'stat-item' }, [
               h('span', { class: 'stat-value' }, props.result.totalCount),
-              h('span', { class: 'stat-label' }, 'Total')
+              h('span', { class: 'stat-label' }, t('step4.statTotal'))
             ]),
             props.resultLength && h('span', { class: 'stat-divider' }, '·'),
             props.resultLength && h('span', { class: 'stat-size' }, formatSize(props.resultLength))
@@ -1814,7 +1832,7 @@ const InterviewDisplay = {
           onClick: () => { activeIndex.value = i }
         }, [
           h('span', { class: 'tab-avatar' }, interview.name ? interview.name.charAt(0) : (i + 1)),
-          h('span', { class: 'tab-name' }, interview.title || interview.name || `Analyst ${i + 1}`)
+          h('span', { class: 'tab-name' }, interview.title || interview.name || t('step4.analystNumber', { number: i + 1 }))
         ]))
       ),
       
@@ -1824,7 +1842,7 @@ const InterviewDisplay = {
         h('div', { class: 'agent-profile' }, [
           h('div', { class: 'profile-avatar' }, props.result.interviews[activeIndex.value]?.name?.charAt(0) || 'A'),
           h('div', { class: 'profile-info' }, [
-            h('div', { class: 'profile-name' }, props.result.interviews[activeIndex.value]?.name || 'Analyst'),
+            h('div', { class: 'profile-name' }, props.result.interviews[activeIndex.value]?.name || t('step4.analyst')),
             h('div', { class: 'profile-role' }, props.result.interviews[activeIndex.value]?.role || ''),
             props.result.interviews[activeIndex.value]?.bio && h('div', { class: 'profile-bio' }, props.result.interviews[activeIndex.value].bio)
           ])
@@ -1832,7 +1850,7 @@ const InterviewDisplay = {
         
         // Selection Reason - 选择理由
         props.result.interviews[activeIndex.value]?.selectionReason && h('div', { class: 'selection-reason' }, [
-          h('div', { class: 'reason-label' }, '选择理由'),
+          h('div', { class: 'reason-label' }, t('step4.selectionReason')),
           h('div', { class: 'reason-content' }, props.result.interviews[activeIndex.value].selectionReason)
         ]),
         
@@ -1840,7 +1858,7 @@ const InterviewDisplay = {
         h('div', { class: 'qa-thread' }, 
           (props.result.interviews[activeIndex.value]?.questions?.length > 0 
             ? props.result.interviews[activeIndex.value].questions 
-            : [props.result.interviews[activeIndex.value]?.question || 'No review question available']
+            : [props.result.interviews[activeIndex.value]?.question || t('step4.noReviewQuestion')]
           ).map((question, qIdx) => {
             const interview = props.result.interviews[activeIndex.value]
             const answerText = getAnswerForQuestion(interview, qIdx)
@@ -1853,7 +1871,7 @@ const InterviewDisplay = {
               h('div', { class: 'qa-question' }, [
                 h('div', { class: 'qa-badge q-badge' }, `Q${qIdx + 1}`),
                 h('div', { class: 'qa-content' }, [
-                  h('div', { class: 'qa-sender' }, 'Reviewer'),
+                  h('div', { class: 'qa-sender' }, t('step4.reviewer')),
                   h('div', { class: 'qa-text' }, question)
                 ])
               ]),
@@ -1868,7 +1886,7 @@ const InterviewDisplay = {
                   h('div', {
                     class: ['qa-text', 'answer-text', { 'placeholder-text': isPlaceholder }],
                     innerHTML: isPlaceholder
-                      ? '（未获得回复）'
+                      ? t('step4.noReply')
                       : formatAnswer(answerText, isExpanded)
                           .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
                           .replace(/\n/g, '<br>')
@@ -1877,7 +1895,7 @@ const InterviewDisplay = {
                   !isPlaceholder && answerText.length > 400 && h('button', {
                     class: 'expand-answer-btn',
                     onClick: () => toggleAnswer(expandKey)
-                  }, isExpanded ? 'Show Less' : 'Show More')
+                  }, isExpanded ? t('step4.showLess') : t('step4.showMore'))
                 ])
               ])
             ])
@@ -1886,7 +1904,7 @@ const InterviewDisplay = {
         
         // Key Quotes Section
         props.result.interviews[activeIndex.value]?.quotes?.length > 0 && h('div', { class: 'quotes-section' }, [
-          h('div', { class: 'quotes-header' }, 'Key Quotes'),
+          h('div', { class: 'quotes-header' }, t('step4.keyQuotes')),
           h('div', { class: 'quotes-list' },
             props.result.interviews[activeIndex.value].quotes.slice(0, 3).map((quote, qi) => {
               const cleanedQuote = cleanQuoteText(quote)
@@ -1903,7 +1921,7 @@ const InterviewDisplay = {
 
       // Summary Section (Collapsible)
       props.result.summary && h('div', { class: 'summary-section' }, [
-        h('div', { class: 'summary-header' }, 'Review Summary'),
+        h('div', { class: 'summary-header' }, t('step4.reviewSummary')),
         h('div', { 
           class: 'summary-content',
           innerHTML: renderMarkdown(props.result.summary.length > 500 ? props.result.summary.substring(0, 500) + '...' : props.result.summary)
@@ -1931,20 +1949,20 @@ const QuickSearchDisplay = {
     const formatSize = (length) => {
       if (!length) return ''
       if (length >= 1000) {
-        return `${(length / 1000).toFixed(1)}k chars`
+        return t('step4.kCharsUnit', { count: (length / 1000).toFixed(1) })
       }
-      return `${length} chars`
+      return t('step4.charsUnit', { count: length })
     }
     
     return () => h('div', { class: 'quick-search-display' }, [
       // Header Section
       h('div', { class: 'quicksearch-header' }, [
         h('div', { class: 'header-main' }, [
-          h('div', { class: 'header-title' }, 'Quick Search'),
+          h('div', { class: 'header-title' }, t('step4.toolQuickSearch')),
           h('div', { class: 'header-stats' }, [
             h('span', { class: 'stat-item' }, [
               h('span', { class: 'stat-value' }, props.result.count || props.result.facts.length),
-              h('span', { class: 'stat-label' }, 'Results')
+              h('span', { class: 'stat-label' }, t('step4.statResults'))
             ]),
             props.resultLength && h('span', { class: 'stat-divider' }, '·'),
             props.resultLength && h('span', { class: 'stat-size' }, formatSize(props.resultLength))
@@ -2050,10 +2068,10 @@ const statusClass = computed(() => {
 })
 
 const statusText = computed(() => {
-  if (isFailed.value) return 'Failed'
-  if (isComplete.value) return 'Completed'
-  if (agentLogs.value.length > 0) return 'Generating...'
-  return 'Waiting'
+  if (isFailed.value) return t('common.failed')
+  if (isComplete.value) return t('common.completed')
+  if (agentLogs.value.length > 0) return t('step4.generatingStatus')
+  return t('step4.waitingStatus')
 })
 
 const totalSections = computed(() => {
@@ -2116,10 +2134,11 @@ const evidencePanel = computed(() => buildStep4ReportEvidence({
   generatedSections: generatedSections.value,
   workflowSteps: workflowSteps.value,
   statusText: statusText.value,
+  t,
 }))
 
 const isTacticsSection = (section) => {
-  return section?.title === '战术、阵型与预计首发'
+  return /战术|阵型|首发|tactics|lineup/i.test(section?.title || '')
 }
 
 const hasLineupWidget = computed(() => {
@@ -2175,7 +2194,7 @@ const activeStep = computed(() => {
   if (doneSteps.length > 0) return doneSteps[doneSteps.length - 1]
   
   // 否则返回第一个步骤
-  return steps[0] || { noLabel: '--', title: '等待开始', status: 'todo', meta: '' }
+  return steps[0] || { noLabel: '--', title: t('step4.waitingStart'), status: 'todo', meta: '' }
 })
 
 const workflowSteps = computed(() => {
@@ -2186,9 +2205,9 @@ const workflowSteps = computed(() => {
   steps.push({
     key: 'planning',
     noLabel: 'PL',
-    title: isFootballPredictionMode.value ? '证据组装 / 报告大纲' : 'Planning / Outline',
+    title: isFootballPredictionMode.value ? t('step4.planningOutlineTitle') : t('step4.planningOutlineFallback'),
     status: planningStatus,
-    meta: planningStatus === 'active' ? 'IN PROGRESS' : ''
+    meta: planningStatus === 'active' ? t('step4.inProgressMeta') : ''
   })
 
   // Sections (if outline exists)
@@ -2204,7 +2223,7 @@ const workflowSteps = computed(() => {
       noLabel: String(idx).padStart(2, '0'),
       title: section.title,
       status,
-      meta: status === 'active' ? 'IN PROGRESS' : ''
+      meta: status === 'active' ? t('step4.inProgressMeta') : ''
     })
   })
 
@@ -2213,9 +2232,9 @@ const workflowSteps = computed(() => {
   steps.push({
     key: 'complete',
     noLabel: 'OK',
-    title: isFootballPredictionMode.value ? '报告完成' : 'Complete',
+    title: isFootballPredictionMode.value ? t('step4.reportCompleteTitle') : t('common.completed'),
     status: completeStatus,
-    meta: completeStatus === 'active' ? 'FINALIZING' : ''
+    meta: completeStatus === 'active' ? t('step4.finalizingMeta') : ''
   })
 
   return steps
@@ -2255,8 +2274,8 @@ const formatParams = (params) => {
 
 const formatResultSize = (length) => {
   if (!length) return ''
-  if (length < 1000) return `${length} chars`
-  return `${(length / 1000).toFixed(1)}k chars`
+  if (length < 1000) return t('step4.charsUnit', { count: length })
+  return t('step4.kCharsUnit', { count: (length / 1000).toFixed(1) })
 }
 
 const truncateText = (text, maxLen) => {
@@ -2287,27 +2306,27 @@ const getConnectorClass = (log, idx, total) => {
 
 const getActionLabel = (action) => {
   const labels = isFootballPredictionMode.value ? {
-    'report_start': '预测报告开始',
-    'planning_start': '证据组装',
-    'planning_complete': '大纲完成',
-    'section_start': '章节开始',
-    'section_content': '内容就绪',
-    'section_complete': '章节完成',
-    'tool_call': '预测工具调用',
-    'tool_result': '预测工具结果',
-    'llm_response': '模型响应',
-    'report_complete': '完成'
+    'report_start': t('step4.timeline_report_start'),
+    'planning_start': t('step4.timeline_planning_start'),
+    'planning_complete': t('step4.timeline_planning_complete'),
+    'section_start': t('step4.timeline_section_start'),
+    'section_content': t('step4.timeline_section_content'),
+    'section_complete': t('step4.timeline_section_complete'),
+    'tool_call': t('step4.timeline_tool_call'),
+    'tool_result': t('step4.timeline_tool_result'),
+    'llm_response': t('step4.timeline_llm_response'),
+    'report_complete': t('step4.timeline_report_complete')
   } : {
-    'report_start': 'Report Started',
-    'planning_start': 'Planning',
-    'planning_complete': 'Plan Complete',
-    'section_start': 'Section Start',
-    'section_content': 'Content Ready',
-    'section_complete': 'Section Done',
-    'tool_call': 'Tool Call',
-    'tool_result': 'Tool Result',
-    'llm_response': 'LLM Response',
-    'report_complete': 'Complete'
+    'report_start': t('step4.actionReportStarted'),
+    'planning_start': t('step4.actionPlanning'),
+    'planning_complete': t('step4.actionPlanComplete'),
+    'section_start': t('step4.actionSectionStart'),
+    'section_content': t('step4.actionContentReady'),
+    'section_complete': t('step4.actionSectionDone'),
+    'tool_call': t('step4.actionToolCall'),
+    'tool_result': t('step4.actionToolResult'),
+    'llm_response': t('step4.actionLlmResponse'),
+    'report_complete': t('common.completed')
   }
   return labels[action] || action
 }
@@ -2580,10 +2599,11 @@ const regenerateStep4Report = async () => {
       projectId: activeProjectId.value,
       step: 4,
       reason: 'step4_report_regenerate',
+      t,
       onBefore: () => {
         resetReportState()
         emit('update-status', 'processing')
-        addLog('Step4 报告重新生成，旧 Step5 问答已失效')
+        addLog(t('step4.logStep4Regenerated'))
       },
     })
     if (!regenerated) return
@@ -2594,12 +2614,12 @@ const regenerateStep4Report = async () => {
     })
     const newReportId = response.data?.report_id
     if (newReportId) {
-      addLog(`新赛事预测报告已生成: ${newReportId}`)
+      addLog(t('step4.logNewReportGenerated', { id: newReportId }))
       router.replace({ name: 'Report', params: { reportId: newReportId } })
     }
   } catch (err) {
     markReportFailed()
-    addLog(`重新生成报告失败: ${err.message}`)
+    addLog(t('step4.logRegenerateReportFailed', { error: err.message }))
   } finally {
     isRegeneratingReport.value = false
   }
@@ -2612,7 +2632,7 @@ const initializeReport = async (reportId) => {
 
   const loadToken = ++reportLoadToken
   resetReportState()
-  addLog(`Prediction report initialized: ${reportId}`)
+  addLog(t('step4.logPredictionReportInitialized', { id: reportId }))
 
   await refreshPredictionStatus()
   const terminal = await refreshReportSnapshot()
@@ -2652,7 +2672,7 @@ const stopPolling = () => {
 
 // Lifecycle
 onMounted(() => {
-  if (props.reportId) addLog(`Report view mounted: ${props.reportId}`)
+  if (props.reportId) addLog(t('step4.logReportViewMounted', { id: props.reportId }))
 })
 
 onUnmounted(() => {

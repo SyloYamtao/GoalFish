@@ -31,7 +31,12 @@ from ..db.models import (
 from ..db.session import get_session
 from ..utils.llm_client import LLMClient
 from ..utils.logger import LogbackStyleFormatter, get_logger
-from ..utils.locale import get_language_instruction, t
+from ..utils.locale import t
+from .content_language import (
+    build_content_language_instruction,
+    instruction_for_project,
+    project_materials_by_graph_id,
+)
 from .graph_backend_factory import get_graph_tools
 from .simulation_domains import FOOTBALL_MATCH, normalize_simulation_domain
 
@@ -1290,6 +1295,14 @@ class ReportAgent:
             if params_desc:
                 desc_parts.append(f"  参数: {params_desc}")
         return "\n".join(desc_parts)
+
+    def _content_language_instruction(self) -> str:
+        return build_content_language_instruction(
+            [
+                project_materials_by_graph_id(self.graph_id),
+                self.simulation_requirement,
+            ]
+        )
     
     def plan_outline(
         self, 
@@ -1322,7 +1335,7 @@ class ReportAgent:
         
         plan_system_prompt = FOOTBALL_PLAN_SYSTEM_PROMPT if self.simulation_domain == FOOTBALL_MATCH else PLAN_SYSTEM_PROMPT
         plan_user_template = FOOTBALL_PLAN_USER_PROMPT_TEMPLATE if self.simulation_domain == FOOTBALL_MATCH else PLAN_USER_PROMPT_TEMPLATE
-        system_prompt = f"{plan_system_prompt}\n\n{get_language_instruction()}"
+        system_prompt = f"{plan_system_prompt}\n\n{self._content_language_instruction()}"
         user_prompt = plan_user_template.format(
             simulation_requirement=self.simulation_requirement,
             total_nodes=context.get('graph_statistics', {}).get('total_nodes', 0),
@@ -1429,7 +1442,7 @@ class ReportAgent:
             section_title=section.title,
             tools_description=self._get_tools_description(),
         )
-        system_prompt = f"{system_prompt}\n\n{get_language_instruction()}"
+        system_prompt = f"{system_prompt}\n\n{self._content_language_instruction()}"
 
         # 构建用户prompt - 每个已完成章节各传入最大4000字
         if previous_sections:
@@ -1973,7 +1986,7 @@ class ReportAgent:
             report_content=report_content if report_content else "（暂无报告）",
             tools_description=self._get_tools_description(),
         )
-        system_prompt = f"{system_prompt}\n\n{get_language_instruction()}"
+        system_prompt = f"{system_prompt}\n\n{self._content_language_instruction()}"
 
         # 构建消息
         messages = [{"role": "system", "content": system_prompt}]

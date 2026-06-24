@@ -24,7 +24,7 @@
         <LanguageSwitcher />
         <div class="step-divider"></div>
         <div class="workflow-step">
-          <span class="step-num">Step 5/5</span>
+          <span class="step-num">{{ t('main.stepProgress', { step: 5, total: 5 }) }}</span>
           <span class="step-name">{{ $tm('main.stepNames')[4] }}</span>
         </div>
         <div class="step-divider"></div>
@@ -121,10 +121,10 @@ const statusClass = computed(() => {
 })
 
 const statusText = computed(() => {
-  if (currentStatus.value === 'error') return 'Error'
-  if (currentStatus.value === 'completed') return 'Completed'
-  if (currentStatus.value === 'processing') return 'Processing'
-  return 'Ready'
+  if (currentStatus.value === 'error') return t('common.error')
+  if (currentStatus.value === 'completed') return t('common.completed')
+  if (currentStatus.value === 'processing') return t('common.processing')
+  return t('common.ready')
 })
 
 // --- Helpers ---
@@ -168,7 +168,7 @@ const loadReportData = async () => {
         await loadPredictionReportContext(predictionRunId.value, reportData)
       } else {
         currentStatus.value = 'error'
-        addLog('报告缺少预测运行 ID，无法加载预测问答上下文')
+        addLog(t('log.reportMissingQaPredictionRun'))
       }
     } else {
       addLog(t('log.getReportInfoFailed', { error: reportRes.error || t('common.unknownError') }))
@@ -194,7 +194,7 @@ const loadPredictionReportContext = async (runId, reportData) => {
       }
     }
   } catch (err) {
-    addLog(`加载预测问答上下文失败: ${err.message}`)
+    addLog(t('log.loadPredictionQaContextFailed', { error: err.message }))
   }
 }
 

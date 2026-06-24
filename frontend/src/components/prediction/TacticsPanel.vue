@@ -1,8 +1,8 @@
 <template>
-  <section class="tactics-panel" aria-label="主教练战术思路">
+  <section class="tactics-panel" :aria-label="t('prediction.tacticsAria')">
     <div class="tactics-head">
-      <span>TACTICAL PLAN</span>
-      <strong>主教练战术思路</strong>
+      <span>{{ t('prediction.tacticalPlanKicker') }}</span>
+      <strong>{{ t('prediction.tacticsTitle') }}</strong>
     </div>
 
     <div class="tactics-grid">
@@ -11,26 +11,26 @@
           <strong>{{ team.name }}</strong>
           <span>{{ team.shape }} · {{ confidenceLabel(team.confidence) }}</span>
         </div>
-        <div class="coach-line">主教练：{{ team.coach }}</div>
+        <div class="coach-line">{{ t('prediction.headCoach', { coach: team.coach }) }}</div>
         <dl>
           <div>
-            <dt>进攻</dt>
+            <dt>{{ t('prediction.attack') }}</dt>
             <dd>{{ team.attacking }}</dd>
           </div>
           <div>
-            <dt>防守</dt>
+            <dt>{{ t('prediction.defense') }}</dt>
             <dd>{{ team.defensive }}</dd>
           </div>
           <div>
-            <dt>转换</dt>
+            <dt>{{ t('prediction.transition') }}</dt>
             <dd>{{ team.transition }}</dd>
           </div>
           <div>
-            <dt>定位球</dt>
+            <dt>{{ t('prediction.setPiece') }}</dt>
             <dd>{{ team.setPiece }}</dd>
           </div>
           <div class="weakness-row">
-            <dt>风险点</dt>
+            <dt>{{ t('prediction.riskPoint') }}</dt>
             <dd>{{ team.weakness }}</dd>
           </div>
         </dl>
@@ -41,20 +41,23 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
-  homeTeam: { type: String, default: '主队' },
-  awayTeam: { type: String, default: '客队' },
+  homeTeam: { type: String, default: '' },
+  awayTeam: { type: String, default: '' },
   tactics: { type: Object, default: () => ({}) },
 })
 
-const safeText = value => String(value || '').trim() || '资料未明确'
+const { t } = useI18n()
+
+const safeText = value => String(value || '').trim() || t('prediction.unspecified')
 const confidenceLabel = value => {
   const numeric = Number(value)
-  if (!Number.isFinite(numeric)) return '可信度 -'
-  if (numeric >= 0.75) return '可信度 高'
-  if (numeric >= 0.55) return '可信度 中'
-  return '可信度 低'
+  if (!Number.isFinite(numeric)) return t('prediction.confidenceUnknown')
+  if (numeric >= 0.75) return t('prediction.confidenceHigh')
+  if (numeric >= 0.55) return t('prediction.confidenceMedium')
+  return t('prediction.confidenceLow')
 }
 
 const teamRow = (key, fallbackName) => {
@@ -74,8 +77,8 @@ const teamRow = (key, fallbackName) => {
 }
 
 const teams = computed(() => [
-  teamRow('home', props.homeTeam),
-  teamRow('away', props.awayTeam),
+  teamRow('home', props.homeTeam || t('prediction.homeTeam')),
+  teamRow('away', props.awayTeam || t('prediction.awayTeam')),
 ])
 </script>
 

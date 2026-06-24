@@ -51,8 +51,15 @@ from .football_goal_model import FitArtifacts, FootballGoalModelAdapter
 from .llm_budget import LLMCallLedger, LLMBudgetProfile, MAX_HARD_CAP_CALLS
 from ..utils.llm_client import LLMClient
 from .match_simulator import MatchSimulator, SimulationResult, Trajectory
+from .content_language import instruction_for_project
 from .project_workflow import ProjectWorkflowService
 from .roster_loader import PlayerSnapshot, RosterLoader, TeamRoster
+from .team_localization import (
+    localize_scenario_case_rows,
+    localize_scenario_space_rows,
+    localize_step2_payload,
+    localize_team_strength_rows,
+)
 
 
 FOOTBALL_EVENT_SEQUENCE: tuple[tuple[int, str], ...] = (
@@ -175,6 +182,13 @@ class FootballPredictionEngine:
                 warnings.append(warning)
         budget = _resolve_step3_budget(llm_budget_profile or model_input_snapshot.get("llm_budget"))
         ledger = LLMCallLedger(config_id=prediction_config_id, run_id=prediction_run_id, budget=budget)
+        content_language_instruction = model_input_snapshot.get("content_language_instruction") or instruction_for_project(
+            project_id,
+            fallback_materials=[
+                simulation_requirement,
+                json.dumps(model_input_snapshot.get("extracted") or {}, ensure_ascii=False, default=str),
+            ],
+        )
         simulation_seed = int(_override_seed) if _override_seed is not None else self._generate_seed(
             prediction_config_id or prediction_run_id,
             utc_now(),
@@ -243,8 +257,13 @@ class FootballPredictionEngine:
             squads,
             budget,
             ledger,
+            content_language_instruction,
         )
-        coach_review = CoachReviewWriter(budget=budget, ledger=ledger).review(
+        coach_review = CoachReviewWriter(
+            budget=budget,
+            ledger=ledger,
+            content_language_instruction=content_language_instruction,
+        ).review(
             scenario_cases=scenario_cases,
             sim_results=sim_results,
             team_strengths=(team_strengths[0], team_strengths[1]),
@@ -260,6 +279,7 @@ class FootballPredictionEngine:
             budget,
             ledger,
             coach_review,
+            content_language_instruction,
         )
         prediction_result = self._prediction_result(
             prediction_run_id,
@@ -720,9 +740,15 @@ class FootballPredictionEngine:
         squads: tuple[TeamRoster, TeamRoster],
         budget: LLMBudgetProfile,
         ledger: LLMCallLedger,
+        content_language_instruction: str,
     ) -> list[dict[str, Any]]:
         events: list[dict[str, Any]] = []
-        polisher = EventNarrativePolisher(budget=budget, ledger=ledger, squads=squads)
+        polisher = EventNarrativePolisher(
+            budget=budget,
+            ledger=ledger,
+            squads=squads,
+            content_language_instruction=content_language_instruction,
+        )
         for case in scenario_cases:
             sim_result = sim_results[case["scenario_key"]]
             events.extend(
@@ -915,9 +941,14 @@ class FootballPredictionEngine:
         budget: LLMBudgetProfile,
         ledger: LLMCallLedger,
         coach_review: dict[str, Any],
+        content_language_instruction: str,
     ) -> list[dict[str, Any]]:
         notes: list[dict[str, Any]] = []
-        for note in AnalystNotesWriter(budget=budget, ledger=ledger).write_notes(
+        for note in AnalystNotesWriter(
+            budget=budget,
+            ledger=ledger,
+            content_language_instruction=content_language_instruction,
+        ).write_notes(
             scenario_cases=scenario_cases,
             sim_results=sim_results,
             scorelines=scorelines,
@@ -1629,19 +1660,19 @@ class PredictionPersistenceService:
                 if event.scenario_case_id:
                     events_by_case.setdefault(event.scenario_case_id, []).append(event)
             scoreline_by_case = {row.scenario_case_id: row for row in scorelines if row.scenario_case_id}
-            return [
+            return localize_scenario_case_rows([
                 _scenario_case_to_dict(
                     row,
                     events=events_by_case.get(row.id) or [],
                     scoreline=scoreline_by_case.get(row.id),
                 )
                 for row in rows
-            ]
+            ])
 
     def list_team_strengths(self, prediction_run_id: str) -> list[dict[str, Any]]:
         with get_session() as session:
             rows = session.query(PredictionTeamStrengthRecord).filter_by(prediction_run_id=prediction_run_id).order_by(PredictionTeamStrengthRecord.team_role.asc()).all()
-            return [_team_strength_to_dict(row) for row in rows]
+            return localize_team_strength_rows([_team_strength_to_dict(row) for row in rows])
 
     def list_scorelines(self, prediction_run_id: str) -> list[dict[str, Any]]:
         with get_session() as session:
@@ -1651,7 +1682,7 @@ class PredictionPersistenceService:
     def list_scenario_spaces(self, prediction_run_id: str) -> list[dict[str, Any]]:
         with get_session() as session:
             rows = session.query(PredictionScenarioSpaceRecord).filter_by(prediction_run_id=prediction_run_id).order_by(PredictionScenarioSpaceRecord.created_at.asc()).all()
-            return [_scenario_space_to_dict(row) for row in rows]
+            return localize_scenario_space_rows([_scenario_space_to_dict(row) for row in rows])
 
     def list_match_events(self, prediction_run_id: str) -> list[dict[str, Any]]:
         with get_session() as session:
@@ -1678,12 +1709,13 @@ class PredictionPersistenceService:
             dataset_id = (run.run_metadata or {}).get("player_dataset_id") or (config.player_dataset_id if config else None)
             dataset = session.get(PredictionPlayerDatasetRecord, dataset_id) if dataset_id else None
             model_input = (config.model_input_snapshot or {}) if config else {}
-            return _roster_contract(
+            roster = _roster_contract(
                 dataset_id=dataset_id,
                 dataset=dataset,
                 squads=model_input.get("squads") or {},
                 actor_stats=_actor_stats_for_run(session, prediction_run_id),
             )
+            return localize_step2_payload({"roster": roster, "model_input_snapshot": model_input})["roster"]
 
     def get_budget_usage(self, prediction_run_id: str) -> dict[str, Any]:
         with get_session() as session:
@@ -2236,22 +2268,31 @@ class PredictionReportAssembler:
             return self._enrich_required_context(self._template_sections(context), context), "template_fallback", str(exc)
 
     def _report_messages(self, context: dict[str, Any]) -> list[dict[str, str]]:
+        language_instruction = instruction_for_project(
+            context.get("match", {}).get("project_id"),
+            fallback_materials=[
+                context.get("match", {}).get("requirement") or "",
+                json.dumps(context.get("step1", {}).get("project") or {}, ensure_ascii=False, default=str),
+            ],
+        )
         return [
             {
                 "role": "system",
                 "content": (
-                    "你是专业足球赛前预测分析师。请用中文写一份普通球迷能看懂的数据看板式 Markdown 报告。"
+                    "你是专业足球赛前预测分析师。请按内容语言要求写一份普通球迷能看懂的数据看板式 Markdown 报告。"
                     "只使用证据包 JSON 中的真实数据，缺失数据写“资料未明确”，不得编造。"
                     "禁止输出数据库字段、内部 ID、模型诊断字段，也不要解释实现细节。"
                     "不要写大段散文；每章最多 2 段长文字，其余用 Markdown 表格、短 bullet、数字卡片、文本概率条表达。"
                     "少用抽象黑话；每个专业判断都要解释这对比赛意味着什么。"
                     "不得使用 Mermaid、ECharts、HTML、SVG、canvas 或外链图片。"
+                    f"\n\n{language_instruction}"
                 ),
             },
             {
                 "role": "user",
                 "content": (
-                    "请严格输出 6 个章节，每章用“## 章节名”作为边界，章节标题必须逐字为：\n"
+                    "请严格输出 6 个章节，每章用“## 章节名”作为边界，并保持以下章节顺序。"
+                    "如果内容语言不是中文，可以把章节标题翻译为上传材料主要语言，但顺序必须一致：\n"
                     "- 比赛结论摘要\n"
                     "- 双方基本面与图谱证据\n"
                     "- 战术、阵型与预计首发\n"
@@ -2282,6 +2323,12 @@ class PredictionReportAssembler:
         if len(titled_sections) == 6:
             return [
                 {"title": title, "content": self._normalize_section_content(titled_sections[index])}
+                for index, title in enumerate(self.SECTION_TITLES)
+            ]
+        heading_sections = _section_blocks_by_markdown_headings(text)
+        if len(heading_sections) == 6:
+            return [
+                {"title": title, "content": self._normalize_section_content(heading_sections[index])}
                 for index, title in enumerate(self.SECTION_TITLES)
             ]
         sections: list[str] = []
@@ -2501,6 +2548,13 @@ class PredictionReportAssembler:
         message: str,
         chat_history: list[dict[str, Any]],
     ) -> list[dict[str, str]]:
+        language_instruction = instruction_for_project(
+            context.get("match", {}).get("project_id"),
+            fallback_materials=[
+                context.get("match", {}).get("requirement") or "",
+                "\n".join(item.get("excerpt") or "" for item in context.get("report_sections") or []),
+            ],
+        )
         return [
             {
                 "role": "system",
@@ -2509,6 +2563,7 @@ class PredictionReportAssembler:
                     "再结合结构化预测产物回答用户问题。不要编造报告没有支持的信息；"
                     "资料不足时直接说明“报告未明确”。不要暴露数据库字段、内部 ID、实现细节或工具调用。"
                     "回答应针对用户当前问题，不要每次都套用同一段比分/风险模板。"
+                    f"\n\n{language_instruction}"
                 ),
             },
             {
@@ -2612,6 +2667,24 @@ def _section_blocks_by_titles(text: str, titles: tuple[str, ...]) -> list[str]:
         return []
     blocks: list[str] = []
     for index, (_, end, _) in enumerate(markers):
+        next_start = markers[index + 1][0] if index + 1 < len(markers) else len(text)
+        blocks.append(text[end:next_start].strip())
+    return blocks
+
+
+def _section_blocks_by_markdown_headings(text: str) -> list[str]:
+    markers: list[tuple[int, int]] = []
+    offset = 0
+    for line in text.splitlines(keepends=True):
+        if re.match(r"^\s*#{1,3}\s+\S+", line):
+            line_start = offset + len(line) - len(line.lstrip())
+            line_end = offset + len(line.rstrip("\r\n"))
+            markers.append((line_start, line_end))
+        offset += len(line)
+    if len(markers) != 6:
+        return []
+    blocks: list[str] = []
+    for index, (_, end) in enumerate(markers):
         next_start = markers[index + 1][0] if index + 1 < len(markers) else len(text)
         blocks.append(text[end:next_start].strip())
     return blocks

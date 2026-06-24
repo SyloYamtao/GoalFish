@@ -126,6 +126,8 @@ class ExternalDataPool:
         self._force = False
         self._fit_df: pd.DataFrame | None = None
         self._elo_snapshot: dict[str, float] | None = None
+        self.sources: list[str] = []
+        self.source_errors: dict[str, str] = {}
 
     def fetch_for_match(
         self,
@@ -141,21 +143,31 @@ class ExternalDataPool:
         self._offline = offline
         self._force = force
         source_set = {source for source in (sources or ["intl_results", "national_elo"]) if source}
+        self.sources = sorted(source_set)
+        self.source_errors = {}
         if "intl_results" in source_set:
             normalized_cutoff = _cutoff_datetime(cutoff_date).strftime("%Y-%m-%d") if cutoff_date else None
-            self._fit_df = self.intl_results.as_fit_dataframe(
-                start_date=f"{since_year}-01-01",
-                cutoff_date=normalized_cutoff,
-                offline=offline,
-                force=force,
-                normalizer=self.normalizer,
-            )
+            try:
+                self._fit_df = self.intl_results.as_fit_dataframe(
+                    start_date=f"{since_year}-01-01",
+                    cutoff_date=normalized_cutoff,
+                    offline=offline,
+                    force=force,
+                    normalizer=self.normalizer,
+                )
+            except Exception as exc:  # noqa: BLE001 - external evidence must not block Step2.
+                self._fit_df = _empty_training_frame()
+                self.source_errors["intl_results"] = f"{type(exc).__name__}: {exc}"
         if "national_elo" in source_set:
-            if offline or force:
-                elo_df = self.elo.as_dataframe(offline=offline, force=force)
-                self._elo_snapshot = dict(zip(elo_df["team_iso3"], elo_df["elo_rating"], strict=False))
-            else:
-                self._elo_snapshot = self.elo.fetch_current_snapshot()
+            try:
+                if offline or force:
+                    elo_df = self.elo.as_dataframe(offline=offline, force=force)
+                    self._elo_snapshot = dict(zip(elo_df["team_iso3"], elo_df["elo_rating"], strict=False))
+                else:
+                    self._elo_snapshot = self.elo.fetch_current_snapshot()
+            except Exception as exc:  # noqa: BLE001 - model can fall back to uniform priors.
+                self._elo_snapshot = {}
+                self.source_errors["national_elo"] = f"{type(exc).__name__}: {exc}"
         return self
 
     def fit_dataframe(self, cutoff_date: str | None = None) -> pd.DataFrame:
@@ -709,9 +721,7 @@ def _normalize_structured_date(value: str) -> str:
 
 def _normalize_training_frame(df: pd.DataFrame) -> pd.DataFrame:
     if df is None or df.empty:
-        return pd.DataFrame(
-            columns=["date", "home_iso3", "away_iso3", "home_score", "away_score", "neutral", "tournament"]
-        )
+        return _empty_training_frame()
 
     normalized = df.copy()
     if "tournament" not in normalized.columns:
@@ -723,6 +733,12 @@ def _normalize_training_frame(df: pd.DataFrame) -> pd.DataFrame:
         if column not in normalized.columns:
             normalized[column] = None
     return normalized[required]
+
+
+def _empty_training_frame() -> pd.DataFrame:
+    return pd.DataFrame(
+        columns=["date", "home_iso3", "away_iso3", "home_score", "away_score", "neutral", "tournament"]
+    )
 
 
 def _competition_weight(row: pd.Series) -> float:

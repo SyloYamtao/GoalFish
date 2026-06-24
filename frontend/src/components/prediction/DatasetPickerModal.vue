@@ -4,7 +4,7 @@
       <div v-if="open" class="modal-mask" @click.self="$emit('close')">
         <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="dataset-title" @keydown.esc="$emit('close')">
           <header class="modal-header">
-            <h3 id="dataset-title">切换名册数据集</h3>
+            <h3 id="dataset-title">{{ t('prediction.datasetTitle') }}</h3>
             <button type="button" class="modal-close" @click="$emit('close')">×</button>
           </header>
 
@@ -18,21 +18,21 @@
               <input v-model="selectedId" type="radio" :value="dataset.dataset_id" />
               <span class="dataset-radio"></span>
               <span class="dataset-main">
-                <b>{{ dataset.dataset_id }} <em v-if="dataset.dataset_id === currentDatasetId">(当前)</em></b>
-                <small>{{ dataset.scope_label || '-' }} · {{ dataset.teams_count || 0 }} 队 · {{ dataset.players_count || 0 }} 人</small>
-                <small class="mono">导入于 {{ shortDate(dataset.created_at) }}</small>
+                <b>{{ dataset.dataset_id }} <em v-if="dataset.dataset_id === currentDatasetId">({{ t('prediction.currentDataset') }})</em></b>
+                <small>{{ dataset.scope_label || '-' }} · {{ t('prediction.teamsPlayers', { teams: dataset.teams_count || 0, players: dataset.players_count || 0 }) }}</small>
+                <small class="mono">{{ t('prediction.importedAt', { date: shortDate(dataset.created_at) }) }}</small>
                 <small v-if="dataset.match_scope && dataset.match_scope.matches_compatible === false" class="dataset-warn">
-                  与本场比赛域不匹配, 不建议
+                  {{ t('prediction.datasetIncompatible') }}
                 </small>
               </span>
             </label>
-            <div v-if="datasets.length === 0" class="dataset-empty">暂无可切换数据集</div>
+            <div v-if="datasets.length === 0" class="dataset-empty">{{ t('prediction.noDatasets') }}</div>
           </div>
 
           <footer class="modal-footer">
-            <button class="ghost-btn" type="button" @click="$emit('close')">取消</button>
+            <button class="ghost-btn" type="button" @click="$emit('close')">{{ t('common.cancel') }}</button>
             <button class="primary-btn" type="button" :disabled="!selectedId || selectedId === currentDatasetId || loading" @click="$emit('apply', selectedId)">
-              {{ loading ? '应用中...' : '应用并重新生成' }}
+              {{ loading ? t('prediction.applying') : t('prediction.applyRegenerate') }}
             </button>
           </footer>
         </section>
@@ -43,6 +43,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   open: { type: Boolean, default: false },
@@ -53,6 +54,7 @@ const props = defineProps({
 
 defineEmits(['close', 'apply'])
 
+const { t } = useI18n()
 const selectedId = ref('')
 
 watch(() => props.open, (open) => {

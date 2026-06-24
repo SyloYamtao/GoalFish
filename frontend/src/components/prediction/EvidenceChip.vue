@@ -6,7 +6,7 @@
       :class="{ 'ev-chip-compact': compact }"
       type="button"
       :aria-expanded="expanded"
-      :aria-label="`查看${sourceLabel}证据`"
+      :aria-label="t('prediction.viewEvidence', { source: sourceLabel })"
       :title="compact ? sourceLabel : ''"
       @click="toggleExpanded"
     >
@@ -22,7 +22,7 @@
           :style="detailStyle"
         >
           <span class="ev-detail-title">{{ sourceLabel }}</span>
-          <span v-if="normalizedRefs.length === 0" class="ev-empty">暂无证据明细</span>
+          <span v-if="normalizedRefs.length === 0" class="ev-empty">{{ t('prediction.emptyEvidence') }}</span>
           <span v-for="ref in normalizedRefs" :key="ref.id" class="ev-row">
             <span class="mono">{{ ref.type }}</span>
             <b>{{ ref.name }}</b>
@@ -36,6 +36,7 @@
 
 <script setup>
 import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   compactEvidenceSourceLabel,
   evidenceSourceLabel,
@@ -46,14 +47,15 @@ const props = defineProps({
   refs: { type: Array, default: () => [] },
   compact: { type: Boolean, default: false }
 })
+const { t } = useI18n()
 
 const expanded = ref(false)
 const triggerRef = ref(null)
 const detailRef = ref(null)
 const position = ref({ left: 0, top: 0 })
 
-const sourceLabel = computed(() => evidenceSourceLabel(props.source))
-const compactSourceLabel = computed(() => compactEvidenceSourceLabel(props.source))
+const sourceLabel = computed(() => evidenceSourceLabel(props.source, t))
+const compactSourceLabel = computed(() => compactEvidenceSourceLabel(props.source, t))
 const detailStyle = computed(() => ({
   left: `${position.value.left}px`,
   top: `${position.value.top}px`

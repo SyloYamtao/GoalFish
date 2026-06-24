@@ -26,6 +26,7 @@ from ..services.project_workflow import ProjectWorkflowService
 from ..services.step2_preview import build_step2_preview_best_effort
 from ..services.task_workflow import GraphBindingStatus, TaskWorkflowService
 from ..services.task_workflow_safe import try_workflow
+from ..services.team_localization import localize_step2_payload
 from ..tasks.workflow_tasks import enqueue_workflow_event
 from ..utils.file_parser import FileParser
 from ..utils.logger import get_logger
@@ -60,9 +61,15 @@ def get_project(project_id: str):
             "error": t('api.projectNotFound', id=project_id)
         }), 404
 
+    payload = project.to_dict()
+    metadata = dict(payload.get("project_metadata") or {})
+    if isinstance(metadata.get("step2_preview"), dict):
+        metadata["step2_preview"] = localize_step2_payload(metadata["step2_preview"])
+        payload["project_metadata"] = metadata
+
     return jsonify({
         "success": True,
-        "data": project.to_dict()
+        "data": payload
     })
 
 
@@ -182,6 +189,7 @@ def generate_ontology():
         simulation_requirement = request.form.get('simulation_requirement', '')
         project_name = request.form.get('project_name', 'Unnamed Project')
         additional_context = request.form.get('additional_context', '')
+        ontology_ui_locale = get_locale()
         try:
             # 产品主路径固定为 football_match，字段保留是为了兼容现有 projects schema。
             # normalize_simulation_domain 会把空值转成默认领域，并拒绝不支持的值。
@@ -232,6 +240,7 @@ def generate_ontology():
                     "simulation_requirement": simulation_requirement,
                     "simulation_domain": simulation_domain,
                     "additional_context": additional_context,
+                    "ontology_ui_locale": ontology_ui_locale,
                     "source": "api.graph.ontology.generate",
                 },
             ),
@@ -380,7 +389,8 @@ def generate_ontology():
                 document_texts=document_texts,
                 simulation_requirement=simulation_requirement,
                 additional_context=additional_context if additional_context else None,
-                simulation_domain=simulation_domain
+                simulation_domain=simulation_domain,
+                ui_locale=ontology_ui_locale,
             )
         
         # generator.generate 返回的是完整结果；项目里只保存后续图谱构建真正需要的本体结构

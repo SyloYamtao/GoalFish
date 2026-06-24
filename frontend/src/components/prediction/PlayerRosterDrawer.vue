@@ -16,37 +16,37 @@
           tabindex="-1"
         >
           <header class="drawer-header">
-            <h3 id="roster-drawer-title">球员名册</h3>
+            <h3 id="roster-drawer-title">{{ t('prediction.rosterTitle') }}</h3>
             <span class="mono drawer-id">dataset: {{ rosterPayload?.dataset_id || datasetId || '-' }}</span>
-            <button class="drawer-close" type="button" aria-label="关闭名册" @click="close">×</button>
+            <button class="drawer-close" type="button" :aria-label="t('prediction.closeRoster')" @click="close">×</button>
           </header>
           <div class="drawer-body">
-            <div v-if="loading" class="drawer-empty">名册加载中...</div>
+            <div v-if="loading" class="drawer-empty">{{ t('prediction.rosterLoading') }}</div>
             <div v-else-if="error" class="drawer-error" role="alert">{{ error }}</div>
             <template v-else-if="teams.length">
               <section v-for="team in teams" :key="team.role" class="roster-team">
                 <div class="roster-team-head">
                   <div>
-                    <span>{{ team.role === 'home' ? '主队' : '客队' }}</span>
+                    <span>{{ team.role === 'home' ? t('prediction.homeTeam') : t('prediction.awayTeam') }}</span>
                     <b>{{ team.name || team.iso3 || '-' }}</b>
-                    <small class="mono">{{ team.players?.length || 0 }} 人</small>
+                    <small class="mono">{{ t('prediction.peopleUnit', { count: team.players?.length || 0 }) }}</small>
                   </div>
                   <div class="roster-issues">
-                    <span>伤 {{ countStatus(team, 'injured') }}</span>
-                    <span>停 {{ countStatus(team, 'suspended') }}</span>
-                    <span>疑 {{ countStatus(team, 'doubtful') + countStatus(team, 'doubt') }}</span>
+                    <span>{{ t('prediction.injuredShort') }} {{ countStatus(team, 'injured') }}</span>
+                    <span>{{ t('prediction.suspendedShort') }} {{ countStatus(team, 'suspended') }}</span>
+                    <span>{{ t('prediction.doubtfulShort') }} {{ countStatus(team, 'doubtful') + countStatus(team, 'doubt') }}</span>
                   </div>
                 </div>
 
                 <table class="roster-table">
                   <thead>
                     <tr>
-                      <th scope="col">位置</th>
-                      <th scope="col">球员名</th>
-                      <th scope="col">能力</th>
-                      <th scope="col">状态</th>
-                      <th scope="col">预计</th>
-                      <th v-if="mode === 'run'" scope="col">进球</th>
+                      <th scope="col">{{ t('prediction.position') }}</th>
+                      <th scope="col">{{ t('prediction.playerName') }}</th>
+                      <th scope="col">{{ t('prediction.ability') }}</th>
+                      <th scope="col">{{ t('prediction.status') }}</th>
+                      <th scope="col">{{ t('prediction.expected') }}</th>
+                      <th v-if="mode === 'run'" scope="col">{{ t('prediction.goals') }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -74,7 +74,7 @@
                 </table>
               </section>
             </template>
-            <div v-else class="drawer-empty">暂无名册数据。</div>
+            <div v-else class="drawer-empty">{{ t('prediction.emptyRoster') }}</div>
           </div>
         </aside>
       </div>
@@ -84,6 +84,7 @@
 
 <script setup>
 import { computed, nextTick, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { getPredictionConfigRoster, getPredictionRunRoster } from '../../api/prediction'
 import { normalizedAvailability, topGoalShareIds } from '../../utils/step3Adapters'
 
@@ -98,6 +99,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:open', 'close'])
+const { t } = useI18n()
 
 const drawerRef = ref(null)
 const loading = ref(false)
@@ -127,7 +129,7 @@ const loadRoster = async () => {
       : await getPredictionConfigRoster(props.configId)
     fetchedRoster.value = response.data
   } catch (err) {
-    error.value = err.message || '名册加载失败'
+    error.value = err.message || t('prediction.rosterLoadFailed')
   } finally {
     loading.value = false
   }
@@ -187,10 +189,10 @@ const availability = (player) => normalizedAvailability(player)
 const statusLabel = (player) => ({
   available: '✓',
   ok: '✓',
-  doubtful: '疑',
-  doubt: '疑',
-  injured: '伤',
-  suspended: '停',
+  doubtful: t('prediction.status_doubtful'),
+  doubt: t('prediction.status_doubt'),
+  injured: t('prediction.status_injured'),
+  suspended: t('prediction.status_suspended'),
 }[availability(player)] || availability(player))
 
 const countStatus = (team, status) => (

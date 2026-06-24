@@ -3,15 +3,15 @@
     <div class="scroll-container">
       <section class="setup-header">
         <div>
-          <span class="eyebrow">STEP 02</span>
-          <h2>预测配置准备</h2>
-          <p>{{ config?.match_name || preview?.match_name || projectData?.simulation_requirement || '等待赛事预测需求' }}</p>
+          <span class="eyebrow">{{ t('step2.eyebrow') }}</span>
+          <h2>{{ t('step2.setupTitle') }}</h2>
+          <p>{{ config?.match_name || preview?.match_name || projectData?.simulation_requirement || t('step2.setupWaitingRequirement') }}</p>
         </div>
         <div class="header-actions">
-          <button class="ghost-btn" type="button" @click="$emit('go-back')">返回图谱</button>
+          <button class="ghost-btn" type="button" @click="$emit('go-back')">{{ t('step2.backToGraph') }}</button>
           <button class="ghost-btn" type="button" :disabled="isPreparing" @click="prepareConfig(true)">
             <span v-if="isPreparing" class="spinner dark"></span>
-            {{ predictionConfigId ? '重新生成配置' : '生成配置' }}
+            {{ predictionConfigId ? t('step2.regenerateConfig') : t('step2.generateConfig') }}
           </button>
         </div>
       </section>
@@ -19,103 +19,103 @@
       <section class="metrics-grid">
         <div class="metric">
           <span class="metric-label">
-            配置
+            {{ t('step2.metricConfig') }}
             <InfoTooltip
               align="left"
-              title="配置 ID"
-              text="当前 Step2 生成出的预测配置编号。后续 Step3 会用它读取球队强度、场景矩阵、评审记录和恢复策略。"
+              :title="t('step2.metricConfigTitle')"
+              :text="t('step2.metricConfigText')"
             />
           </span>
           <span class="metric-value mono">{{ predictionConfigId || '-' }}</span>
         </div>
         <div class="metric">
           <span class="metric-label">
-            状态
+            {{ t('step2.metricStatus') }}
             <InfoTooltip
-              title="准备状态"
-              text="pending 表示尚未完成，preparing 表示正在生成，ready 表示配置可进入 Step3，failed 或 error 表示需要重新生成。"
+              :title="t('step2.metricStatusTitle')"
+              :text="t('step2.metricStatusText')"
             />
           </span>
           <span class="metric-value">{{ statusLabel }}</span>
         </div>
         <div class="metric">
           <span class="metric-label">
-            进度
+            {{ t('step2.metricProgress') }}
             <InfoTooltip
-              title="生成进度"
-              text="后端按里程碑更新的准备进度，覆盖名册匹配、数据源读取、球队强度估计、场景设计和恢复节点生成。"
+              :title="t('step2.metricProgressTitle')"
+              :text="t('step2.metricProgressText')"
             />
           </span>
           <span class="metric-value mono">{{ config?.progress_percent ?? 0 }}%</span>
         </div>
         <div class="metric">
           <span class="metric-label">
-            模型
+            {{ t('step2.metricModel') }}
             <InfoTooltip
-              title="预测模型"
-              text="当前配置采用的底层足球进球模型。数据足够时会使用拟合模型，数据不足时会降级为先验或规则模型。"
+              :title="t('step2.metricModelTitle')"
+              :text="t('step2.metricModelText')"
             />
           </span>
           <span class="metric-value">{{ config?.model_name || '-' }}</span>
         </div>
         <div class="metric">
           <span class="metric-label">
-            拟合
+            {{ t('step2.metricFit') }}
             <InfoTooltip
-              title="拟合状态"
-              text="说明模型是否从结构化赛果中拟合出参数。fitted 可信度较高；fallback_prior 或 insufficient 表示样本不足，更多依赖名册、排名和图谱证据。"
+              :title="t('step2.metricFitTitle')"
+              :text="t('step2.metricFitText')"
             />
           </span>
           <span class="metric-value">{{ config?.fit_status || '-' }}</span>
         </div>
         <div class="metric">
           <span class="metric-label">
-            名册
+            {{ t('step2.metricRoster') }}
             <InfoTooltip
-              title="球员数据"
-              text="两队可用于建模的球员总数。名册影响能力评分、位置深度、伤停风险、门将强度和事件参与者抽样。"
+              :title="t('step2.metricRosterTitle')"
+              :text="t('step2.metricRosterText')"
             />
           </span>
           <span class="metric-value mono">{{ rosterSummaryLabel }}</span>
         </div>
         <div class="metric">
           <span class="metric-label">
-            数据源
+            {{ t('step2.metricDataSources') }}
             <InfoTooltip
-              title="外部数据快照"
-              text="已同步的数据源数 / 可用数据源总数。包含国际赛果、Elo、FIFA 排名和可选 xG 数据；同步失败时会使用本地缓存或降级特征。"
+              :title="t('step2.metricDataSourcesTitle')"
+              :text="t('step2.metricDataSourcesText')"
             />
           </span>
           <span class="metric-value mono">{{ externalSourcesActive }}/{{ externalSourcesTotal }}</span>
         </div>
         <div class="metric">
           <span class="metric-label">
-            评审 ★
+            {{ t('step2.metricReview') }}
             <InfoTooltip
               align="right"
-              title="LLM 调用预算"
-              text="显示实际 LLM 调用数 / 计划调用数，cap 是硬上限。fresh/cached 是生成完成后的实际账本；准备中或禁用 LLM 时实际调用可以暂时为 0。"
+              :title="t('step2.metricReviewTitle')"
+              :text="t('step2.metricReviewText')"
             />
           </span>
           <span class="metric-value-stack">
             <span class="metric-value mono" :class="budgetClass">{{ budgetUsed }}/{{ budgetPlanned }}</span>
-            <span class="metric-subvalue mono">cap {{ budgetCap }}</span>
+            <span class="metric-subvalue mono">{{ t('prediction.capLabel', { cap: budgetCap }) }}</span>
           </span>
         </div>
       </section>
 
       <div v-if="errorMessage" class="setup-error" role="alert">
-        <b>配置准备失败</b>
+        <b>{{ t('step2.configFailed') }}</b>
         <span>{{ errorMessage }}</span>
       </div>
 
       <section class="setup-section">
         <div class="section-title-row">
           <span class="section-index mono">01</span>
-          <h3>数据源与名册</h3>
+          <h3>{{ t('step2.sectionDataRosterTitle') }}</h3>
           <InfoTooltip
-            title="数据源与名册"
-            text="这里决定模型可用的客观输入：外部赛果/排名/xG 快照提供球队近期和长期强度，球员名册提供阵容深度、位置能力、伤停和门将信息。"
+            :title="t('step2.sectionDataRosterTitle')"
+            :text="t('step2.sectionDataRosterText')"
           />
         </div>
         <div class="data-source-roster-grid">
@@ -132,10 +132,10 @@
       <section class="setup-section">
         <div class="section-title-row">
           <span class="section-index mono">02</span>
-          <h3>评审预算</h3>
+          <h3>{{ t('step2.section_budget') }}</h3>
           <InfoTooltip
-            title="评审预算"
-            text="控制 Step2/Step3 中 LLM 参与的深度。启用更多角色、场景叙述、分析师笔记和复核通常会增加耗时和模型费用；实际费用取决于你配置的模型。"
+            :title="t('step2.section_budget')"
+            :text="t('step2.metricReviewText')"
           />
         </div>
 
@@ -153,7 +153,7 @@
           @apply="prepareConfig(true)"
         />
         <p v-if="isPreparing" class="budget-lock-note">
-          当前配置正在生成，预算已锁定；如需调整，请等待本次生成完成后再应用。
+          {{ t('step2.budgetLocked') }}
         </p>
         <LLMBudgetMeter :ledger="budgetLedger" />
       </section>
@@ -161,10 +161,10 @@
       <section class="setup-section">
         <div class="section-title-row">
           <span class="section-index mono">03</span>
-          <h3>100 教练评审团</h3>
+          <h3>{{ t('step2.coachJuryTitle') }}</h3>
           <InfoTooltip
-            title="教练评审团"
-            text="系统会生成 100 个教练代理，但只有预算启用的角色会参与关键讨论。不同角色从进攻、防守、转换、定位球、门将、体能和风险角度审视同一场比赛。"
+            :title="t('step2.coachJuryTooltip')"
+            :text="t('step2.coachJuryText')"
           />
         </div>
         <div class="coach-grid">
@@ -186,7 +186,7 @@
             </span>
             <b class="mono">{{ item.count }}</b>
             <span v-if="isRoleSpoken(item.role)" class="coach-spoken">✦</span>
-            <small v-else-if="!isRoleEnabled(item.role)" class="coach-budget-hint">未启用 (预算)</small>
+            <small v-else-if="!isRoleEnabled(item.role)" class="coach-budget-hint">{{ t('step2.disabledByBudget') }}</small>
           </div>
         </div>
         <div class="discussion-list">
@@ -195,22 +195,22 @@
               <b>{{ discussion.topic }}</b>
               <p>{{ discussion.summary }}</p>
               <small v-if="discussion.metadata?.tokens" class="discussion-cost mono">
-                ↳ cost {{ formatTokens(discussion.metadata.tokens) }} · {{ discussion.metadata.latency_ms || '-' }}ms
+                {{ t('prediction.costLatency', { cost: formatTokens(discussion.metadata.tokens), latency: discussion.metadata.latency_ms || '-' }) }}
               </small>
             </div>
             <span class="mono">{{ Math.round(Number(discussion.consensus_score || 0) * 100) }}%</span>
           </article>
-          <div v-if="discussions.length === 0" class="mini-empty">暂无评审讨论。</div>
+          <div v-if="discussions.length === 0" class="mini-empty">{{ t('step2.emptyDiscussions') }}</div>
         </div>
       </section>
 
       <section class="setup-section">
         <div class="section-title-row">
           <span class="section-index mono">04</span>
-          <h3>场景空间设计</h3>
+          <h3>{{ t('step2.scenarioDesignTitle') }}</h3>
           <InfoTooltip
-            title="场景空间设计"
-            text="把比赛拆成若干可能世界，例如基准、主队上行、客队失误或高波动。每个场景会有初始权重和评审后权重，Step3 会按这些权重抽样比赛过程。"
+            :title="t('step2.scenarioDesignTitle')"
+            :text="t('step2.scenarioDesignText')"
           />
         </div>
         <div class="scenario-matrix">
@@ -232,56 +232,56 @@
             <p>{{ (scenario.key_drivers || []).join(' / ') || '-' }}</p>
             <em>{{ (scenario.risk_factors || []).join(' / ') || '-' }}</em>
           </article>
-          <div v-if="scenarioCases.length === 0" class="mini-empty">暂无场景矩阵。</div>
+          <div v-if="scenarioCases.length === 0" class="mini-empty">{{ t('step2.emptyScenarioMatrix') }}</div>
         </div>
       </section>
 
       <section class="setup-section">
         <div class="section-title-row">
           <span class="section-index mono">05</span>
-          <h3>恢复与回看策略</h3>
+          <h3>{{ t('step2.resumePolicyTitle') }}</h3>
           <InfoTooltip
-            title="恢复与回看策略"
-            text="定义预测流程中哪些节点必须持久化，以及中断或重跑时从哪里恢复。它保证 Step3、报告生成和回放能复用同一份配置，不重复昂贵步骤。"
+            :title="t('step2.resumePolicyTitle')"
+            :text="t('step2.resumePolicyText')"
           />
         </div>
         <div class="resume-table">
           <div class="resume-row resume-head">
             <span>
-              序列
+              {{ t('step2.resumeSequence') }}
               <InfoTooltip
                 align="left"
-                title="序列"
-                text="节点在预测流程中的执行顺序。序号越小越早生成，后续节点依赖前序产物。"
+                :title="t('step2.resumeSequence')"
+                :text="t('step2.resumeSequenceText')"
               />
             </span>
             <span>
-              节点
+              {{ t('step2.resumeNode') }}
               <InfoTooltip
-                title="节点"
-                text="可恢复的流程步骤，例如生成球队强度、九宫格场景、比赛事件或报告摘要。"
+                :title="t('step2.resumeNode')"
+                :text="t('step2.resumeNodeText')"
               />
             </span>
             <span>
-              持久化
+              {{ t('step2.resumePersist') }}
               <InfoTooltip
-                title="持久化"
-                text="“是”表示该节点产物会写入数据库，刷新页面、重启后端或重跑后仍可复用。"
+                :title="t('step2.resumePersist')"
+                :text="t('step2.resumePersistText')"
               />
             </span>
             <span>
-              策略
+              {{ t('step2.resumeStrategy') }}
               <InfoTooltip
                 align="right"
-                title="恢复策略"
-                text="说明中断后如何处理该节点：复用已有结果、重新计算，或从最近稳定节点继续。"
+                :title="t('step2.resumeStrategy')"
+                :text="t('step2.resumeStrategyText')"
               />
             </span>
           </div>
           <div v-for="node in resumeNodes" :key="node.id" class="resume-row">
             <span class="mono">{{ node.sequence }}</span>
             <span>{{ node.label }}</span>
-            <span>{{ node.must_persist ? '是' : '否' }}</span>
+            <span>{{ node.must_persist ? t('step2.yes') : t('step2.no') }}</span>
             <span>{{ node.resume_strategy }}</span>
           </div>
         </div>
@@ -290,16 +290,16 @@
       <section class="setup-section">
         <div class="section-title-row">
           <span class="section-index mono">06</span>
-          <h3>球队强度 & 基础概率</h3>
+          <h3>{{ t('step2.teamStrengthTitle') }}</h3>
           <InfoTooltip
-            title="球队强度与基础概率"
-            text="把图谱、名册、排名和赛果转换成 0-100 的球队维度评分。进攻看机会创造和终结，防守看限制机会能力，控球看中场出球与节奏，转换看反抢和反击，定位球看高空球与二点保护，门将看扑救、出球和高球处理。评分右上角的来源按钮可展开查看模型融合、球员名册等证据来源。主队和客队使用同一套定义，所以说明集中在这里。"
+            :title="t('step2.teamStrengthTitle')"
+            :text="t('step2.teamStrengthText')"
           />
         </div>
         <div class="team-grid">
           <article v-for="team in orderedTeamStrengths" :key="team.team_role" class="team-card">
             <div class="team-head">
-              <span>{{ team.team_role === 'home' ? '主队' : '客队' }}</span>
+              <span>{{ team.team_role === 'home' ? t('step2.homeTeam') : t('step2.awayTeam') }}</span>
               <b>{{ team.team_name }}</b>
               <em class="mono">{{ team.confidence }}%</em>
             </div>
@@ -319,9 +319,9 @@
               </div>
             </div>
             <div class="team-adjustments">
-              <small>状态调整</small>
+              <small>{{ t('step2.formAdjustments') }}</small>
               <div>
-                伤停 <b>{{ signed(team.injury_adjustment) }}</b>
+                {{ t('step2.injury') }} <b>{{ signed(team.injury_adjustment) }}</b>
                 <EvidenceChip
                   v-for="ref in team.injury_evidence_refs || []"
                   :key="ref.id || ref.name"
@@ -330,7 +330,7 @@
                 />
               </div>
               <div>
-                状态 <b>{{ signed(team.form_adjustment) }}</b>
+                {{ t('step2.form') }} <b>{{ signed(team.form_adjustment) }}</b>
                 <EvidenceChip
                   v-for="ref in team.form_evidence_refs || []"
                   :key="ref.id || ref.name"
@@ -338,85 +338,85 @@
                   :refs="[ref]"
                 />
               </div>
-              <div>主场 <b>{{ homeAwayText(team) }}</b></div>
+              <div>{{ t('step2.homeAdvantage') }} <b>{{ homeAwayText(team) }}</b></div>
             </div>
           </article>
-          <div v-if="teamStrengths.length === 0" class="mini-empty">暂无球队强度。</div>
+          <div v-if="teamStrengths.length === 0" class="mini-empty">{{ t('step2.emptyTeamStrength') }}</div>
         </div>
       </section>
 
       <section class="setup-section">
         <div class="section-title-row">
           <span class="section-index mono">07</span>
-          <h3>模型输入与数据充分性</h3>
+          <h3>{{ t('step2.modelInputsTitle') }}</h3>
           <InfoTooltip
-            title="模型输入与数据充分性"
-            text="展示模型实际吃到的关键输入和降级原因。这里能判断结果是由结构化数据强支撑，还是主要依赖报告文本、名册和先验规则。"
+            :title="t('step2.modelInputsTitle')"
+            :text="t('step2.modelInputsText')"
           />
         </div>
         <div class="input-grid">
           <div class="input-row">
             <span>
-              比赛
+              {{ t('step2.inputMatch') }}
               <InfoTooltip
-                title="比赛"
-                text="后端从需求文本、图谱实体或显式入参中识别出的主客队和赛事名称。识别错误会影响后续名册匹配和强度估计。"
+                :title="t('step2.inputMatch')"
+                :text="t('step2.inputMatchText')"
               />
             </span>
             <b>{{ config?.match_name || '-' }}</b>
           </div>
           <div class="input-row">
             <span>
-              图谱
+              {{ t('step2.inputGraph') }}
               <InfoTooltip
-                title="图谱"
-                text="Step1 生成的知识图谱 ID。Step2 会从图谱节点中读取球队、球员、战术、天气、伤停和赛制信息。"
+                :title="t('step2.inputGraph')"
+                :text="t('step2.inputGraphText')"
               />
             </span>
             <b class="mono">{{ config?.graph_id || projectData?.graph_id || '-' }}</b>
           </div>
           <div class="input-row">
             <span>
-              数据充分性
+              {{ t('step2.inputDataSufficiency') }}
               <InfoTooltip
-                title="数据充分性"
-                text="模型对当前输入质量的总体判断。sufficient 表示结构化样本较完整；partial 表示可用但有缺口；insufficient 表示会明显依赖降级逻辑。"
+                :title="t('step2.inputDataSufficiency')"
+                :text="t('step2.inputDataSufficiencyText')"
               />
             </span>
             <b>{{ config?.data_sufficiency || '-' }}</b>
           </div>
           <div class="input-row">
             <span>
-              结构化赛果
+              {{ t('step2.inputStructuredResults') }}
               <InfoTooltip
-                title="结构化赛果"
-                text="已匹配到的历史比赛记录数量。数量越多，球队强度和近期状态估计越稳定；数量少时会回退到排名、名册和文本证据。"
+                :title="t('step2.inputStructuredResults')"
+                :text="t('step2.inputStructuredResultsText')"
               />
             </span>
             <b class="mono">{{ structuredMatchCount }}</b>
           </div>
           <div class="input-row">
             <span>
-              xG 样本
+              {{ t('step2.inputXgSamples') }}
               <InfoTooltip
-                title="xG 样本"
-                text="可用的预期进球样本数量。xG 能补充比分无法体现的机会质量；缺失时模型仍可运行，但对攻防质量的判断会更粗。"
+                :title="t('step2.inputXgSamples')"
+                :text="t('step2.inputXgSamplesText')"
               />
             </span>
             <b class="mono">{{ structuredXgCount }}</b>
           </div>
           <div class="input-row input-row-detail">
             <span>
-              fallback
+              {{ t('step2.inputFallback') }}
               <InfoTooltip
-                title="降级链路"
-                text="当结构化数据不足、模型无法拟合或外部源失败时采用的替代逻辑。展开详情可以看到具体降级原因和诊断字段。"
+                :title="t('step2.inputFallbackTitle')"
+                :text="t('step2.inputFallbackText')"
               />
             </span>
             <div class="fallback-detail">
               <b>{{ modelDiagnostics.fit_status || modelDiagnostics.fallback_reason || '-' }}</b>
               <button class="ghost-btn-xs" type="button" @click="diagOpen = !diagOpen">
-                详情 {{ diagOpen ? '▴' : '▾' }}
+                {{ t('step2.detailsToggle', { caret: diagOpen ? '▴' : '▾' }) }}
               </button>
               <div v-if="diagOpen" class="diag-block">
                 <div v-for="row in diagnosticRows" :key="row.key" class="diag-row">
@@ -424,7 +424,7 @@
                   <span>{{ row.value }}</span>
                 </div>
                 <div v-if="warnings.length" class="diag-warnings">
-                  <small>降级链路:</small>
+                  <small>{{ t('step2.fallbackChain') }}</small>
                   <ul>
                     <li v-for="warning in warnings" :key="warning">{{ warning }}</li>
                   </ul>
@@ -437,7 +437,7 @@
 
       <section class="action-section">
         <button class="primary-btn" type="button" :disabled="!canContinue" @click="enterPredictionRun">
-          进入比赛场景推演
+          {{ t('step2.enterStep3') }}
           <span>→</span>
         </button>
       </section>
@@ -445,8 +445,8 @@
 
     <div class="system-logs">
       <div class="log-header">
-        <span class="log-title">PREDICTION CONFIG</span>
-        <span class="log-id">{{ predictionConfigId || projectData?.project_id || 'NO_CONFIG' }}</span>
+        <span class="log-title">{{ t('step2.predictionConfigLogTitle') }}</span>
+        <span class="log-id">{{ predictionConfigId || projectData?.project_id || t('step2.noConfig') }}</span>
       </div>
       <div ref="logContent" class="log-content">
         <div v-for="(log, idx) in systemLogs" :key="idx" class="log-line">
@@ -478,6 +478,7 @@
 
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   getPredictionCoachAgents,
   getPredictionCoachDiscussions,
@@ -517,6 +518,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['go-back', 'next-step', 'add-log', 'update-status'])
+const { t } = useI18n()
 
 const ROLE_ORDER = ['head_coach', 'attack', 'defense', 'transition', 'set_piece', 'goalkeeper', 'fitness', 'risk']
 
@@ -596,9 +598,9 @@ const orderedTeamStrengths = computed(() => orderTeamStrengths(teamStrengths.val
 const rosterSummary = computed(() => config.value?.dataset_summary || preview.value?.dataset_summary || null)
 const rosterSummaryLabel = computed(() => {
   const total = Number(rosterSummary.value?.home?.players_count || 0) + Number(rosterSummary.value?.away?.players_count || 0)
-  if (total) return `${total}人`
+  if (total) return t('step2.peopleUnit', { count: total })
   const rosterTotal = (roster.value?.teams || []).reduce((sum, team) => sum + (team.players?.length || 0), 0)
-  return rosterTotal ? `${rosterTotal}人` : '-'
+  return rosterTotal ? t('step2.peopleUnit', { count: rosterTotal }) : '-'
 })
 
 const externalSources = computed(() => normalizeExternalSources(config.value?.external_sources || preview.value?.external_sources || []))
@@ -682,6 +684,39 @@ const graphEntities = computed(() => {
 
 const addLog = (message) => emit('add-log', message)
 
+const clearConfigArtifacts = () => {
+  predictionConfigId.value = null
+  config.value = null
+  agents.value = []
+  discussions.value = []
+  scenarioCases.value = []
+  resumeNodes.value = []
+  teamStrengths.value = []
+  roster.value = null
+}
+
+const projectPreviewIdentity = () => {
+  const payload = props.projectData?.project_metadata?.step2_preview || {}
+  const home = String(payload.home_iso3 || '').trim().toUpperCase()
+  const away = String(payload.away_iso3 || '').trim().toUpperCase()
+  return home && away ? { home, away } : null
+}
+
+const configIdentity = (payload = {}) => {
+  const snapshot = payload.model_input_snapshot || {}
+  const squads = snapshot.squads || {}
+  const home = String(payload.home_iso3 || snapshot.home_iso3 || squads.home?.team_iso3 || '').trim().toUpperCase()
+  const away = String(payload.away_iso3 || snapshot.away_iso3 || squads.away?.team_iso3 || '').trim().toUpperCase()
+  return home && away ? { home, away } : null
+}
+
+const configMatchesProjectIdentity = (payload = {}) => {
+  const expected = projectPreviewIdentity()
+  const actual = configIdentity(payload)
+  if (!expected || !actual) return true
+  return expected.home === actual.home && expected.away === actual.away
+}
+
 const prepareConfig = async (forceRegenerate = false, datasetId = null) => {
   if (!props.projectData?.project_id || isPreparing.value) return
   if (forceRegenerate && predictionConfigId.value) {
@@ -690,23 +725,17 @@ const prepareConfig = async (forceRegenerate = false, datasetId = null) => {
         projectId: props.projectData.project_id,
         step: 2,
         reason: 'step2_reconfigure',
+        t,
         onBefore: () => {
-          predictionConfigId.value = null
-          config.value = null
-          agents.value = []
-          discussions.value = []
-          scenarioCases.value = []
-          resumeNodes.value = []
-          teamStrengths.value = []
-          roster.value = null
+          clearConfigArtifacts()
           emit('update-status', 'processing')
-          addLog('Step2 已重新配置，旧 Step3/Step4/Step5 已失效')
+          addLog(t('step2.logStep2Regenerated'))
         },
       })
       if (!regenerated) return
     } catch (err) {
-      errorMessage.value = err.message || '重新配置失败'
-      addLog(`重新配置失败: ${errorMessage.value}`)
+      errorMessage.value = err.message || t('step2.reconfigureFailed')
+      addLog(t('step2.logRegenerateFailed', { error: errorMessage.value }))
       return
     }
   }
@@ -714,7 +743,7 @@ const prepareConfig = async (forceRegenerate = false, datasetId = null) => {
   isPreparing.value = true
   errorMessage.value = ''
   emit('update-status', 'processing')
-  addLog(forceRegenerate ? '重新生成预测配置' : '准备或复用预测配置')
+  addLog(forceRegenerate ? t('step2.logRegenerateConfig') : t('step2.logPrepareConfig'))
 
   try {
     const payload = {
@@ -737,17 +766,18 @@ const prepareConfig = async (forceRegenerate = false, datasetId = null) => {
     const response = await preparePredictionConfig(props.projectData.project_id, payload)
     predictionConfigId.value = response.data.prediction_config_id
     startProgressPolling()
-    await loadConfigArtifacts(predictionConfigId.value)
+    const loaded = await loadConfigArtifacts(predictionConfigId.value)
+    if (!loaded) throw new Error(t('step2.configIdentityMismatch'))
 
     if (config.value?.status === 'ready') {
       emit('update-status', 'completed')
-      addLog(`预测配置已就绪: ${predictionConfigId.value}`)
+      addLog(t('step2.logConfigReady', { id: predictionConfigId.value }))
       stopProgressPolling()
     }
   } catch (err) {
     errorMessage.value = err.message || 'unknown error'
     emit('update-status', 'error')
-    addLog(`预测配置准备失败: ${errorMessage.value}`)
+    addLog(t('step2.logConfigFailed', { error: errorMessage.value }))
     stopProgressPolling()
   } finally {
     isPreparing.value = false
@@ -756,7 +786,7 @@ const prepareConfig = async (forceRegenerate = false, datasetId = null) => {
 }
 
 const loadConfigArtifacts = async (configId) => {
-  if (!configId) return
+  if (!configId) return false
   const [configRes, agentsRes, discussionsRes, scenarioRes, resumeRes, strengthsRes, rosterRes] = await Promise.all([
     getPredictionConfig(configId),
     getPredictionCoachAgents(configId),
@@ -766,6 +796,12 @@ const loadConfigArtifacts = async (configId) => {
     getPredictionConfigTeamStrengths(configId),
     getPredictionConfigRoster(configId)
   ])
+
+  if (!configMatchesProjectIdentity(configRes.data)) {
+    clearConfigArtifacts()
+    addLog(t('step2.logConfigIdentityMismatch', { id: configId }))
+    return false
+  }
 
   config.value = configRes.data
   agents.value = agentsRes.data?.coach_agents || []
@@ -780,6 +816,7 @@ const loadConfigArtifacts = async (configId) => {
     selectedProfile.value = normalizeBudgetProfile(config.value.llm_budget)
   }
   pendingBudgetProfile.value = null
+  return true
 }
 
 const startProgressPolling = () => {
@@ -804,7 +841,8 @@ const pollProgress = async () => {
     appendProgressMessages(data.progress_messages || data.messages || [])
     if (data.status === 'ready') {
       stopProgressPolling()
-      await loadConfigArtifacts(predictionConfigId.value)
+      const loaded = await loadConfigArtifacts(predictionConfigId.value)
+      if (!loaded) throw new Error(t('step2.configIdentityMismatch'))
       isPreparing.value = false
       emit('update-status', 'completed')
     }
@@ -825,13 +863,13 @@ const appendProgressMessages = (messages) => {
 
 const enterPredictionRun = () => {
   if (!canContinue.value) return
-  addLog('进入比赛场景推演')
+  addLog(t('step2.logEnterStep3'))
   emit('update-status', 'completed')
   emit('next-step', { predictionConfigId: predictionConfigId.value })
 }
 
 const refreshSources = () => {
-  addLog('刷新数据源快照')
+  addLog(t('step2.logRefreshSources'))
   prepareConfig(true)
 }
 
@@ -865,11 +903,11 @@ const applyDatasetSelection = async (playerDatasetId) => {
   try {
     await switchPredictionConfigDataset(predictionConfigId.value, playerDatasetId)
     datasetPickerOpen.value = false
-    addLog(`切换名册数据集: ${playerDatasetId}`)
+    addLog(t('step2.logSwitchDataset', { id: playerDatasetId }))
     await prepareConfig(true, playerDatasetId)
   } catch (err) {
-    errorMessage.value = err.message || '切换数据集失败'
-    addLog(`切换数据集失败: ${errorMessage.value}`)
+    errorMessage.value = err.message || t('step2.datasetSwitchFailed')
+    addLog(`${t('step2.datasetSwitchFailed')}: ${errorMessage.value}`)
   } finally {
     isDatasetSwitching.value = false
   }
@@ -888,44 +926,30 @@ const updateCustomBudget = (profile) => {
 const isRoleEnabled = (role) => enabledRoles.value.has(role)
 const isRoleSpoken = (role) => spokenRoles.value.has(role)
 
-const roleLabel = (role) => ({
-  head_coach: '战术主教练',
-  attack: '进攻教练',
-  defense: '防守教练',
-  transition: '转换/压迫教练',
-  set_piece: '定位球教练',
-  goalkeeper: '门将/防线教练',
-  fitness: '体能/换人教练',
-  risk: '风险/裁判/天气教练'
-}[role] || role)
+const roleLabel = (role) => t(`step2.role_${role}`) === `step2.role_${role}` ? role : t(`step2.role_${role}`)
 
-const roleDescription = (role) => ({
-  head_coach: '综合各专项意见，形成整体战术判断、基准比分倾向和关键胜负手。',
-  attack: '关注进攻创造、锋线效率、边路突破、禁区触球和关键球员终结能力。',
-  defense: '关注防线结构、禁区保护、中卫对抗、边后卫身后空间和失误风险。',
-  transition: '关注高位压迫、反抢、防反速度、二点球归属和攻守转换中的空间暴露。',
-  set_piece: '关注角球、任意球、后点保护、身高对抗和定位球进失球风险。',
-  goalkeeper: '关注门将扑救、出球、高球处理、身后球清理和门将对高位防线的保护。',
-  fitness: '关注旅行、时差、赛程负荷、伤停存疑、替补冲击力和换人窗口。',
-  risk: '关注裁判尺度、红黄牌、天气、草皮、赛制压力和极端比分波动。'
-}[role] || '该角色从特定专业角度审视比赛，并影响场景权重和风险提示。')
+const roleDescription = (role) => {
+  const key = `step2.roleDesc_${role}`
+  const value = t(key)
+  return value === key ? t('step2.coachJuryText') : value
+}
 
 const stateLabel = (state) => ({
-  normal: '正常',
-  overperform: '超常',
-  underperform: '低迷'
+  normal: t('step2.state_normal'),
+  overperform: t('step2.state_overperform'),
+  underperform: t('step2.state_underperform')
 }[state] || state)
 
 const spaceLabel = (space) => ({
-  baseline: '基准',
-  home_upside: '主队上行',
-  away_upside: '客队上行',
-  home_error: '主队失误',
-  away_error: '客队失误',
-  volatility: '高波动'
+  baseline: t('step2.space_baseline'),
+  home_upside: t('step2.space_home_upside'),
+  away_upside: t('step2.space_away_upside'),
+  home_error: t('step2.space_home_error'),
+  away_error: t('step2.space_away_error'),
+  volatility: t('step2.space_volatility')
 }[space] || space)
 
-const ratingItems = teamStrengthRatingItems
+const ratingItems = (team) => teamStrengthRatingItems(team, t)
 
 const signed = (value) => {
   const numeric = Number(value || 0)
@@ -934,8 +958,8 @@ const signed = (value) => {
 
 const homeAwayText = (team) => {
   const adjustment = Number(team.home_away_adjustment || 0)
-  if (!adjustment) return '+0 (中立)'
-  const reason = team.home_away_adjustment_reason || '主队顺位'
+  if (!adjustment) return `+0 (${t('step2.homeAwayNeutral')})`
+  const reason = team.home_away_adjustment_reason || t('step2.homeAwayDefaultReason')
   return `${adjustment > 0 ? '+' : ''}${adjustment} (${reason})`
 }
 
@@ -989,7 +1013,7 @@ const applyProjectPreview = () => {
 
 const initializeStep2 = async () => {
   if (!props.projectData?.project_id) return
-  addLog('Step2 预测配置准备初始化')
+  addLog(t('step2.logInitializeStep2'))
   applyProjectPreview()
   try {
     const latest = await getLatestPredictionConfig(props.projectData.project_id, {
@@ -997,12 +1021,13 @@ const initializeStep2 = async () => {
     })
     if (latest.data?.prediction_config_id) {
       predictionConfigId.value = latest.data.prediction_config_id
-      await loadConfigArtifacts(predictionConfigId.value)
+      const loaded = await loadConfigArtifacts(predictionConfigId.value)
+      if (!loaded) return
       emit('update-status', 'completed')
-      addLog(`加载已有预测配置: ${predictionConfigId.value}`)
+      addLog(t('step2.logLoadExistingConfig', { id: predictionConfigId.value }))
     }
   } catch (err) {
-    addLog(`读取已有预测配置失败: ${err.message}`)
+    addLog(t('step2.logLoadExistingConfigFailed', { error: err.message }))
   }
 }
 

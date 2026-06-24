@@ -3,6 +3,19 @@ import { describe, it } from 'node:test'
 
 import { buildStep4ReportEvidence, resolveReportProjectId } from '../step4ReportEvidence.js'
 
+const interpolate = (template, params = {}) => String(template).replace(/\{(\w+)\}/g, (match, key) => (
+  params[key] === undefined || params[key] === null ? match : String(params[key])
+))
+
+const zh = (key, params = {}) => interpolate({
+  'step4.wdlSubtitle': '主胜 {home} · 平 {draw} · 客胜 {away}',
+  'step4.availabilityLabel': '主 {home} · 客 {away}',
+  'step4.matchEvents': '比赛事件',
+  'step4.graphSource': '图谱',
+  'step4.graphSourceValue': '{entities} 实体 · {relationships} 关系',
+  'step4.peopleUnit': '{count}人',
+}[key] || key, params)
+
 describe('step4ReportEvidence', () => {
   it('resolves project id from persisted report evidence after a refresh', () => {
     assert.equal(resolveReportProjectId({ project_id: 'proj_top' }), 'proj_top')
@@ -81,12 +94,60 @@ describe('step4ReportEvidence', () => {
     })
 
     assert.equal(panel.verdict.title, '加拿大 1-0 波黑')
-    assert.match(panel.verdict.subtitle, /主胜 55\.0%/)
+    assert.match(panel.verdict.subtitle, /Home win 55\.0%/)
     assert.equal(panel.modelInputs[0].value, 'dixon_coles_decay v2')
+    assert.equal(panel.modelInputs[1].value, 'Home 26/26 · Away 24/24')
+    assert.equal(panel.evidenceStats.find(item => item.label === 'Match events').value, '77')
+    assert.match(panel.credibilityItems[0].detail, /26\/20/)
+    assert.match(panel.sectionSteps[0].hint, /Score probabilities/)
+  })
+
+  it('uses supplied translator functions for localized Step 4 evidence labels', () => {
+    const panel = buildStep4ReportEvidence({
+      reportSnapshot: {
+        report_metadata: {
+          evidence_package: {
+            prediction_config: {
+              match_name: '加拿大 vs 波黑',
+              home_team: '加拿大',
+              away_team: '波黑',
+            },
+            scoreline_summary: {
+              most_likely_score: '1-0',
+              win_draw_loss_probability: {
+                home_win: 0.55,
+                draw: 0.25,
+                away_win: 0.2,
+              },
+            },
+            match_events_count: 77,
+            budget_credibility: {
+              player_availability: {
+                home: { available: 26, total: 26 },
+                away: { available: 24, total: 24 },
+              },
+            },
+            step1: {
+              graph_entities_count: 18,
+              graph_relationships_count: 31,
+            },
+          },
+          widgets: {
+            lineup_widget: {
+              home: { players: [{ name: 'A' }] },
+              away: { players: [{ name: 'B' }] },
+            },
+          },
+        },
+      },
+      t: zh,
+    })
+
+    assert.match(panel.verdict.subtitle, /主胜 55\.0%/)
     assert.equal(panel.modelInputs[1].value, '主 26/26 · 客 24/24')
     assert.equal(panel.evidenceStats.find(item => item.label === '比赛事件').value, '77')
-    assert.match(panel.credibilityItems[0].detail, /26\/20/)
-    assert.match(panel.sectionSteps[0].hint, /比分概率/)
+    assert.match(panel.sourceHighlights.find(item => item.label === '图谱').value, /18 实体/)
+    assert.equal(panel.insightTabs.find(tab => tab.key === 'lineups').meta, '2人')
   })
 
   it('falls back to generated section text when score metadata is absent', () => {
@@ -108,7 +169,7 @@ describe('step4ReportEvidence', () => {
     })
 
     assert.equal(panel.verdict.title, '加拿大 1-0 波黑')
-    assert.match(panel.verdict.subtitle, /平 25\.0%/)
+    assert.match(panel.verdict.subtitle, /Draw 25\.0%/)
   })
 
   it('supports nested prediction report assembler v2 evidence packages', () => {
@@ -232,14 +293,14 @@ describe('step4ReportEvidence', () => {
     })
 
     assert.equal(panel.verdict.title, '阿根廷 1-1 法国')
-    assert.match(panel.verdict.subtitle, /客胜 35\.0%/)
-    assert.equal(panel.modelInputs[1].value, '主 22/26 · 客 23/26')
-    assert.equal(panel.modelInputs.find(item => item.label === '外部源').value, '2 组')
-    assert.equal(panel.evidenceStats.find(item => item.label === '比赛事件').value, '8')
-    assert.equal(panel.evidenceStats.find(item => item.label === '教练讨论').value, '2')
+    assert.match(panel.verdict.subtitle, /Away win 35\.0%/)
+    assert.equal(panel.modelInputs[1].value, 'Home 22/26 · Away 23/26')
+    assert.equal(panel.modelInputs.find(item => item.label === 'External sources').value, '2 groups')
+    assert.equal(panel.evidenceStats.find(item => item.label === 'Match events').value, '8')
+    assert.equal(panel.evidenceStats.find(item => item.label === 'Coach discussions').value, '2')
     assert.match(panel.credibilityItems[0].detail, /12\/25/)
-    assert.match(panel.sectionSteps[1].hint, /伤停/)
-    assert.match(panel.sectionSteps[2].hint, /预计首发/)
+    assert.match(panel.sectionSteps[1].hint, /Team data|injuries/)
+    assert.match(panel.sectionSteps[2].hint, /expected lineups/)
     assert.deepEqual(panel.insightTabs.map(tab => tab.key), ['overview', 'scores', 'lineups', 'events', 'risks'])
     assert.equal(panel.probabilityBars.find(item => item.key === 'home_win').percentLabel, '34.0%')
     assert.equal(panel.teamComparison.find(item => item.key === 'home').formation, '4-3-3')
@@ -251,7 +312,7 @@ describe('step4ReportEvidence', () => {
     assert.equal(panel.eventTimeline[0].period, '0-30')
     assert.equal(panel.eventItems[1].label, 'VAR')
     assert.equal(panel.riskItems.find(item => item.key === 'cards').tone, 'warn')
-    assert.match(panel.sourceHighlights.find(item => item.label === '图谱').value, /18 实体/)
+    assert.match(panel.sourceHighlights.find(item => item.label === 'Graph').value, /18 entities/)
   })
 
   it('exposes lineup, tactics, and matchup widgets from report metadata', () => {
@@ -292,6 +353,6 @@ describe('step4ReportEvidence', () => {
     assert.equal(panel.widgets.lineup.away.formation, '4-3-3')
     assert.equal(panel.widgets.tactics.home.attacking_plan, '中路组织')
     assert.equal(panel.widgets.matchups[0].zone, '中路')
-    assert.equal(panel.insightTabs.find(tab => tab.key === 'lineups').meta, '2人')
+    assert.equal(panel.insightTabs.find(tab => tab.key === 'lineups').meta, '2 players')
   })
 })

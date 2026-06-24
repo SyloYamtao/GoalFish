@@ -1,8 +1,8 @@
 <template>
-  <section class="key-matchups" aria-label="关键对位">
+  <section class="key-matchups" :aria-label="t('prediction.keyMatchupsAria')">
     <div class="matchups-head">
-      <span>KEY MATCHUPS</span>
-      <strong>关键对位</strong>
+      <span>{{ t('prediction.keyMatchupsKicker') }}</span>
+      <strong>{{ t('prediction.keyMatchupsTitle') }}</strong>
     </div>
 
     <div v-if="rows.length" class="matchup-list">
@@ -10,7 +10,7 @@
         <div class="zone-pill">{{ item.zone }}</div>
         <div class="matchup-main">
           <strong>{{ item.homePlayer }}</strong>
-          <span>vs</span>
+          <span>{{ t('common.vs') }}</span>
           <strong>{{ item.awayPlayer }}</strong>
         </div>
         <div class="advantage-pill">{{ advantageText(item.advantage) }}</div>
@@ -18,36 +18,39 @@
       </article>
     </div>
 
-    <div v-else class="matchup-empty">暂无可渲染的关键对位</div>
+    <div v-else class="matchup-empty">{{ t('prediction.matchupsEmpty') }}</div>
   </section>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   matchups: { type: Array, default: () => [] },
 })
 
-const safeText = value => String(value || '').trim() || '资料未明确'
+const { t } = useI18n()
+
+const safeText = (value, fallback = t('prediction.unspecified')) => String(value || '').trim() || fallback
 
 const rows = computed(() => props.matchups
   .filter(Boolean)
   .slice(0, 6)
   .map((item, index) => ({
     key: `${index}-${item.zone || item.home_player || item.away_player}`,
-    zone: safeText(item.zone),
-    homePlayer: safeText(item.home_player),
-    awayPlayer: safeText(item.away_player),
+    zone: safeText(item.zone, t('prediction.zoneUnknown')),
+    homePlayer: safeText(item.home_player, t('prediction.homePlayerUnknown')),
+    awayPlayer: safeText(item.away_player, t('prediction.awayPlayerUnknown')),
     why: safeText(item.why_it_matters),
     advantage: ['home', 'away', 'even'].includes(item.advantage) ? item.advantage : 'even',
   })))
 
 const advantageText = value => ({
-  home: '主队占优',
-  away: '客队占优',
-  even: '接近',
-}[value] || '接近')
+  home: t('prediction.advantage_home'),
+  away: t('prediction.advantage_away'),
+  even: t('prediction.advantage_even'),
+}[value] || t('prediction.advantage_even'))
 </script>
 
 <style scoped>

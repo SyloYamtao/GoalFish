@@ -4,7 +4,7 @@
  */
 import { reactive } from 'vue'
 
-export const DEFAULT_PREDICTION_REQUIREMENT = '严谨地预测这场比赛的过程和结果'
+export const DEFAULT_PREDICTION_REQUIREMENT = 'Predict this match process and result rigorously'
 
 const state = reactive({
   files: [],

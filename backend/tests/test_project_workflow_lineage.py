@@ -268,6 +268,82 @@ def test_workflow_state_recovers_from_database_after_service_restart(postgres_db
     assert state["active_artifacts"]["report_id"] == ids["report_id"]
 
 
+def test_workflow_state_repairs_stale_config_pointer_from_active_run(postgres_db):
+    ids = _seed_completed_workflow("proj_repair_stale_config")
+    stale_config_id = f"{ids['project_id']}_stale_config"
+
+    with get_session() as session:
+        project = session.get(ProjectRecord, ids["project_id"])
+        metadata = dict(project.project_metadata or {})
+        metadata["step2_preview"] = {"home_iso3": "POR", "away_iso3": "COD"}
+        active = {
+            "graph_id": ids["graph_id"],
+            "prediction_config_id": stale_config_id,
+            "prediction_run_id": ids["prediction_run_id"],
+            "report_id": None,
+        }
+        metadata["workflow"] = {
+            "workflow_revision": 1,
+            "current_step": 4,
+            "active_artifacts": active,
+            "invalidations": [],
+        }
+        metadata["active_artifacts"] = active
+        project.project_metadata = metadata
+        session.add(
+            PredictionConfigRecord(
+                prediction_config_id=stale_config_id,
+                project_id=ids["project_id"],
+                graph_id=ids["graph_id"],
+                match_name="Portugal vs Sweden",
+                home_team="Portugal",
+                away_team="Sweden",
+                status="ready",
+                current_phase="ready",
+                progress_percent=100,
+                model_name="dixon_coles_decay",
+                model_version="v2",
+                fit_status="fitted",
+                data_sufficiency="sufficient",
+                source_document_ids=[],
+                graph_snapshot={},
+                model_input_snapshot={"home_iso3": "POR", "away_iso3": "SWE"},
+                scenario_design_summary={},
+                resume_policy_summary={},
+                coach_jury_summary={},
+                player_dataset_id="wc2026_fifa_v2",
+                llm_budget_profile={},
+                progress_messages=[],
+                completed_at=utc_now(),
+                config_metadata={"artifact_status": "active", "workflow_revision": 1},
+            )
+        )
+        good_config = session.get(PredictionConfigRecord, ids["prediction_config_id"])
+        good_config.model_input_snapshot = {"home_iso3": "POR", "away_iso3": "COD"}
+
+    state = ProjectWorkflowService().get_state(ids["project_id"])
+
+    assert state["current_step"] == 4
+    assert state["active_artifacts"]["prediction_config_id"] == ids["prediction_config_id"]
+    assert state["active_artifacts"]["prediction_run_id"] == ids["prediction_run_id"]
+
+    with get_session() as session:
+        project = session.get(ProjectRecord, ids["project_id"])
+        active = (project.project_metadata["workflow"] or {})["active_artifacts"]
+        assert active["prediction_config_id"] == ids["prediction_config_id"]
+
+
+def test_workflow_state_does_not_restore_superseded_step3_run(postgres_db):
+    ids = _seed_completed_workflow("proj_no_restore_superseded_run")
+
+    ProjectWorkflowService().regenerate_step(ids["project_id"], 3, reason="user_requested")
+    state = ProjectWorkflowService().get_state(ids["project_id"])
+
+    assert state["current_step"] == 3
+    assert state["active_artifacts"]["prediction_config_id"] == ids["prediction_config_id"]
+    assert state["active_artifacts"]["prediction_run_id"] is None
+
+
 def test_regenerate_api_returns_workflow_payload(postgres_db):
     ids = _seed_completed_workflow("proj_api_lineage")
     client = _create_app().test_client()

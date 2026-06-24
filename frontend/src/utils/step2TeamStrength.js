@@ -9,13 +9,22 @@ export const orderTeamStrengths = (teams = []) => [...teams].sort((a, b) => {
   return aOrder - bOrder
 })
 
-export const teamStrengthRatingItems = (team = {}) => ([
-  { key: 'attack', label: '进攻', value: team.attack_rating },
-  { key: 'defense', label: '防守', value: team.defense_rating },
-  { key: 'possession', label: '控球', value: team.possession_rating },
-  { key: 'transition', label: '转换', value: team.transition_rating },
-  { key: 'set_piece', label: '定位球', value: team.set_piece_rating },
-  { key: 'goalkeeper', label: '门将', value: team.goalkeeper_rating },
+const fallbackT = (key) => ({
+  'step2.rating_attack': 'Attack',
+  'step2.rating_defense': 'Defense',
+  'step2.rating_possession': 'Possession',
+  'step2.rating_transition': 'Transition',
+  'step2.rating_set_piece': 'Set pieces',
+  'step2.rating_goalkeeper': 'Goalkeeper',
+}[key] || key)
+
+export const teamStrengthRatingItems = (team = {}, t = fallbackT) => ([
+  { key: 'attack', label: t('step2.rating_attack'), value: team.attack_rating },
+  { key: 'defense', label: t('step2.rating_defense'), value: team.defense_rating },
+  { key: 'possession', label: t('step2.rating_possession'), value: team.possession_rating },
+  { key: 'transition', label: t('step2.rating_transition'), value: team.transition_rating },
+  { key: 'set_piece', label: t('step2.rating_set_piece'), value: team.set_piece_rating },
+  { key: 'goalkeeper', label: t('step2.rating_goalkeeper'), value: team.goalkeeper_rating },
 ].map(item => {
   const evidence = team.evidence_breakdown?.[item.key] || {}
   return {

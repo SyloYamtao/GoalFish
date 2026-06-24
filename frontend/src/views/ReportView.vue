@@ -24,7 +24,7 @@
         <LanguageSwitcher />
         <div class="step-divider"></div>
         <div class="workflow-step">
-          <span class="step-num">Step 4/5</span>
+          <span class="step-num">{{ t('main.stepProgress', { step: 4, total: 5 }) }}</span>
           <span class="step-name">{{ $tm('main.stepNames')[3] }}</span>
         </div>
         <div class="step-divider"></div>
@@ -124,9 +124,9 @@ const statusClass = computed(() => {
 })
 
 const statusText = computed(() => {
-  if (currentStatus.value === 'error') return 'Error'
-  if (currentStatus.value === 'completed') return 'Completed'
-  return 'Generating'
+  if (currentStatus.value === 'error') return t('common.error')
+  if (currentStatus.value === 'completed') return t('common.completed')
+  return t('common.processing')
 })
 
 // --- Helpers ---
@@ -176,7 +176,7 @@ const loadReportData = async () => {
         await loadPredictionReportContext(predictionRunId.value, reportData)
       } else {
         currentStatus.value = 'error'
-        addLog('报告缺少预测运行 ID，无法加载赛事预测上下文')
+        addLog(t('log.reportMissingPredictionRun'))
       }
     } else {
       addLog(t('log.getReportInfoFailed', { error: reportRes.error || t('common.unknownError') }))
@@ -194,12 +194,12 @@ const loadPredictionReportContext = async (runId, reportData) => {
       status = statusRes.data
       predictionConfigId.value = status?.prediction_config_id || predictionConfigId.value
     } catch (err) {
-      addLog(`预测运行状态加载失败，尝试从报告快照恢复项目上下文: ${err.message}`)
+      addLog(t('log.predictionStatusLoadFailed', { error: err.message }))
     }
 
     const projectId = status?.project_id || resolveReportProjectId(reportData)
     if (!projectId) {
-      addLog('报告快照缺少项目 ID，无法加载项目上下文')
+      addLog(t('log.reportSnapshotMissingProject'))
       return
     }
 
@@ -213,7 +213,7 @@ const loadPredictionReportContext = async (runId, reportData) => {
       }
     }
   } catch (err) {
-    addLog(`加载预测报告上下文失败: ${err.message}`)
+    addLog(t('log.loadPredictionReportContextFailed', { error: err.message }))
   }
 }
 

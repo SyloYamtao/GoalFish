@@ -1,50 +1,50 @@
 export const EVENT_LABELS = {
-  KICKOFF: '开球',
-  TACTICAL_PHASE: '战术阶段',
-  CHANCE_CREATED: '机会',
-  CHANCE: '机会',
-  SHOT: '射门',
-  SAVE: '扑救',
-  GOAL: '进球',
-  ET_GOAL: '加时进球',
-  FOUL: '犯规',
-  CARD: '牌',
-  YELLOW_CARD: '黄牌',
-  RED_CARD: '红牌',
-  VAR: 'VAR',
-  VAR_CHECK: 'VAR',
-  SUB: '换人',
-  SUBSTITUTION: '换人',
-  PRESS: '压迫',
-  PRESSURE_SHIFT: '压力',
-  PSO: '点球',
-  FINAL_SCORE_HYPOTHESIS: '终局假设',
+  KICKOFF: ['step3.event_KICKOFF', 'Kickoff'],
+  TACTICAL_PHASE: ['step3.event_TACTICAL_PHASE', 'Tactical phase'],
+  CHANCE_CREATED: ['step3.event_CHANCE_CREATED', 'Chance'],
+  CHANCE: ['step3.event_CHANCE', 'Chance'],
+  SHOT: ['step3.event_SHOT', 'Shot'],
+  SAVE: ['step3.event_SAVE', 'Save'],
+  GOAL: ['step3.event_GOAL', 'Goal'],
+  ET_GOAL: ['step3.event_ET_GOAL', 'Extra-time goal'],
+  FOUL: ['step3.event_FOUL', 'Foul'],
+  CARD: ['step3.event_CARD', 'Card'],
+  YELLOW_CARD: ['step3.event_YELLOW_CARD', 'Yellow card'],
+  RED_CARD: ['step3.event_RED_CARD', 'Red card'],
+  VAR: [null, 'VAR'],
+  VAR_CHECK: [null, 'VAR'],
+  SUB: ['step3.event_SUB', 'Substitution'],
+  SUBSTITUTION: ['step3.event_SUBSTITUTION', 'Substitution'],
+  PRESS: ['step3.event_PRESS', 'Press'],
+  PRESSURE_SHIFT: ['step3.event_PRESSURE_SHIFT', 'Pressure shift'],
+  PSO: ['step3.event_PSO', 'Penalty shootout'],
+  FINAL_SCORE_HYPOTHESIS: ['step3.event_FINAL_SCORE_HYPOTHESIS', 'Final score hypothesis'],
 }
 
 export const ROLE_LABELS = {
-  data: '数据研判',
-  tactics: '战术研判',
-  risk: '风险研判',
-  event_simulation: '事件推演',
-  coach_review: '教练复核',
-  head_coach: '战术主教练',
-  attack: '进攻教练',
-  defense: '防守教练',
-  set_piece: '定位球教练',
-  fitness: '体能教练',
-  goalkeeper: '门将教练',
-  transition: '转换教练',
-  narrative_polisher: '事件叙述润色',
-  analyst_notes: '分析笔记',
-  step3_review_head_coach: 'Step3 主教练复核',
-  step3_review_risk: 'Step3 风险复核',
-  step3_review_attack: 'Step3 进攻复核',
+  data: ['step3.role_data', 'Data analyst'],
+  tactics: ['step3.role_tactics', 'Tactics analyst'],
+  risk: ['step3.role_risk', 'Risk analyst'],
+  event_simulation: ['step3.role_event_simulation', 'Event simulation'],
+  coach_review: ['step3.role_coach_review', 'Coach review'],
+  head_coach: ['step3.role_head_coach', 'Head coach'],
+  attack: ['step3.role_attack', 'Attack coach'],
+  defense: ['step3.role_defense', 'Defense coach'],
+  set_piece: ['step3.role_set_piece', 'Set-piece coach'],
+  fitness: ['step3.role_fitness', 'Fitness coach'],
+  goalkeeper: ['step3.role_goalkeeper', 'Goalkeeper coach'],
+  transition: ['step3.role_transition', 'Transition coach'],
+  narrative_polisher: ['step3.role_narrative_polisher', 'Narrative polish'],
+  analyst_notes: ['step3.role_analyst_notes', 'Analyst notes'],
+  step3_review_head_coach: ['step3.role_step3_review_head_coach', 'Step 3 head-coach review'],
+  step3_review_risk: ['step3.role_step3_review_risk', 'Step 3 risk review'],
+  step3_review_attack: ['step3.role_step3_review_attack', 'Step 3 attack review'],
 }
 
 export const STATE_LABELS = {
-  normal: '正常',
-  overperform: '超常',
-  underperform: '低迷',
+  normal: ['step3.state_normal', 'Normal'],
+  overperform: ['step3.state_overperform', 'Overperforming'],
+  underperform: ['step3.state_underperform', 'Underperforming'],
 }
 
 export function seedShortCode(seed) {
@@ -101,16 +101,16 @@ export function normalizedAvailability(player = {}) {
   return String(raw || 'available').toLowerCase()
 }
 
-export function eventTypeLabel(type) {
-  return EVENT_LABELS[type] || type || '-'
+export function eventTypeLabel(type, t) {
+  return translatedLookup(EVENT_LABELS[type], t) || type || '-'
 }
 
-export function roleLabel(role) {
-  return ROLE_LABELS[role] || role || '-'
+export function roleLabel(role, t) {
+  return translatedLookup(ROLE_LABELS[role], t) || role || '-'
 }
 
-export function stateLabel(state) {
-  return STATE_LABELS[state] || state || '-'
+export function stateLabel(state, t) {
+  return translatedLookup(STATE_LABELS[state], t) || state || '-'
 }
 
 export function scoreAfterText(scoreAfter) {
@@ -124,6 +124,7 @@ export function matchTeamIdentity({
   predictionResult = {},
   teamStrengths = [],
   roster = {},
+  t,
 } = {}) {
   const resultConfig = predictionResult?.metadata?.prediction_config || {}
   const metadata = predictionResult?.metadata || {}
@@ -138,20 +139,20 @@ export function matchTeamIdentity({
     homeStrength.team_name,
     homeRoster.team_name,
     homeRoster.name,
-  ]) || '主队'
+  ]) || translate(t, 'prediction.homeTeam', 'Home')
   const away = firstText([
     ...sources.map(source => source?.away_team),
     awayStrength.team_name,
     awayRoster.team_name,
     awayRoster.name,
-  ]) || '客队'
+  ]) || translate(t, 'prediction.awayTeam', 'Away')
   const matchName = firstText(sources.map(source => source?.match_name)) || `${home} vs ${away}`
 
   return {
     home,
     away,
-    homeLabel: `主队 ${home}`,
-    awayLabel: `客队 ${away}`,
+    homeLabel: translate(t, 'step3.homeLabelWithTeam', 'Home {team}', { team: home }),
+    awayLabel: translate(t, 'step3.awayLabelWithTeam', 'Away {team}', { team: away }),
     matchupLabel: `${home} vs ${away}`,
     matchName,
   }
@@ -178,7 +179,7 @@ export function formatMs(value) {
   return `${Math.round(numeric)}ms`
 }
 
-export function coachReviewSummary(review = {}, ledger = {}) {
+export function coachReviewSummary(review = {}, ledger = {}, t) {
   if (!review || typeof review !== 'object') {
     return {
       consensusScore: null,
@@ -198,14 +199,14 @@ export function coachReviewSummary(review = {}, ledger = {}) {
     const failure = failuresByRole.get(role) || null
     return {
       role,
-      roleLabel: roleLabel(item?.role),
+      roleLabel: roleLabel(item?.role, t),
       verdict,
-      verdictLabel: verdictLabel(verdict),
+      verdictLabel: verdictLabel(verdict, t),
       weight: verdictWeight(verdict),
       confidence: Number.isFinite(Number(item?.confidence)) ? Number(item.confidence) : null,
       rationale: String(item?.rationale || ''),
       source: item?.source || review.source || '-',
-      sourceNote: sourceNote(item?.source || review.source, failure),
+      sourceNote: sourceNote(item?.source || review.source, failure, t),
       failure,
       evidenceRefs: Array.isArray(item?.evidence_refs) ? item.evidence_refs : [],
     }
@@ -250,7 +251,7 @@ export function coachReviewSummary(review = {}, ledger = {}) {
   }
 }
 
-export function budgetUsageDetails(ledger = {}) {
+export function budgetUsageDetails(ledger = {}, t) {
   const used = toInt(ledger.total_calls ?? ledger.calls_used ?? ledger.spent)
   const spent = toInt(ledger.spent ?? used)
   const cached = toInt(ledger.cached ?? ledger.calls_cached)
@@ -262,7 +263,7 @@ export function budgetUsageDetails(ledger = {}) {
       const payload = item && typeof item === 'object' ? item : {}
       return {
         role,
-        roleLabel: roleLabel(role),
+        roleLabel: roleLabel(role, t),
         calls: toInt(payload.calls),
         cached: toInt(payload.cached),
         fresh: Math.max(0, toInt(payload.calls) - toInt(payload.cached)),
@@ -290,7 +291,7 @@ export function budgetUsageDetails(ledger = {}) {
   }
 }
 
-export function failureEventRows(failures = [], events = []) {
+export function failureEventRows(failures = [], events = [], t) {
   const eventBuckets = new Map()
   for (const event of events || []) {
     const key = failureEventKey(event?.scenario_key || event?.metadata?.scenario_key, event?.event_type)
@@ -315,7 +316,9 @@ export function failureEventRows(failures = [], events = []) {
       failure,
       event,
       eventLabel: event ? eventFailureLabel(event) : fallbackFailureLabel(failure),
-      fallbackLabel: failure?.fallback ? `fallback: ${failure.fallback}` : '无 fallback 信息',
+      fallbackLabel: failure?.fallback
+        ? translate(t, 'step3.fallbackLabel', 'fallback: {fallback}', { fallback: failure.fallback })
+        : translate(t, 'step3.fallbackNoInfo', 'No fallback info'),
     }
   })
 }
@@ -406,13 +409,13 @@ function verdictWeight(verdict) {
   return 0.5
 }
 
-function verdictLabel(verdict) {
-  return {
-    support: '支持',
-    adjust: '调整观察',
-    watch: '观察',
-    reject: '反对',
-  }[verdict] || verdict || '-'
+function verdictLabel(verdict, t) {
+  return translatedLookup({
+    support: ['step3.verdict_support', 'Support'],
+    adjust: ['step3.verdict_adjust', 'Adjust / watch'],
+    watch: ['step3.verdict_watch', 'Watch'],
+    reject: ['step3.verdict_reject', 'Reject'],
+  }[verdict], t) || verdict || '-'
 }
 
 function weightedVoteFormula(supportVotes, abstainVotes, opposeVotes) {
@@ -450,9 +453,28 @@ function reviewFailureIndex(ledger = {}) {
   return index
 }
 
-function sourceNote(source, failure) {
+function sourceNote(source, failure, t) {
   if (failure?.reason || failure?.fallback) {
-    return `${failure.reason || 'failed'}${failure.fallback ? ` / fallback: ${failure.fallback}` : ''}`
+    return `${failure.reason || translate(t, 'step3.failureDefault', 'failed')}${failure.fallback ? ` / fallback: ${failure.fallback}` : ''}`
   }
   return source || '-'
+}
+
+function translatedLookup(entry, t) {
+  if (!entry) return ''
+  const [key, fallback] = Array.isArray(entry) ? entry : [null, entry]
+  return key ? translate(t, key, fallback) : fallback
+}
+
+function interpolateParams(template, params = {}) {
+  return String(template ?? '').replace(/\{(\w+)\}/g, (match, key) => (
+    params[key] === undefined || params[key] === null ? match : String(params[key])
+  ))
+}
+
+function translate(t, key, fallback, params) {
+  const fallbackText = interpolateParams(fallback, params)
+  if (typeof t !== 'function') return fallbackText
+  const translated = t(key, params)
+  return translated && translated !== key ? interpolateParams(translated, params) : fallbackText
 }

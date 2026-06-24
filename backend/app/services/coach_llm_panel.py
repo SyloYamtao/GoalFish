@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from .coach_jury import SCENARIO_TEMPLATE
+from .content_language import build_content_language_instruction
 from .llm_budget import BudgetExceeded, LLMCallLedger, LLMBudgetProfile
 
 
@@ -150,10 +151,12 @@ class CoachLLMPanel:
         budget: LLMBudgetProfile,
         ledger: LLMCallLedger,
         llm_client: Any | None = None,
+        content_language_instruction: str | None = None,
     ) -> None:
         self._budget = budget
         self._ledger = ledger
         self._llm_client = llm_client
+        self._content_language_instruction = content_language_instruction or build_content_language_instruction(None)
 
     def deliberate(self, inputs: CoachPanelInputs) -> list[CoachVerdict]:
         role_keys = list(getattr(self._budget, "coach_panel_roles", []) or [])
@@ -255,6 +258,7 @@ class CoachLLMPanel:
                 "content": (
                     "你是足球预测教练评审。只输出一个合法 JSON object，"
                     "不得输出 Markdown、解释文字或 schema 之外的事实。"
+                    f"\n\n{self._content_language_instruction}"
                 ),
             },
             {

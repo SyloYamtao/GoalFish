@@ -10,6 +10,7 @@ from dataclasses import asdict, dataclass
 from typing import Any
 
 from .external_data.team_name_normalizer import TeamNameNormalizer
+from .content_language import build_content_language_instruction
 from .llm_budget import LLMCallLedger
 
 
@@ -225,6 +226,7 @@ class FootballDataExtractor:
         return self._llm_client
 
     def _build_prompt(self, *, prediction_requirement: str, graph_id: str) -> list[dict[str, str]]:
+        language_instruction = build_content_language_instruction(prediction_requirement)
         schema = {
             "type": "object",
             "required": [
@@ -286,6 +288,7 @@ class FootballDataExtractor:
                     "你是足球比赛数据抽取器。只输出合法 JSON object。"
                     "从用户需求、图谱标识和上下文中抽取结构化比赛上下文；"
                     "未知值使用 null 或空数组，不要编造事实。"
+                    f"\n\n{language_instruction}"
                 ),
             },
             {
@@ -359,6 +362,10 @@ class FootballDataExtractor:
         )
 
     def _resolve_team_pair(self, text: str) -> tuple[str | None, str | None]:
+        target_pair = self._resolve_target_match_pair(text)
+        if target_pair != (None, None):
+            return target_pair
+
         explicit_pair = self._resolve_explicit_pair(text)
         if explicit_pair != (None, None):
             return explicit_pair
@@ -369,6 +376,45 @@ class FootballDataExtractor:
         if len(mentions) == 1:
             return mentions[0][1], None
         return None, None
+
+    def _resolve_target_match_pair(self, text: str) -> tuple[str | None, str | None]:
+        source = str(text or "")
+        if not source:
+            return None, None
+
+        structured_home, structured_away = _resolve_structured_team_ab_pair(source[:80000], self)
+        if structured_home and structured_away and structured_home != structured_away:
+            return structured_home, structured_away
+
+        candidates: list[tuple[int, int, tuple[str, str]]] = []
+        in_sources = False
+        in_match_overview = False
+        for index, raw_line in enumerate(source.splitlines()[:800]):
+            line = raw_line.strip()
+            if not line:
+                continue
+            if re.match(r"^#{1,6}\s*", line):
+                in_match_overview = bool(
+                    re.search(r"\bmatch\s+overview\b|比赛概览|比赛信息|赛事概览|基本信息", line, flags=re.I)
+                )
+                in_sources = False
+                continue
+            if re.match(r"^(?:main\s+sources?|sources?|参考来源|主要来源)\s*[:：]?\s*$", line, flags=re.I):
+                in_sources = True
+                continue
+            if in_sources or _looks_like_source_line(line):
+                continue
+
+            pair = _resolve_target_pair_from_line(line, self)
+            if pair == (None, None) or pair[0] == pair[1]:
+                continue
+            score = _target_pair_line_score(line, in_match_overview=in_match_overview)
+            if score >= 35:
+                candidates.append((score, -index, pair))
+
+        if not candidates:
+            return None, None
+        return max(candidates)[2]
 
     def _resolve_explicit_pair(self, text: str) -> tuple[str | None, str | None]:
         patterns = [
@@ -586,6 +632,86 @@ def _build_raw_alias_index(normalizer: TeamNameNormalizer) -> dict[str, str]:
         }
     )
     return index
+
+
+def _resolve_structured_team_ab_pair(
+    text: str,
+    extractor: FootballDataExtractor,
+) -> tuple[str | None, str | None]:
+    team_a_patterns = (
+        r"\bteam\s*a\b\s*[：:]\s*\"?(?P<team>[^\"\n\r,，;；()]+)",
+        r'"team_a"\s*:\s*"(?P<team>[^"]+)"',
+        r"'team_a'\s*:\s*'(?P<team>[^']+)'",
+        r"球队\s*A\s*[：:]\s*(?P<team>[^\n\r,，;；()]+)",
+    )
+    team_b_patterns = (
+        r"\bteam\s*b\b\s*[：:]\s*\"?(?P<team>[^\"\n\r,，;；()]+)",
+        r'"team_b"\s*:\s*"(?P<team>[^"]+)"',
+        r"'team_b'\s*:\s*'(?P<team>[^']+)'",
+        r"球队\s*B\s*[：:]\s*(?P<team>[^\n\r,，;；()]+)",
+    )
+    team_a = _first_declared_team(text, team_a_patterns, extractor)
+    team_b = _first_declared_team(text, team_b_patterns, extractor)
+    return team_a, team_b
+
+
+def _resolve_target_pair_from_line(
+    line: str,
+    extractor: FootballDataExtractor,
+) -> tuple[str | None, str | None]:
+    normalized = re.sub(r"\((?:\s*team\s*[ab]\s*|球队\s*[ab]\s*)\)", "", line, flags=re.I)
+    normalized = re.sub(r"^\s*[-*]\s*", "", normalized).strip()
+    normalized = re.sub(
+        r"^(?:teams?|match|fixture|target\s+match|main\s+match|比赛|比赛双方|对阵双方|参赛双方|本场双方|对阵|赛事)\s*[：:]\s*",
+        "",
+        normalized,
+        flags=re.I,
+    )
+    return extractor._resolve_explicit_pair(normalized)
+
+
+def _target_pair_line_score(line: str, *, in_match_overview: bool) -> int:
+    score = 0
+    if in_match_overview:
+        score += 45
+    if re.search(r"\bteams?\b|比赛双方|对阵双方|参赛双方|本场双方", line, flags=re.I):
+        score += 55
+    if re.search(r"\bteam\s*a\b|\bteam\s*b\b|球队\s*A|球队\s*B", line, flags=re.I):
+        score += 20
+    if re.search(r"\bmatch\b|fixture|比赛|对阵|vs\.?| v\.? ", line, flags=re.I):
+        score += 20
+    if re.search(r"this\s+report|this\s+match|本场|本报告", line, flags=re.I):
+        score += 15
+    if re.search(r"recent|first[- ]round|round\s+1|\br1\b|review|opponent|score|head[- ]to[- ]head", line, flags=re.I):
+        score -= 35
+    if re.search(r"\b\d+\s*[-:：]\s*\d+\b", line):
+        score -= 25
+    return score
+
+
+def _looks_like_source_line(line: str) -> bool:
+    lowered = line.casefold()
+    return bool(
+        "http://" in lowered
+        or "https://" in lowered
+        or "retrieved" in lowered
+        or re.search(r"\b(?:sources?|references?|citation|citations)\b", lowered)
+    )
+
+
+def _first_declared_team(
+    text: str,
+    patterns: tuple[str, ...],
+    extractor: FootballDataExtractor,
+) -> str | None:
+    for pattern in patterns:
+        match = re.search(pattern, text, flags=re.I)
+        if not match:
+            continue
+        iso3 = extractor._resolve_team_name(match.group("team"))
+        if iso3:
+            return iso3
+    return None
 
 
 def _iter_values(values: object) -> Iterable[object]:

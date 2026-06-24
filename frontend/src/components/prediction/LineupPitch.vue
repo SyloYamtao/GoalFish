@@ -1,13 +1,13 @@
 <template>
-  <section class="lineup-pitch-module" aria-label="双方预计首发阵型图">
+  <section class="lineup-pitch-module" :aria-label="t('prediction.lineupPitchAria')">
     <div class="lineup-pitch-header">
       <div>
-        <span class="module-kicker">EXPECTED LINEUPS</span>
-        <h3>{{ homeTeam }} vs {{ awayTeam }}</h3>
+        <span class="module-kicker">{{ t('prediction.expectedLineupsKicker') }}</span>
+        <h3>{{ homeTeam }} {{ t('common.vs') }} {{ awayTeam }}</h3>
       </div>
       <div class="formation-summary">
         <span>{{ homeFormation }}</span>
-        <strong>阵型图</strong>
+        <strong>{{ t('prediction.lineupPitchTitle') }}</strong>
         <span>{{ awayFormation }}</span>
       </div>
     </div>
@@ -79,18 +79,18 @@
       </div>
     </div>
 
-    <div v-else class="lineup-empty">暂无可渲染的预计首发阵型图</div>
+    <div v-else class="lineup-empty">{{ t('prediction.lineupEmpty') }}</div>
 
     <div class="selected-player-panel" v-if="hasLineup">
       <template v-if="activePlayer">
-        <strong>{{ activePlayer.name || '资料未明确' }}</strong>
-        <span>{{ activePlayer.position || '-' }} · {{ activePlayer.role || '资料未明确' }} · {{ availabilityLabel(activePlayer.availability) }}</span>
+        <strong>{{ activePlayer.name || t('prediction.unspecified') }}</strong>
+        <span>{{ activePlayer.position || '-' }} · {{ activePlayer.role || t('prediction.unspecified') }} · {{ availabilityLabel(activePlayer.availability) }}</span>
         <small>{{ attributesText(activePlayer) }}</small>
-        <small>置信度：{{ activePlayer.data_confidence || 'medium' }}</small>
+        <small>{{ t('prediction.confidence') }}: {{ activePlayer.data_confidence || t('prediction.confidenceMediumValue') }}</small>
       </template>
       <template v-else>
-        <strong>悬停或点击球员查看详情</strong>
-        <span>位置、职责、可用性和关键属性会显示在这里，不会遮挡球场。</span>
+        <strong>{{ t('prediction.lineupHoverTitle') }}</strong>
+        <span>{{ t('prediction.lineupHoverText') }}</span>
       </template>
     </div>
 
@@ -103,11 +103,11 @@
 
     <div class="bench-strip" v-if="homeBench.length || awayBench.length">
       <div class="bench-team">
-        <span>{{ homeTeam }} 替补</span>
+        <span>{{ homeTeam }} {{ t('prediction.bench') }}</span>
         <b v-for="player in homeBench" :key="`hb-${player.name}-${player.number}`">{{ numberName(player) }}</b>
       </div>
       <div class="bench-team away-bench">
-        <span>{{ awayTeam }} 替补</span>
+        <span>{{ awayTeam }} {{ t('prediction.bench') }}</span>
         <b v-for="player in awayBench" :key="`ab-${player.name}-${player.number}`">{{ numberName(player) }}</b>
       </div>
     </div>
@@ -116,6 +116,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   home: { type: Object, default: () => ({}) },
@@ -125,11 +126,12 @@ const props = defineProps({
 const selectedKey = ref('')
 const selectedPlayer = ref(null)
 const hoveredPlayer = ref(null)
+const { t } = useI18n()
 
-const homeTeam = computed(() => props.home?.team || '主队')
-const awayTeam = computed(() => props.away?.team || '客队')
-const homeFormation = computed(() => props.home?.formation || '资料未明确')
-const awayFormation = computed(() => props.away?.formation || '资料未明确')
+const homeTeam = computed(() => props.home?.team || t('prediction.homeTeam'))
+const awayTeam = computed(() => props.away?.team || t('prediction.awayTeam'))
+const homeFormation = computed(() => props.home?.formation || t('prediction.unspecified'))
+const awayFormation = computed(() => props.away?.formation || t('prediction.unspecified'))
 const homeBench = computed(() => Array.isArray(props.home?.bench) ? props.home.bench.slice(0, 9) : [])
 const awayBench = computed(() => Array.isArray(props.away?.bench) ? props.away.bench.slice(0, 9) : [])
 const hasLineup = computed(() => homePlayers.value.length > 0 || awayPlayers.value.length > 0)
@@ -172,16 +174,16 @@ const halfPitchX = value => {
 const inferredLayoutNotes = computed(() => {
   const notes = []
   if (homePlayers.value.length && (!normalizeFormation(homeFormation.value) || props.home?.formation_source === 'inferred')) {
-    notes.push(`${homeTeam.value} 阵型资料未明确，按位置分布推断`)
+    notes.push(t('prediction.inferredFormationNote', { team: homeTeam.value }))
   }
   if (awayPlayers.value.length && (!normalizeFormation(awayFormation.value) || props.away?.formation_source === 'inferred')) {
-    notes.push(`${awayTeam.value} 阵型资料未明确，按位置分布推断`)
+    notes.push(t('prediction.inferredFormationNote', { team: awayTeam.value }))
   }
   if (homePlayers.value.length > 0 && homePlayers.value.length < 11) {
-    notes.push(`${homeTeam.value} 首发名单不完整 / 低置信度`)
+    notes.push(t('prediction.incompleteLineupNote', { team: homeTeam.value }))
   }
   if (awayPlayers.value.length > 0 && awayPlayers.value.length < 11) {
-    notes.push(`${awayTeam.value} 首发名单不完整 / 低置信度`)
+    notes.push(t('prediction.incompleteLineupNote', { team: awayTeam.value }))
   }
   return notes
 })
@@ -221,14 +223,17 @@ const scoreLabel = player => {
 
 const numberName = player => {
   const number = player?.number || '--'
-  const rawName = String(player?.name || '资料未明确').trim()
+  const rawName = String(player?.name || t('prediction.unspecified')).trim()
   const compactName = rawName.includes(' ') ? rawName.split(/\s+/).slice(-1)[0] : rawName
-  return `${number}. ${compactName || '资料未明确'}`
+  return `${number}. ${compactName || t('prediction.unspecified')}`
 }
 
 const availabilityLabel = value => ({
-  available: '可用', doubtful: '存疑', injured: '伤病', suspended: '停赛',
-}[String(value || '')] || value || '资料未明确')
+  available: t('prediction.availability_available'),
+  doubtful: t('prediction.availability_doubtful'),
+  injured: t('prediction.availability_injured'),
+  suspended: t('prediction.availability_suspended'),
+}[String(value || '')] || value || t('prediction.unspecified'))
 
 const playerBadges = player => {
   const flags = Array.isArray(player?.risk_flags) ? [...player.risk_flags] : []
@@ -237,20 +242,26 @@ const playerBadges = player => {
 }
 
 const badgeIcon = badge => ({ captain: 'C', doubtful: '!', injured: '+', suspended: 'S', low_confidence: '?' }[badge] || '!')
-const badgeTitle = badge => ({ captain: '队长', doubtful: '出场存疑', injured: '伤病风险', suspended: '停赛风险', low_confidence: '低置信度' }[badge] || badge)
+const badgeTitle = badge => ({
+  captain: t('prediction.badge_captain'),
+  doubtful: t('prediction.badge_doubtful'),
+  injured: t('prediction.badge_injured'),
+  suspended: t('prediction.badge_suspended'),
+  low_confidence: t('prediction.badge_low_confidence'),
+}[badge] || badge)
 
 const attributesText = player => {
   const attrs = player?.key_attributes || {}
   const parts = Object.entries(attrs).slice(0, 3).map(([key, value]) => `${key} ${value}`)
-  return parts.length ? parts.join(' · ') : '关键属性资料未明确'
+  return parts.length ? parts.join(' · ') : t('prediction.attributesUnknown')
 }
 
 const confidenceLabel = value => {
   const numeric = Number(value)
-  if (!Number.isFinite(numeric)) return '可信度 -'
-  if (numeric >= 0.75) return '可信度 高'
-  if (numeric >= 0.55) return '可信度 中'
-  return '可信度 低'
+  if (!Number.isFinite(numeric)) return t('prediction.confidenceUnknown')
+  if (numeric >= 0.75) return t('prediction.confidenceHigh')
+  if (numeric >= 0.55) return t('prediction.confidenceMedium')
+  return t('prediction.confidenceLow')
 }
 
 const selectPlayer = (side, player) => {
@@ -269,9 +280,9 @@ const clearHoverPlayer = () => {
 
 const playerAriaLabel = player => {
   const parts = [
-    player?.name || '资料未明确',
-    player?.position || '位置资料未明确',
-    player?.role || '职责资料未明确',
+    player?.name || t('prediction.unspecified'),
+    player?.position || t('prediction.positionUnknown'),
+    player?.role || t('prediction.roleUnknown'),
     availabilityLabel(player?.availability),
   ]
   return parts.join(' · ')

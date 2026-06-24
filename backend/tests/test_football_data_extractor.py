@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from app.services.football_data_extractor import (
     ExtractedMatchContext,
     FootballDataExtractor,
@@ -266,6 +268,26 @@ def test_regex_fallback_ignores_markdown_filename_suffix_for_match_pair():
     assert ctx.away_iso3 == "TUN"
     assert ctx.home_name_zh == "瑞典"
     assert ctx.away_name_zh == "突尼斯"
+
+
+def test_regex_fallback_prefers_uploaded_body_target_match_over_prior_round_context():
+    ledger = LLMCallLedger(config_id="c1", budget=LLMBudgetProfile.LOW_NO_LLM)
+    extractor = FootballDataExtractor()
+    report_text = (
+        Path(__file__).resolve().parents[2]
+        / "docs/sample/research/20260621/04.Tunisia_vs_Japan_Pre-Match_Report_EN.md"
+    ).read_text(encoding="utf-8")
+
+    ctx = extractor.extract(
+        prediction_requirement=report_text,
+        graph_id="g1",
+        llm_ledger=ledger,
+    )
+
+    assert ctx.home_iso3 == "TUN"
+    assert ctx.away_iso3 == "JPN"
+    assert ctx.home_name_zh == "突尼斯"
+    assert ctx.away_name_zh == "日本"
 
 
 def test_llm_failure_records_warning_and_falls_back_to_regex():

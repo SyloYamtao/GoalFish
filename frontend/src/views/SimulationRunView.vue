@@ -23,7 +23,7 @@
         <LanguageSwitcher />
         <div class="step-divider"></div>
         <div class="workflow-step">
-          <span class="step-num">Step 3/5</span>
+          <span class="step-num">{{ t('main.stepProgress', { step: 3, total: 5 }) }}</span>
           <span class="step-name">{{ $tm('main.stepNames')[2] }}</span>
         </div>
         <div class="step-divider"></div>
@@ -71,6 +71,7 @@ import { useI18n } from 'vue-i18n'
 import GraphPanel from '../components/GraphPanel.vue'
 import Step3Simulation from '../components/Step3Simulation.vue'
 import { getProject, getGraphData } from '../api/graph'
+import { getPredictionStatus } from '../api/prediction'
 import { getProjectWorkflow } from '../api/projectWorkflow'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 
@@ -78,11 +79,13 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const isStaticDemo = typeof window !== 'undefined' && window.__GOALFISH_STATIC_DEMO__ === true
+const routePredictionRunId = () => route.params.predictionRunId || null
+const routePredictionConfigId = () => route.query.prediction_config_id || null
 
 const viewMode = ref('split')
 const currentProjectId = ref(route.params.projectId)
-const currentPredictionRunId = ref(isStaticDemo ? (route.params.predictionRunId || null) : null)
-const currentPredictionConfigId = ref(isStaticDemo ? (route.query.prediction_config_id || null) : null)
+const currentPredictionRunId = ref(routePredictionRunId())
+const currentPredictionConfigId = ref(routePredictionConfigId())
 const projectData = ref(null)
 const graphData = ref(null)
 const graphLoading = ref(false)
@@ -105,9 +108,9 @@ const rightPanelStyle = computed(() => {
 const statusClass = computed(() => currentStatus.value)
 
 const statusText = computed(() => {
-  if (currentStatus.value === 'error') return 'Error'
-  if (currentStatus.value === 'completed') return 'Completed'
-  return 'Running'
+  if (currentStatus.value === 'error') return t('common.error')
+  if (currentStatus.value === 'completed') return t('common.completed')
+  return t('common.running')
 })
 
 const addLog = (msg) => {
@@ -158,11 +161,33 @@ const replaceRouteWithActiveWorkflow = (active = {}) => {
   }
 }
 
+const recoverConfigFromRouteRun = async (active = {}) => {
+  const resolved = { ...active }
+  const routeRunId = routePredictionRunId()
+  const routeConfigId = routePredictionConfigId()
+
+  if (!resolved.prediction_run_id && routeRunId) {
+    resolved.prediction_run_id = routeRunId
+  }
+  if (!resolved.prediction_config_id && routeConfigId) {
+    resolved.prediction_config_id = routeConfigId
+  }
+  if (!resolved.prediction_config_id && resolved.prediction_run_id && !isStaticDemo) {
+    try {
+      const statusRes = await getPredictionStatus(resolved.prediction_run_id)
+      resolved.prediction_config_id = statusRes.data?.prediction_config_id || null
+    } catch (err) {
+      addLog(t('log.restoreConfigFromRunFailed', { error: err.message }))
+    }
+  }
+  return resolved
+}
+
 const syncActiveWorkflow = async () => {
   if (!currentProjectId.value) return
   try {
     const workflowRes = await getProjectWorkflow(currentProjectId.value)
-    const active = workflowRes.data?.active_artifacts || {}
+    const active = await recoverConfigFromRouteRun(workflowRes.data?.active_artifacts || {})
     workflowLoaded.value = true
 
     currentPredictionConfigId.value = active.prediction_config_id || null
@@ -170,8 +195,8 @@ const syncActiveWorkflow = async () => {
 
     if (route.params.predictionRunId && route.params.predictionRunId !== active.prediction_run_id) {
       addLog(active.prediction_run_id
-        ? '路由中的旧 Step3 推演已失效，已切换到当前 active 推演'
-        : '当前项目没有 active Step3 推演，已忽略旧链接中的推演 ID')
+        ? t('log.oldStep3RouteSwitched')
+        : t('log.oldStep3RouteIgnored'))
     }
 
     replaceRouteWithActiveWorkflow(active)
@@ -181,18 +206,18 @@ const syncActiveWorkflow = async () => {
     currentPredictionRunId.value = null
     currentPredictionConfigId.value = null
     currentStatus.value = 'error'
-    addLog(`读取项目 active workflow 失败: ${err.message}`)
+    addLog(t('log.activeWorkflowLoadFailed', { error: err.message }))
   }
 }
 
 const loadProjectData = async () => {
   try {
     graphData.value = null
-    addLog(`加载比赛推演项目: ${currentProjectId.value}`)
+    addLog(t('log.loadSimulationProject', { id: currentProjectId.value }))
     const projRes = await getProject(currentProjectId.value)
     if (!projRes.success || !projRes.data) {
       currentStatus.value = 'error'
-      addLog(`加载项目失败: ${projRes.error || 'unknown error'}`)
+      addLog(t('log.loadProjectFailed', { error: projRes.error || t('common.unknownError') }))
       return
     }
     projectData.value = projRes.data
@@ -203,7 +228,7 @@ const loadProjectData = async () => {
     }
   } catch (err) {
     currentStatus.value = 'error'
-    addLog(`加载比赛推演项目异常: ${err.message}`)
+    addLog(t('log.loadSimulationProjectException', { error: err.message }))
   }
 }
 
@@ -213,10 +238,10 @@ const loadGraph = async (graphId) => {
     const res = await getGraphData(graphId)
     if (res.success) {
       graphData.value = res.data
-      addLog('赛事图谱加载完成')
+      addLog(t('log.graphLoaded'))
     }
   } catch (err) {
-    addLog(`图谱加载异常: ${err.message}`)
+    addLog(t('log.graphLoadFailed', { error: err.message }))
   } finally {
     graphLoading.value = false
   }

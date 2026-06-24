@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from datetime import timedelta
+from pathlib import Path
 from typing import Any
 
 from flask import Flask
 
 from app.api import prediction_bp
-from app.db.models import PredictionConfigRecord, ProjectRecord
+from app.db.models import PredictionConfigRecord, ProjectRecord, utc_now
 from app.db.session import get_session
 from app.services.external_data.team_name_normalizer import TeamNameNormalizer
 from app.services.graph_evidence_query import GraphFacts
@@ -140,6 +142,46 @@ def test_existing_ready_config_short_circuit(postgres_db, monkeypatch):
     assert second["prediction_config_id"] == first["prediction_config_id"]
     assert second["already_prepared"] is True
     assert second["status"] == "ready"
+
+
+def test_latest_ready_config_skips_identity_that_conflicts_with_uploaded_body(postgres_db):
+    del postgres_db
+    project_id = "proj_skip_wrong_ready_identity"
+    graph_id = "graph_skip_wrong_ready_identity"
+    report = (
+        Path(__file__).resolve().parents[2]
+        / "docs/sample/research/20260621/04.Tunisia_vs_Japan_Pre-Match_Report_EN.md"
+    ).read_text(encoding="utf-8")
+    _seed_project(project_id, graph_id, extracted_text=report, simulation_requirement="Predict this match")
+    created_at = utc_now()
+
+    with get_session() as session:
+        session.add(
+            _ready_config_record(
+                prediction_config_id="cfg_valid_tun_jpn",
+                project_id=project_id,
+                graph_id=graph_id,
+                home_iso3="TUN",
+                away_iso3="JPN",
+                home_team="突尼斯",
+                away_team="日本",
+                created_at=created_at,
+            )
+        )
+        session.add(
+            _ready_config_record(
+                prediction_config_id="cfg_wrong_tun_swe",
+                project_id=project_id,
+                graph_id=graph_id,
+                home_iso3="TUN",
+                away_iso3="SWE",
+                home_team="突尼斯",
+                away_team="瑞典",
+                created_at=created_at + timedelta(seconds=1),
+            )
+        )
+
+    assert PredictionConfigService().find_ready_config(project_id=project_id, graph_id=graph_id) == "cfg_valid_tun_jpn"
 
 
 def test_ready_config_with_extracted_team_conflict_is_not_reusable():
@@ -330,6 +372,182 @@ def test_match_identity_prefers_graph_match_over_text_fallback(monkeypatch):
     assert identity == ("SWE", "TUN", "瑞典", "突尼斯")
 
 
+def test_match_identity_prefers_uploaded_match_declaration_over_graph_noise(monkeypatch):
+    class FakeGraphReader:
+        def get_all_nodes(self, graph_id: str) -> list[dict[str, Any]]:
+            assert graph_id == "graph_uploaded_match"
+            return [
+                {
+                    "uuid": "match-noise",
+                    "name": "Sweden vs Netherlands",
+                    "labels": ["Entity", "Match"],
+                    "summary": "Sweden and Netherlands are both Group F background teams.",
+                    "attributes": {},
+                },
+                {
+                    "uuid": "team-1",
+                    "name": "Sweden",
+                    "labels": ["Entity", "FootballTeam"],
+                    "summary": "Sweden national team",
+                    "attributes": {},
+                },
+                {
+                    "uuid": "team-2",
+                    "name": "Netherlands",
+                    "labels": ["Entity", "FootballTeam"],
+                    "summary": "Netherlands national team",
+                    "attributes": {},
+                },
+            ]
+
+        def get_all_edges(self, graph_id: str) -> list[dict[str, Any]]:
+            assert graph_id == "graph_uploaded_match"
+            return [
+                {
+                    "name": "HAS_TEAM_A",
+                    "source_node_uuid": "match-noise",
+                    "target_node_uuid": "team-1",
+                    "fact": "The match lists team_a as Sweden.",
+                },
+                {
+                    "name": "HAS_TEAM_B",
+                    "source_node_uuid": "match-noise",
+                    "target_node_uuid": "team-2",
+                    "fact": "The match lists team_b as Netherlands.",
+                },
+            ]
+
+    monkeypatch.setattr("app.services.prediction_config.get_entity_reader", lambda: FakeGraphReader())
+
+    identity = _resolve_match_identity(
+        requirement="Predict this match process and result rigorously",
+        source_text="Group F background mentions Sweden, Netherlands, Japan and Tunisia.",
+        primary_source_text=(
+            "# Sweden vs Netherlands Pre-Match Report\n"
+            "Main sources:\n"
+            "- FIFA report: Netherlands 2-2 Japan and Sweden 5-1 Tunisia.\n"
+            "\n"
+            "# 1. Match Overview\n"
+            "- Teams: Tunisia (Team A) vs Japan (Team B).\n"
+            "- Venue: Estadio BBVA, Monterrey.\n"
+        ),
+        graph_entities=[],
+        graph_id="graph_uploaded_match",
+        home_team=None,
+        away_team=None,
+        normalizer=TeamNameNormalizer(),
+    )
+
+    assert identity == ("TUN", "JPN", "突尼斯", "日本")
+
+
+def test_match_identity_uses_uploaded_body_content_for_real_tunisia_japan_report(monkeypatch):
+    class FakeGraphReader:
+        def get_all_nodes(self, graph_id: str) -> list[dict[str, Any]]:
+            assert graph_id == "graph_real_tunisia_japan"
+            return [
+                {
+                    "uuid": "match-noise",
+                    "name": "Sweden vs Netherlands",
+                    "labels": ["Entity", "Match"],
+                    "summary": "Group F background match.",
+                    "attributes": {},
+                },
+                {"uuid": "sweden", "name": "Sweden", "labels": ["Entity", "FootballTeam"], "attributes": {}},
+                {"uuid": "netherlands", "name": "Netherlands", "labels": ["Entity", "FootballTeam"], "attributes": {}},
+            ]
+
+        def get_all_edges(self, graph_id: str) -> list[dict[str, Any]]:
+            assert graph_id == "graph_real_tunisia_japan"
+            return [
+                {
+                    "name": "HAS_TEAM_A",
+                    "source_node_uuid": "match-noise",
+                    "target_node_uuid": "sweden",
+                    "fact": "The match lists team_a as Sweden.",
+                },
+                {
+                    "name": "HAS_TEAM_B",
+                    "source_node_uuid": "match-noise",
+                    "target_node_uuid": "netherlands",
+                    "fact": "The match lists team_b as Netherlands.",
+                },
+            ]
+
+    monkeypatch.setattr("app.services.prediction_config.get_entity_reader", lambda: FakeGraphReader())
+    report = (
+        Path(__file__).resolve().parents[2]
+        / "docs/sample/research/20260621/04.Tunisia_vs_Japan_Pre-Match_Report_EN.md"
+    ).read_text(encoding="utf-8")
+
+    identity = _resolve_match_identity(
+        requirement="Predict the uploaded report's match",
+        source_text="Group F background mentions Sweden, Netherlands, Japan and Tunisia.",
+        primary_source_text=report,
+        graph_entities=[],
+        graph_id="graph_real_tunisia_japan",
+        home_team=None,
+        away_team=None,
+        normalizer=TeamNameNormalizer(),
+    )
+
+    assert identity == ("TUN", "JPN", "突尼斯", "日本")
+
+
+def test_prepare_keeps_uploaded_body_identity_over_extracted_prior_match_context(postgres_db, monkeypatch):
+    class FakeGraphReader:
+        def get_all_nodes(self, graph_id: str) -> list[dict[str, Any]]:
+            assert graph_id == "graph_prepare_tunisia_japan"
+            return [
+                {
+                    "uuid": "match-noise",
+                    "name": "Sweden vs Netherlands",
+                    "labels": ["Entity", "Match"],
+                    "summary": "Group F background match.",
+                    "attributes": {},
+                }
+            ]
+
+        def get_all_edges(self, graph_id: str) -> list[dict[str, Any]]:
+            assert graph_id == "graph_prepare_tunisia_japan"
+            return []
+
+    del postgres_db
+    _patch_step2_dependencies(monkeypatch)
+    monkeypatch.setattr("app.services.prediction_config.get_entity_reader", lambda: FakeGraphReader())
+    report = (
+        Path(__file__).resolve().parents[2]
+        / "docs/sample/research/20260621/04.Tunisia_vs_Japan_Pre-Match_Report_EN.md"
+    ).read_text(encoding="utf-8")
+    _seed_project(
+        "proj_prepare_tunisia_japan",
+        "graph_prepare_tunisia_japan",
+        extracted_text=report,
+        simulation_requirement="Predict the uploaded match",
+    )
+    dataset_id = "dataset_tunisia_japan_lock"
+    _seed_prediction_dataset(
+        dataset_id,
+        [("TUN", "Tunisia", "突尼斯"), ("JPN", "Japan", "日本"), ("SWE", "Sweden", "瑞典")],
+    )
+    _add_extra_prediction_players(dataset_id, "SWE", "Sweden", "瑞典", 20)
+
+    result = PredictionConfigService().prepare(
+        project_id="proj_prepare_tunisia_japan",
+        graph_id="graph_prepare_tunisia_japan",
+        prediction_requirement="Predict the uploaded match",
+        player_dataset_id=dataset_id,
+        force_regenerate=True,
+        llm_budget={"profile_key": "low"},
+    )
+
+    assert result["home_iso3"] == "TUN"
+    assert result["away_iso3"] == "JPN"
+    assert result["match_name"] == "Tunisia vs Japan"
+    assert result["dataset_summary"]["away"]["team_iso3"] == "JPN"
+    assert "match_identity_corrected_from_extracted_context" not in result["warnings"]
+
+
 def test_prepare_uses_current_match_venue_for_multihost_world_cup(postgres_db, monkeypatch):
     class FakeGraphReader:
         def get_all_nodes(self, graph_id: str) -> list[dict[str, Any]]:
@@ -412,8 +630,9 @@ def test_prepare_uses_current_match_venue_for_multihost_world_cup(postgres_db, m
     strengths = service.list_team_strengths(result["prediction_config_id"])
     home = next(row for row in strengths if row["team_role"] == "home")
 
-    assert config["home_team"] == "墨西哥"
-    assert config["away_team"] == "韩国"
+    assert config["home_team"] == "Mexico"
+    assert config["away_team"] == "Korea Republic"
+    assert home["team_name"] == "Mexico"
     assert config["competition"]["neutral_venue"] is True
     assert config["competition"]["host_country_iso3"] == "MEX"
     assert home["home_away_adjustment"] == 20
@@ -696,6 +915,45 @@ def _seed_project(
         )
 
 
+def _ready_config_record(
+    *,
+    prediction_config_id: str,
+    project_id: str,
+    graph_id: str,
+    home_iso3: str,
+    away_iso3: str,
+    home_team: str,
+    away_team: str,
+    created_at,
+) -> PredictionConfigRecord:
+    return PredictionConfigRecord(
+        prediction_config_id=prediction_config_id,
+        project_id=project_id,
+        graph_id=graph_id,
+        match_name=f"{home_team} vs {away_team}",
+        home_team=home_team,
+        away_team=away_team,
+        status="ready",
+        current_phase="ready",
+        progress_percent=100,
+        fit_status="uniform",
+        data_sufficiency="insufficient",
+        created_at=created_at,
+        updated_at=created_at,
+        model_input_snapshot={
+            "home_team": home_team,
+            "away_team": away_team,
+            "home_iso3": home_iso3,
+            "away_iso3": away_iso3,
+            "squads": {
+                "home": {"team_iso3": home_iso3, "team_name": home_team, "players": []},
+                "away": {"team_iso3": away_iso3, "team_name": away_team, "players": []},
+            },
+        },
+        config_metadata={},
+    )
+
+
 def _seed_prediction_dataset(dataset_id: str, teams: list[tuple[str, str, str]]) -> None:
     from app.db.models import PredictionPlayerDatasetRecord, PredictionPlayerRecord, PredictionTeamMetadataRecord
 
@@ -759,3 +1017,47 @@ def _seed_prediction_dataset(dataset_id: str, teams: list[tuple[str, str, str]])
                         player_metadata={},
                     )
                 )
+
+
+def _add_extra_prediction_players(dataset_id: str, iso3: str, team_fifa: str, team_zh: str, count: int) -> None:
+    from app.db.models import PredictionPlayerRecord
+
+    with get_session() as session:
+        for index in range(12, 12 + count):
+            session.add(
+                PredictionPlayerRecord(
+                    id=f"ply_{dataset_id}_{iso3}_extra_{index:02d}",
+                    dataset_id=dataset_id,
+                    team_name=team_fifa,
+                    team_iso3=iso3,
+                    player_external_id=f"{iso3}_extra_{index}",
+                    full_name=f"{team_zh}替补{index}",
+                    full_name_en=f"{team_fifa} Extra {index}",
+                    full_name_alt=[],
+                    position_primary="MF",
+                    position_secondary=[],
+                    age=24 + index % 8,
+                    foot="R",
+                    height_cm=180,
+                    ratings={},
+                    derived={
+                        "overall": 70,
+                        "attack": 68,
+                        "defense": 66,
+                        "pace": 67,
+                        "finishing": 65,
+                        "passing": 66,
+                        "set_piece": 64,
+                        "gk": 0,
+                    },
+                    availability={"status": "available"},
+                    expected_role="bench",
+                    expected_minutes_share=0.2,
+                    shirt_number=index,
+                    position_class="MF",
+                    caps_intl=5,
+                    goals_intl=1,
+                    club_fifa="Test FC",
+                    player_metadata={},
+                )
+            )

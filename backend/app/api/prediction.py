@@ -563,9 +563,14 @@ def create_prediction_report(prediction_run_id: str):
 @prediction_bp.route("/<prediction_run_id>/status", methods=["GET"])
 def get_prediction_status(prediction_run_id: str):
     try:
-        _ensure_active_prediction_run(prediction_run_id)
+        is_active_run = True
+        try:
+            _ensure_active_prediction_run(prediction_run_id)
+        except ValueError:
+            is_active_run = False
         prediction_service = PredictionPersistenceService()
         status = prediction_service.get_status(prediction_run_id)
+        status["is_active_run"] = is_active_run
         celery_task_id = (status.get("metadata") or {}).get("celery_task_id")
         if celery_task_id:
             task_service = TaskWorkflowService()
@@ -596,6 +601,7 @@ def get_prediction_status(prediction_run_id: str):
                         prediction_run_id,
                         job,
                     )
+                    status["is_active_run"] = is_active_run
                     status["celery_job"] = job
                     return jsonify({"success": True, "data": status})
 
@@ -610,6 +616,7 @@ def get_prediction_status(prediction_run_id: str):
                 )
                 if status["status"] in {"queued", "running"} and is_terminal_failure:
                     status = prediction_service.sync_async_failure_from_celery_job(prediction_run_id, job)
+                    status["is_active_run"] = is_active_run
                     status["celery_job"] = job
         return jsonify({"success": True, "data": status})
     except KeyError as exc:

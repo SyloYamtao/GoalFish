@@ -1,11 +1,11 @@
 <template>
   <div class="modal-traj">
     <span class="modal-traj-dot"></span>
-    <span class="mono">采样 {{ nSimsLabel }} 次</span>
+    <span class="mono">{{ t('prediction.sampleCount', { count: nSimsLabel }) }}</span>
     <span class="modal-traj-detail">
-      首球 {{ firstGoalLabel }}
+      {{ t('prediction.firstGoal', { minute: firstGoalLabel }) }}
       <template v-if="trajectory?.decisive_minute">
-        · 决胜 {{ trajectory.decisive_minute }}'
+        {{ t('prediction.decisiveGoal', { minute: trajectory.decisive_minute }) }}
       </template>
     </span>
   </div>
@@ -13,15 +13,18 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   trajectory: { type: Object, default: () => ({}) },
   nSims: { type: [Number, String], default: 0 },
 })
 
-const nSimsLabel = computed(() => Number(props.nSims || 0).toLocaleString('zh-CN'))
+const { t, locale } = useI18n()
+
+const nSimsLabel = computed(() => Number(props.nSims || 0).toLocaleString(locale.value === 'zh' ? 'zh-CN' : 'en-US'))
 const firstGoalLabel = computed(() => (
-  props.trajectory?.first_goal_minute ? `${props.trajectory.first_goal_minute}'` : '无'
+  props.trajectory?.first_goal_minute ? `${props.trajectory.first_goal_minute}'` : t('prediction.noFirstGoal')
 ))
 </script>
 

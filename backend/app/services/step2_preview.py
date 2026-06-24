@@ -17,8 +17,10 @@ from .prediction_config import (
     _external_offline_enabled,
     _external_sources_contract,
     _external_sources_etag,
+    _identity_locked_by_primary_source,
     _identity_update_from_extracted,
     _load_graph_snapshot_for_config,
+    _primary_source_text,
     _resolve_match_identity,
     _roster_contract,
     _roster_with_display_name,
@@ -88,12 +90,14 @@ class Step2PreviewService:
         graph_snapshot = _load_graph_snapshot_for_config(graph_id, [])
         entities = graph_snapshot.get("entities") or []
         source_text = _combined_text(project_snapshot, entities, requirement)
+        primary_source_text = _primary_source_text(project_snapshot)
         normalizer = TeamNameNormalizer()
         warnings: list[str] = []
 
         home_iso3, away_iso3, home, away = _resolve_match_identity(
             requirement=requirement,
             source_text=source_text,
+            primary_source_text=primary_source_text,
             graph_entities=entities,
             graph_id=graph_id,
             home_team=None,
@@ -124,7 +128,13 @@ class Step2PreviewService:
             normalizer=normalizer,
             dataset_id=dataset_id,
         )
-        if identity_update:
+        identity_locked = _identity_locked_by_primary_source(
+            primary_source_text=primary_source_text,
+            current_home_iso3=home_iso3,
+            current_away_iso3=away_iso3,
+            normalizer=normalizer,
+        )
+        if identity_update and not identity_locked:
             home_iso3, away_iso3, home, away = identity_update
             home_roster, away_roster = loader.snapshot(dataset_id, home_iso3, away_iso3)
             home_roster = _roster_with_display_name(home_roster, home)

@@ -54,15 +54,15 @@ GoalFish is currently packaged around **World Cup match prediction**. The built-
 <div align="center">
 <table>
 <tr>
-<td><img src="./static/00_upload_zh.png" alt="Upload match research" width="100%"/></td>
-<td><img src="./static/02_graph_entity_extract_end.png" alt="Knowledge graph generation" width="100%"/></td>
+<td><img src="./static/00_upload_en.png" alt="Upload match research" width="100%"/></td>
+<td><img src="./static/02_graph_entity_extract_end_en.png" alt="Knowledge graph generation" width="100%"/></td>
 </tr>
 <tr>
-<td><img src="./static/03_config.png" alt="Prediction configuration" width="100%"/></td>
-<td><img src="./static/03_config_players_01.png" alt="Player configuration" width="100%"/></td>
+<td><img src="./static/03_config_en.png" alt="Prediction configuration" width="100%"/></td>
+<td><img src="./static/03_config_players_01_en.png" alt="Player configuration" width="100%"/></td>
 </tr>
 <tr>
-<td><img src="./static/06_game_prediction_page_1.png" alt="Match scenario simulation" width="100%"/></td>
+<td><img src="./static/06_game_prediction_page_1_en.png" alt="Match scenario simulation" width="100%"/></td>
 <td><img src="./static/07_report_page_1.png" alt="Prediction report" width="100%"/></td>
 </tr>
 <tr>

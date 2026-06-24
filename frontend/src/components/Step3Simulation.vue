@@ -3,13 +3,13 @@
     <div class="simulation-scroll">
       <header class="simulation-header">
         <div class="header-copy">
-          <span class="eyebrow mono">STEP 03 · MATCH SIMULATION</span>
-          <h2>比赛场景推演</h2>
-          <p>{{ projectData?.simulation_requirement || projectData?.project_name || '九场景比赛推演' }}</p>
+          <span class="eyebrow mono">{{ t('step3.eyebrow') }}</span>
+          <h2>{{ t('step3.title') }}</h2>
+          <p>{{ projectData?.simulation_requirement || projectData?.project_name || t('step3.defaultSubtitle') }}</p>
           <div class="matchup-strip" :title="matchIdentity.matchName">
-            <span>主队 <b>{{ matchIdentity.home }}</b></span>
-            <span class="mono">VS</span>
-            <span>客队 <b>{{ matchIdentity.away }}</b></span>
+            <span>{{ t('step3.homeTeam') }} <b>{{ matchIdentity.home }}</b></span>
+            <span class="mono">{{ t('common.vs') }}</span>
+            <span>{{ t('step3.awayTeam') }} <b>{{ matchIdentity.away }}</b></span>
           </div>
         </div>
 
@@ -22,7 +22,7 @@
             @click="startPrediction"
           >
             <span v-if="isRunning" class="spinner"></span>
-            {{ isRunning ? '推演中...' : '开始比赛推演' }}
+            {{ isRunning ? t('step3.runningSimulation') : t('step3.startSimulation') }}
           </button>
           <button
             v-if="currentPredictionRunId"
@@ -31,7 +31,7 @@
             :disabled="isRunning || isGeneratingReport"
             @click="regenerateStep3"
           >
-            重新生成推演
+            {{ t('step3.regenerateSimulation') }}
           </button>
           <button
             v-if="phase === 2"
@@ -41,29 +41,29 @@
             @click="handleNextStep"
           >
             <span v-if="isGeneratingReport" class="spinner"></span>
-            {{ isGeneratingReport ? '生成报告中...' : '生成赛事预测报告' }}
+            {{ isGeneratingReport ? t('step3.generatingPredictionReport') : t('step3.generatePredictionReport') }}
             <span v-if="!isGeneratingReport">→</span>
           </button>
-          <button class="action-btn secondary" type="button" @click="$emit('go-back')">返回参数</button>
+          <button class="action-btn secondary" type="button" @click="$emit('go-back')">{{ t('step3.backToConfig') }}</button>
         </div>
       </header>
 
-      <section class="summary-strip" aria-label="推演状态">
+      <section class="summary-strip" :aria-label="t('step3.statusAria')">
         <div class="summary-item summary-run">
-          <span>运行 / 配置</span>
-          <b class="mono">{{ currentPredictionRunId || '未创建' }}</b>
-          <small class="mono">CFG {{ currentPredictionConfigId || '未绑定' }}</small>
+          <span>{{ t('step3.runConfig') }}</span>
+          <b class="mono">{{ currentPredictionRunId || t('step3.notCreated') }}</b>
+          <small class="mono">CFG {{ currentPredictionConfigId || t('step3.notBound') }}</small>
         </div>
         <div class="summary-item">
-          <span>阶段</span>
+          <span>{{ t('step3.phase') }}</span>
           <b>{{ phaseLabel }}</b>
         </div>
         <div class="summary-item">
-          <span>模型</span>
+          <span>{{ t('step3.model') }}</span>
           <b>{{ selectedScoreline?.model_name || '-' }}</b>
         </div>
         <div class="summary-item">
-          <span>共识</span>
+          <span>{{ t('step3.consensus') }}</span>
           <button
             class="meta-btn mono"
             type="button"
@@ -75,7 +75,7 @@
           </button>
         </div>
         <div class="summary-item">
-          <span>预算</span>
+          <span>{{ t('step3.budget') }}</span>
           <button
             class="meta-btn mono"
             type="button"
@@ -87,24 +87,24 @@
           </button>
         </div>
         <div class="summary-item">
-          <span>名册</span>
-          <button class="meta-btn mono" type="button" @click="openRosterDrawer">{{ rosterSummary.total }} 人</button>
+          <span>{{ t('step3.roster') }}</span>
+          <button class="meta-btn mono" type="button" @click="openRosterDrawer">{{ t('step3.playersUnit', { count: rosterSummary.total }) }}</button>
         </div>
         <div class="summary-item">
-          <span>种子</span>
+          <span>{{ t('step3.seed') }}</span>
           <b class="mono">{{ simulationSeedShort }}</b>
         </div>
       </section>
 
       <div v-if="errorMessage" class="run-error" role="alert">
-        <span>比赛推演失败</span>
+        <span>{{ t('step3.simulationFailed') }}</span>
         <p>{{ errorMessage }}</p>
       </div>
 
-      <section v-if="phase === 1" class="run-progress-card" aria-label="比赛推演进度">
+      <section v-if="phase === 1" class="run-progress-card" :aria-label="t('step3.progressAria')">
         <div class="run-progress-head">
           <div>
-            <span class="mono">SIMULATION_PROGRESS</span>
+            <span class="mono">{{ t('step3.progressKicker') }}</span>
             <b>{{ progressTitle }}</b>
           </div>
           <strong class="mono">{{ progressPercent }}%</strong>
@@ -119,13 +119,13 @@
         <section class="scenario-panel">
           <div class="panel-title panel-title-spread">
             <div>
-              <span class="mono">3X3_MATRIX</span>
-              <b>九种比赛可能</b>
+              <span class="mono">{{ t('step3.matrixKicker') }}</span>
+              <b>{{ t('step3.matrixTitle') }}</b>
             </div>
             <em class="mono">{{ orderedScenarioCases.length }}/9</em>
           </div>
           <div v-if="scenarioCases.length === 0" class="empty-state">
-            使用 Step2 配置开始推演后展示九场景矩阵。
+            {{ t('step3.matrixEmpty') }}
           </div>
           <div v-else class="scenario-matrix">
             <button
@@ -145,12 +145,12 @@
 
               <div class="scenario-card-score">
                 <b class="mono">{{ scenario.most_likely_score || scenarioScore(scenario.id) }}</b>
-                <span class="mono">{{ mostLikelyScoreProb(scenario) || '概率 -' }}</span>
+                <span class="mono">{{ mostLikelyScoreProb(scenario) || t('step3.probabilityUnknown') }}</span>
               </div>
 
               <div class="state-line">
-                <span :title="matchIdentity.homeLabel">主队 {{ matchIdentity.home }} · {{ stateLabel(scenario.home_state) }}</span>
-                <span :title="matchIdentity.awayLabel">客队 {{ matchIdentity.away }} · {{ stateLabel(scenario.away_state) }}</span>
+                <span :title="matchIdentity.homeLabel">{{ t('step3.homeTeam') }} {{ matchIdentity.home }} · {{ stateLabel(scenario.home_state) }}</span>
+                <span :title="matchIdentity.awayLabel">{{ t('step3.awayTeam') }} {{ matchIdentity.away }} · {{ stateLabel(scenario.away_state) }}</span>
               </div>
               <p class="sample-line mono">{{ scenarioSampleLabel(scenario) }}</p>
             </button>
@@ -161,17 +161,17 @@
           <div class="selected-scenario-card">
             <div class="selected-scenario-main">
               <span class="mono">{{ selectedScenarioKey }}</span>
-              <h3>{{ selectedScenario?.scenario_name || selectedScenario?.scenario_module || '比赛进程' }}</h3>
+              <h3>{{ selectedScenario?.scenario_name || selectedScenario?.scenario_module || t('step3.matchProcess') }}</h3>
               <div class="state-line selected-state-line">
-                <span>主队 {{ matchIdentity.home }} · {{ stateLabel(selectedScenario?.home_state) }}</span>
-                <span>客队 {{ matchIdentity.away }} · {{ stateLabel(selectedScenario?.away_state) }}</span>
-                <span>权重 {{ selectedScenarioWeight }}</span>
+                <span>{{ t('step3.homeTeam') }} {{ matchIdentity.home }} · {{ stateLabel(selectedScenario?.home_state) }}</span>
+                <span>{{ t('step3.awayTeam') }} {{ matchIdentity.away }} · {{ stateLabel(selectedScenario?.away_state) }}</span>
+                <span>{{ t('step3.weight') }} {{ selectedScenarioWeight }}</span>
               </div>
             </div>
 
             <div class="selected-score-grid">
               <div>
-                <span>最可能比分</span>
+                <span>{{ t('step3.mostLikelyScore') }}</span>
                 <b class="mono">{{ selectedMostLikelyScore }}</b>
               </div>
               <div>
@@ -179,18 +179,18 @@
                 <b class="mono">{{ formatXg(selectedScoreline?.home_xg) }}-{{ formatXg(selectedScoreline?.away_xg) }}</b>
               </div>
               <div>
-                <span>胜平负</span>
+                <span>{{ t('step3.wdl') }}</span>
                 <b>{{ selectedWdlLine }}</b>
               </div>
             </div>
 
             <div class="selected-scenario-evidence">
               <div>
-                <span>驱动因素</span>
-                <p>{{ selectedScenarioDrivers.join(' / ') || 'Monte Carlo modal path' }}</p>
+                <span>{{ t('step3.drivers') }}</span>
+                <p>{{ selectedScenarioDrivers.join(' / ') || t('step3.monteCarloModalPath') }}</p>
               </div>
               <div>
-                <span>风险因素</span>
+                <span>{{ t('step3.risks') }}</span>
                 <p>{{ selectedScenarioRisks.join(' / ') || selectedScenario?.scenario_space || '-' }}</p>
               </div>
             </div>
@@ -201,7 +201,7 @@
             />
           </div>
 
-          <div class="detail-tabs" role="tablist" aria-label="场景详情">
+          <div class="detail-tabs" role="tablist" :aria-label="t('step3.detailAria')">
             <button
               class="detail-tab"
               type="button"
@@ -210,7 +210,7 @@
               :aria-selected="activeDetailTab === 'flow'"
               @click="activeDetailTab = 'flow'"
             >
-              比赛流
+              {{ t('step3.flowTab') }}
               <span class="mono">{{ selectedEvents.length }}</span>
             </button>
             <button
@@ -221,19 +221,19 @@
               :aria-selected="activeDetailTab === 'review'"
               @click="activeDetailTab = 'review'"
             >
-              模型复核
+              {{ t('step3.reviewTab') }}
               <span class="mono">{{ selectedNotes.length }}</span>
             </button>
           </div>
 
           <section v-show="activeDetailTab === 'flow'" class="detail-surface" role="tabpanel">
             <div class="panel-title">
-              <span class="mono">MATCH_FLOW</span>
-              <b>关键事件链</b>
+              <span class="mono">{{ t('step3.matchFlowKicker') }}</span>
+              <b>{{ t('step3.eventChain') }}</b>
             </div>
 
             <div v-if="selectedEvents.length === 0" class="empty-state">
-              当前场景暂无事件链。
+              {{ t('step3.emptyEventChain') }}
             </div>
             <div v-else class="event-list">
               <MatchEventRow v-for="event in selectedEvents" :key="event.id" :event="event" />
@@ -242,13 +242,13 @@
 
           <section v-show="activeDetailTab === 'review'" class="detail-surface" role="tabpanel">
             <div class="panel-title">
-              <span class="mono">MODEL_REVIEW</span>
-              <b>模型研判与教练复核</b>
+              <span class="mono">{{ t('step3.modelReviewKicker') }}</span>
+              <b>{{ t('step3.modelReview') }}</b>
             </div>
 
             <div class="review-grid">
               <div class="probability-card">
-                <span>比分概率 Top</span>
+                <span>{{ t('step3.scoreProbabilityTop') }}</span>
                 <div v-if="scoreDistribution.length === 0" class="mini-empty">-</div>
                 <div v-else class="score-distribution">
                   <div v-for="row in scoreDistribution" :key="row.score" class="score-prob-row">
@@ -260,82 +260,82 @@
 
               <div class="coach-review-card">
                 <div class="card-heading">
-                  <span>教练复核</span>
-                  <button class="ghost-btn-xs" type="button" :disabled="!coachReview" @click="openConsensusDialog">详情</button>
+                  <span>{{ t('step3.coachReview') }}</span>
+                  <button class="ghost-btn-xs" type="button" :disabled="!coachReview" @click="openConsensusDialog">{{ t('step3.details') }}</button>
                 </div>
                 <template v-if="coachReview">
                   <div class="coach-review-summary-line">
-                    <span>共识 <b class="mono">{{ coachReviewMeta.label }}</b></span>
-                    <span>来源 <b>{{ coachReviewMeta.source }}</b></span>
-                    <span>公式 <b class="mono">{{ coachReviewMeta.formula }}</b></span>
+                    <span>{{ t('step3.consensus') }} <b class="mono">{{ coachReviewMeta.label }}</b></span>
+                    <span>{{ t('step3.source') }} <b>{{ coachReviewMeta.source }}</b></span>
+                    <span>{{ t('step3.formula') }} <b class="mono">{{ coachReviewMeta.formula }}</b></span>
                   </div>
                   <div class="vote-line">
-                    <b>支持 {{ coachReviewMeta.supportVotes }}</b>
-                    <b>反对 {{ coachReviewMeta.opposeVotes }}</b>
-                    <b>观察 {{ coachReviewMeta.abstainVotes }}</b>
+                    <b>{{ t('step3.support') }} {{ coachReviewMeta.supportVotes }}</b>
+                    <b>{{ t('step3.oppose') }} {{ coachReviewMeta.opposeVotes }}</b>
+                    <b>{{ t('step3.observe') }} {{ coachReviewMeta.abstainVotes }}</b>
                   </div>
                   <div class="coach-review-role-list">
                     <article v-for="row in coachReviewPreviewRows" :key="`${row.role}-${row.verdict}`">
                       <div>
                         <b>{{ row.roleLabel }}</b>
-                        <span>{{ row.verdictLabel }} · 权重 {{ row.weight }} · 置信 {{ row.confidence === null ? '-' : `${row.confidence}%` }}</span>
+                        <span>{{ row.verdictLabel }} · {{ t('step3.weight') }} {{ row.weight }} · {{ t('step3.confidence') }} {{ row.confidence === null ? '-' : `${row.confidence}%` }}</span>
                       </div>
                       <small>{{ row.sourceNote }}</small>
-                      <p>{{ row.rationale || '无补充理由。' }}</p>
+                      <p>{{ row.rationale || t('step3.noRationale') }}</p>
                     </article>
                   </div>
                   <p class="coach-review-footnote">
-                    置信度调整 {{ coachReviewMeta.confidenceDelta }}；Step3 复核只检查事件链和模态轨迹，不覆盖比分概率。
+                    {{ t('step3.reviewFootnote', { delta: coachReviewMeta.confidenceDelta }) }}
                   </p>
                 </template>
-                <p v-else>暂无复核摘要。</p>
+                <p v-else>{{ t('step3.emptyReview') }}</p>
               </div>
 
               <div class="review-card">
                 <div class="card-heading">
-                  <h4>评审支出</h4>
-                  <button class="ghost-btn-xs" type="button" @click="openBudgetDialog">详情</button>
+                  <h4>{{ t('step3.reviewSpend') }}</h4>
+                  <button class="ghost-btn-xs" type="button" @click="openBudgetDialog">{{ t('step3.details') }}</button>
                 </div>
                 <LLMBudgetMeter :ledger="budgetLedger" compact />
                 <div class="review-card-stats">
-                  <span><small>总耗时</small> <b class="mono">{{ formatMs(budgetLedger.total_latency_ms) }}</b></span>
-                  <span><small>tokens</small> <b class="mono">{{ budgetDetails.totalTokens }}</b></span>
-                  <span><small>p95 延迟</small> <b class="mono">{{ formatMs(budgetLedger.p95_latency_ms) }}</b></span>
+                  <span><small>{{ t('step3.totalLatency') }}</small> <b class="mono">{{ formatMs(budgetLedger.total_latency_ms) }}</b></span>
+                  <span><small>{{ t('step3.tokens') }}</small> <b class="mono">{{ budgetDetails.totalTokens }}</b></span>
+                  <span><small>{{ t('step3.p95Latency') }}</small> <b class="mono">{{ formatMs(budgetLedger.p95_latency_ms) }}</b></span>
                 </div>
               </div>
 
               <div class="review-card">
-                <h4>名册可用度</h4>
+                <h4>{{ t('step3.rosterAvailability') }}</h4>
                 <div class="roster-card-summary">
                   <div class="roster-card-row">
-                    <span>主队</span>
+                    <span>{{ t('step3.homeTeam') }}</span>
                     <span class="mono">{{ rosterSummary.home.available }}/{{ rosterSummary.home.total }}</span>
                     <ConfidenceBar :value="availabilityPercent(rosterSummary.home)" />
                   </div>
                   <div class="roster-card-row">
-                    <span>客队</span>
+                    <span>{{ t('step3.awayTeam') }}</span>
                     <span class="mono">{{ rosterSummary.away.available }}/{{ rosterSummary.away.total }}</span>
                     <ConfidenceBar :value="availabilityPercent(rosterSummary.away)" />
                   </div>
                 </div>
                 <div class="roster-card-issues">
-                  <span v-if="rosterSummary.injured > 0">伤 <b class="mono">{{ rosterSummary.injured }}</b></span>
-                  <span v-if="rosterSummary.suspended > 0">停 <b class="mono">{{ rosterSummary.suspended }}</b></span>
-                  <span v-if="rosterSummary.doubtful > 0">疑 <b class="mono">{{ rosterSummary.doubtful }}</b></span>
+                  <span v-if="rosterSummary.injured > 0">{{ t('prediction.injuredShort') }} <b class="mono">{{ rosterSummary.injured }}</b></span>
+                  <span v-if="rosterSummary.suspended > 0">{{ t('prediction.suspendedShort') }} <b class="mono">{{ rosterSummary.suspended }}</b></span>
+                  <span v-if="rosterSummary.doubtful > 0">{{ t('prediction.doubtfulShort') }} <b class="mono">{{ rosterSummary.doubtful }}</b></span>
                 </div>
-                <button class="ghost-btn-xs" type="button" @click="openRosterDrawer">完整名册 →</button>
+                <button class="ghost-btn-xs" type="button" @click="openRosterDrawer">{{ t('step3.fullRoster') }}</button>
               </div>
             </div>
 
             <section class="fallback-panel">
               <div class="fallback-panel-head">
                 <div>
-                  <span class="mono">NARRATIVE_FALLBACKS</span>
-                  <h4>叙述回退事件</h4>
+                  <span class="mono">{{ t('step3.narrativeFallbacksKicker') }}</span>
+                  <h4>{{ t('step3.narrativeFallbacks') }}</h4>
                 </div>
                 <div class="fallback-actions">
                   <span class="fallback-counter">
-                    当前 <b class="mono">{{ fallbackPanel.currentCount }}</b> / 全部 <b class="mono">{{ fallbackPanel.total }}</b>
+                    {{ t('step3.currentAll', { current: fallbackPanel.currentCount, total: fallbackPanel.total }) }}
                   </span>
                   <button
                     class="ghost-btn-xs"
@@ -343,9 +343,9 @@
                     :disabled="budgetFailureRows.length === 0"
                     @click="showAllFallbacks = !showAllFallbacks"
                   >
-                    {{ showAllFallbacks ? '仅当前场景' : '显示全部' }}
+                    {{ showAllFallbacks ? t('step3.currentOnly') : t('step3.showAll') }}
                   </button>
-                  <button class="ghost-btn-xs" type="button" @click="openBudgetDialog">预算详情</button>
+                  <button class="ghost-btn-xs" type="button" @click="openBudgetDialog">{{ t('step3.budgetDetails') }}</button>
                 </div>
               </div>
 
@@ -355,7 +355,7 @@
                 </span>
               </div>
               <div v-if="fallbackPanel.visible.length === 0" class="mini-empty">
-                当前场景暂无叙述回退事件。
+                {{ t('step3.emptyFallbacks') }}
               </div>
               <div v-else class="fallback-event-list">
                 <article
@@ -379,7 +379,7 @@
                       type="button"
                       @click.stop="focusFallbackEvent(row)"
                     >
-                      查看事件
+                      {{ t('step3.viewEvent') }}
                     </button>
                   </div>
                 </article>
@@ -415,59 +415,59 @@
         <section class="detail-modal" role="dialog" aria-modal="true" aria-labelledby="consensus-detail-title" @keydown.esc="consensusDialogOpen = false">
           <header class="detail-modal-header">
             <div>
-              <span class="mono">CONSENSUS_SOURCE</span>
-              <h3 id="consensus-detail-title">Step3 共识来源</h3>
+              <span class="mono">{{ t('step3.consensusSourceKicker') }}</span>
+              <h3 id="consensus-detail-title">{{ t('step3.consensusSourceTitle') }}</h3>
             </div>
-            <button class="modal-close-btn" type="button" aria-label="关闭共识详情" @click="consensusDialogOpen = false">×</button>
+            <button class="modal-close-btn" type="button" :aria-label="t('step3.closeConsensusDetails')" @click="consensusDialogOpen = false">×</button>
           </header>
 
           <div class="detail-modal-body">
             <div class="detail-kpi-grid">
               <div>
-                <small>当前场景</small>
+                <small>{{ t('step3.currentScenario') }}</small>
                 <b class="mono">{{ selectedScenarioKey }}</b>
               </div>
               <div>
-                <small>共识</small>
+                <small>{{ t('step3.consensus') }}</small>
                 <b class="mono">{{ coachReviewMeta.label }}</b>
               </div>
               <div>
-                <small>来源</small>
+                <small>{{ t('step3.source') }}</small>
                 <b>{{ coachReviewMeta.source }}</b>
               </div>
               <div>
-                <small>公式</small>
+                <small>{{ t('step3.formula') }}</small>
                 <b class="mono">{{ coachReviewMeta.formula }}</b>
               </div>
             </div>
 
             <p class="detail-explain">
-              共识分按角色复核 verdict 加权：support=1，watch/adjust=0.5，reject=0，然后除以参与复核角色数。
+              {{ t('step3.consensusExplain') }}
             </p>
 
             <div class="detail-section">
-              <h4>角色复核明细</h4>
-              <div v-if="coachReviewMeta.reviewRows.length === 0" class="mini-empty">暂无角色复核明细。</div>
+              <h4>{{ t('step3.roleReviewDetails') }}</h4>
+              <div v-if="coachReviewMeta.reviewRows.length === 0" class="mini-empty">{{ t('step3.emptyRoleReviewDetails') }}</div>
               <div v-else class="detail-table">
                 <div class="detail-row detail-row-head">
-                  <span>角色</span>
-                  <span>结论</span>
-                  <span>权重</span>
-                  <span>置信</span>
+                  <span>{{ t('step3.role') }}</span>
+                  <span>{{ t('step3.verdict') }}</span>
+                  <span>{{ t('step3.weight') }}</span>
+                  <span>{{ t('step3.confidence') }}</span>
                 </div>
                 <div v-for="row in coachReviewMeta.reviewRows" :key="`${row.role}-${row.verdict}`" class="detail-row">
                   <span>{{ row.roleLabel }}</span>
                   <span>{{ row.verdictLabel }}</span>
                   <span class="mono">{{ row.weight }}</span>
                   <span class="mono">{{ row.confidence === null ? '-' : `${row.confidence}%` }}</span>
-                  <p>{{ row.rationale || '无补充理由。' }}</p>
+                  <p>{{ row.rationale || t('step3.noRationale') }}</p>
                 </div>
               </div>
             </div>
 
             <div class="detail-section">
-              <h4>原始摘要</h4>
-              <p class="raw-summary">{{ coachReviewMeta.summary || '暂无摘要。' }}</p>
+              <h4>{{ t('step3.rawSummary') }}</h4>
+              <p class="raw-summary">{{ coachReviewMeta.summary || t('step3.emptySummary') }}</p>
             </div>
           </div>
         </section>
@@ -479,45 +479,45 @@
         <section class="detail-modal detail-modal-wide" role="dialog" aria-modal="true" aria-labelledby="budget-detail-title" @keydown.esc="budgetDialogOpen = false">
           <header class="detail-modal-header">
             <div>
-              <span class="mono">BUDGET_SOURCE</span>
-              <h3 id="budget-detail-title">预算调用详情</h3>
+              <span class="mono">{{ t('step3.budgetSourceKicker') }}</span>
+              <h3 id="budget-detail-title">{{ t('step3.budgetCallDetails') }}</h3>
             </div>
-            <button class="modal-close-btn" type="button" aria-label="关闭预算详情" @click="budgetDialogOpen = false">×</button>
+            <button class="modal-close-btn" type="button" :aria-label="t('step3.closeBudgetDetails')" @click="budgetDialogOpen = false">×</button>
           </header>
 
           <div class="detail-modal-body">
             <div class="detail-kpi-grid">
               <div>
-                <small>使用 / 上限</small>
+                <small>{{ t('step3.usedCap') }}</small>
                 <b class="mono" :class="budgetClass">{{ budgetDetails.usedLabel }}</b>
               </div>
               <div>
-                <small>已消费</small>
+                <small>{{ t('step3.spent') }}</small>
                 <b class="mono">{{ budgetDetails.spent }}</b>
               </div>
               <div>
-                <small>缓存命中</small>
+                <small>{{ t('step3.cacheHits') }}</small>
                 <b class="mono">{{ budgetDetails.cached }}</b>
               </div>
               <div>
-                <small>剩余</small>
+                <small>{{ t('step3.remaining') }}</small>
                 <b class="mono">{{ budgetDetails.remaining }}</b>
               </div>
             </div>
 
             <p class="detail-explain">
-              预算数字来自当前 prediction run 的 LLM ledger。total_calls 是实际完成并记录的调用数，hard_cap 是本次 Step3 预算硬上限；超过上限的步骤会转 fallback。
+              {{ t('step3.budgetExplain') }}
             </p>
 
             <div class="detail-section">
-              <h4>按角色统计</h4>
-              <div v-if="budgetDetails.roleRows.length === 0" class="mini-empty">暂无调用记录。</div>
+              <h4>{{ t('step3.byRole') }}</h4>
+              <div v-if="budgetDetails.roleRows.length === 0" class="mini-empty">{{ t('step3.emptyCalls') }}</div>
               <div v-else class="detail-table">
                 <div class="detail-row detail-row-head budget-role-row">
-                  <span>角色</span>
-                  <span>调用</span>
-                  <span>缓存</span>
-                  <span>tokens</span>
+                  <span>{{ t('step3.role') }}</span>
+                  <span>{{ t('step3.calls') }}</span>
+                  <span>{{ t('step3.cache') }}</span>
+                  <span>{{ t('step3.tokens') }}</span>
                 </div>
                 <div v-for="row in budgetDetails.roleRows" :key="row.role" class="detail-row budget-role-row">
                   <span>{{ row.roleLabel }}</span>
@@ -529,13 +529,13 @@
             </div>
 
             <div class="detail-section">
-              <h4>失败与 fallback</h4>
+              <h4>{{ t('step3.failuresFallback') }}</h4>
               <div class="failure-summary">
                 <span v-for="row in budgetDetails.failureReasonRows" :key="row.reason">
                   {{ row.reason }} <b class="mono">{{ row.count }}</b>
                 </span>
               </div>
-              <div v-if="budgetFailureRows.length === 0" class="mini-empty">暂无失败记录。</div>
+              <div v-if="budgetFailureRows.length === 0" class="mini-empty">{{ t('step3.emptyFailures') }}</div>
               <div v-else class="failure-list">
                 <article v-for="row in budgetFailureRows" :key="row.id">
                   <div class="failure-row-head">
@@ -559,6 +559,7 @@
 
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
   createPredictionReport,
@@ -599,6 +600,7 @@ import {
 import { regenerateStepWithConfirm } from '../utils/workflowRegenerate.js'
 
 const router = useRouter()
+const { t, locale } = useI18n()
 
 const props = defineProps({
   predictionRunId: String,
@@ -643,14 +645,14 @@ const progressMessage = computed(() => {
   const messages = statusPayload.value?.metadata?.progress_messages || []
   const latest = Array.isArray(messages) ? messages[messages.length - 1] : null
   if (latest?.message) return latest.message
-  if (statusPayload.value?.status === 'queued') return '比赛推演已进入 Celery 队列'
-  if (statusPayload.value?.status === 'running') return '正在生成比分概率、事件链和复核结果'
-  return '准备启动比赛推演'
+  if (statusPayload.value?.status === 'queued') return t('step3.phaseQueued')
+  if (statusPayload.value?.status === 'running') return t('step3.phaseRunning')
+  return t('step3.phaseReady')
 })
 const phaseLabel = computed(() => {
-  if (phase.value === 2) return 'Completed'
+  if (phase.value === 2) return t('common.completed')
   if (phase.value === 1) return phaseDisplayName(statusPayload.value?.current_phase || statusPayload.value?.status)
-  return currentPredictionConfigId.value ? 'Ready' : 'Missing Config'
+  return currentPredictionConfigId.value ? t('common.ready') : t('step3.notBound')
 })
 
 const orderedScenarioCases = computed(() => {
@@ -713,7 +715,7 @@ const coachReview = computed(() => {
   return note?.metadata?.coach_review_summary || null
 })
 
-const coachReviewMeta = computed(() => coachReviewSummary(coachReview.value, budgetLedger.value || {}))
+const coachReviewMeta = computed(() => coachReviewSummary(coachReview.value, budgetLedger.value || {}, t))
 const coachReviewPreviewRows = computed(() => coachReviewMeta.value.reviewRows.slice(0, 3))
 
 const coachConsensusLabel = computed(() => {
@@ -722,8 +724,8 @@ const coachConsensusLabel = computed(() => {
 })
 
 const coachConsensusTooltip = computed(() => {
-  if (!coachReview.value) return '当前场景暂无 Step3 教练复核'
-  return `来源: ${coachReviewMeta.value.formula} = ${coachReviewMeta.value.label}; 点击查看角色 verdict`
+  if (!coachReview.value) return t('step3.emptyCoachReviewTooltip')
+  return t('step3.coachReviewTooltip', { formula: coachReviewMeta.value.formula, label: coachReviewMeta.value.label })
 })
 
 const selectedWdlLine = computed(() => {
@@ -732,7 +734,11 @@ const selectedWdlLine = computed(() => {
   const draw = selectedScoreline.value?.draw_probability ?? wdl.draw ?? wdl.draw_probability
   const away = selectedScoreline.value?.away_win_probability ?? wdl.away ?? wdl.away_win ?? wdl.away_win_probability
   if (home === undefined && draw === undefined && away === undefined) return '-'
-  return [`主 ${formatPercent(home)}`, `平 ${formatPercent(draw)}`, `客 ${formatPercent(away)}`].join(' / ')
+  return t('step3.wdlLine', {
+    home: formatPercent(home),
+    draw: formatPercent(draw),
+    away: formatPercent(away),
+  })
 })
 
 const scoreDistribution = computed(() => (
@@ -743,10 +749,10 @@ const budgetMeta = computed(() => budgetUsageMeta(budgetLedger.value || {}))
 const budgetUsed = computed(() => budgetMeta.value.used)
 const budgetCap = computed(() => budgetMeta.value.cap)
 const budgetClass = computed(() => budgetMeta.value.className)
-const budgetDetails = computed(() => budgetUsageDetails(budgetLedger.value || {}))
-const budgetFailureRows = computed(() => failureEventRows(budgetDetails.value.failures, matchEvents.value))
+const budgetDetails = computed(() => budgetUsageDetails(budgetLedger.value || {}, t))
+const budgetFailureRows = computed(() => failureEventRows(budgetDetails.value.failures, matchEvents.value, t))
 const fallbackPanel = computed(() => fallbackPanelSummary(budgetFailureRows.value, selectedScenarioKey.value, showAllFallbacks.value))
-const budgetTooltip = computed(() => `LLM 调用 ${budgetDetails.value.usedLabel}; 剩余 ${budgetDetails.value.remaining}; 点击查看角色和 fallback 明细`)
+const budgetTooltip = computed(() => t('step3.budgetTooltip', { used: budgetDetails.value.usedLabel, remaining: budgetDetails.value.remaining }))
 const rosterSummary = computed(() => availabilitySummary(runRoster.value || {}))
 const matchIdentity = computed(() => matchTeamIdentity({
   statusPayload: statusPayload.value || {},
@@ -754,6 +760,7 @@ const matchIdentity = computed(() => matchTeamIdentity({
   predictionResult: predictionResult.value || {},
   teamStrengths: teamStrengths.value,
   roster: runRoster.value || {},
+  t,
 }))
 const simulationSeedShort = computed(() => seedShortCode(statusPayload.value?.simulation_seed || predictionResult.value?.metadata?.simulation_seed))
 const rosterGoalStats = computed(() => {
@@ -799,23 +806,23 @@ const reconcileActiveWorkflow = async () => {
 
     if (!active.prediction_run_id) {
       if (currentPredictionRunId.value) {
-        addLog('当前项目没有 active Step3 推演，已清理旧路由中的 prediction_run_id')
+        addLog(t('step3.logNoActiveRun'))
       }
       resetRunState()
       emit('update-status', currentPredictionConfigId.value ? 'processing' : 'error')
       errorMessage.value = currentPredictionConfigId.value
         ? ''
-        : '缺少 active Step2 配置，请先完成 Step2。'
+        : t('step3.missingStep2Config')
       return false
     }
 
     if (currentPredictionRunId.value && currentPredictionRunId.value !== active.prediction_run_id) {
-      addLog('路由中的旧 Step3 推演已失效，已切换到当前 active 推演')
+      addLog(t('step3.logOldRunSwitched'))
     }
     currentPredictionRunId.value = active.prediction_run_id
     return true
   } catch (err) {
-    addLog(`读取项目 active workflow 失败: ${err.message}`)
+    addLog(t('step3.logActiveWorkflowFailed', { error: err.message }))
     return Boolean(currentPredictionRunId.value)
   }
 }
@@ -828,7 +835,7 @@ const recoverPredictionConfigFromRun = async () => {
     currentPredictionConfigId.value = statusRes.data?.prediction_config_id || currentPredictionConfigId.value
     return Boolean(currentPredictionConfigId.value)
   } catch (err) {
-    addLog(`从 Step3 运行状态恢复配置失败: ${err.message}`)
+    addLog(t('step3.logRestoreConfigFailed', { error: err.message }))
     return false
   }
 }
@@ -841,17 +848,18 @@ const regenerateStep3 = async () => {
       projectId: props.projectData.project_id,
       step: 3,
       reason: 'step3_rerun',
+      t,
       onBefore: () => {
         resetRunState()
         emit('update-status', 'processing')
-        addLog('Step3 已重新生成，旧 Step4 报告和 Step5 问答已失效')
+        addLog(t('step3.logStep3Regenerated'))
       },
     })
     if (!regenerated) return
   } catch (err) {
-    errorMessage.value = err.message || '重新生成推演失败'
+    errorMessage.value = err.message || t('step3.regenerateFailed')
     emit('update-status', 'error')
-    addLog(`重新生成推演失败: ${errorMessage.value}`)
+    addLog(t('step3.logSimulationFailed', { error: errorMessage.value }))
   }
 }
 
@@ -865,11 +873,11 @@ const startPrediction = async () => {
     current_phase: 'queued',
     progress_percent: 1,
     metadata: {
-      progress_messages: [{ message: '比赛推演正在进入 Celery 队列', progress_percent: 1 }],
+      progress_messages: [{ message: t('step3.queueEntering'), progress_percent: 1 }],
     },
   }
   emit('update-status', 'processing')
-  addLog(`使用配置启动九场景推演: ${currentPredictionConfigId.value}`)
+  addLog(t('step3.logStartWithConfig', { id: currentPredictionConfigId.value }))
 
   try {
     const response = await runPrediction(props.projectData.project_id, {
@@ -880,7 +888,7 @@ const startPrediction = async () => {
     currentPredictionRunId.value = response.data.prediction_run_id
     currentPredictionConfigId.value = response.data.prediction_config_id || currentPredictionConfigId.value
     statusPayload.value = response.data || statusPayload.value
-    addLog(`预测运行已进入后台队列: ${currentPredictionRunId.value}`)
+    addLog(t('step3.logQueued', { id: currentPredictionRunId.value }))
     startStatusPolling()
 
     router.replace({
@@ -895,7 +903,7 @@ const startPrediction = async () => {
     errorMessage.value = err.message || 'unknown error'
     phase.value = 0
     emit('update-status', 'error')
-    addLog(`比赛推演失败: ${errorMessage.value}`)
+    addLog(t('step3.logSimulationFailed', { error: errorMessage.value }))
   }
 }
 
@@ -924,13 +932,13 @@ const pollPredictionStatus = async () => {
       await loadPredictionArtifacts()
     } else if (statusRes.data?.status === 'failed') {
       stopStatusPolling()
-      errorMessage.value = statusRes.data?.error || '比赛推演失败'
+      errorMessage.value = statusRes.data?.error || t('step3.simulationFailed')
       phase.value = 0
       emit('update-status', 'error')
-      addLog(`比赛推演失败: ${errorMessage.value}`)
+      addLog(t('step3.logSimulationFailed', { error: errorMessage.value }))
     }
   } catch (err) {
-    addLog(`推演进度查询失败: ${err.message}`)
+    addLog(t('step3.logProgressFailed', { error: err.message }))
   }
 }
 
@@ -984,15 +992,15 @@ const loadPredictionArtifacts = async () => {
     runRoster.value = rosterRes.data || null
     budgetLedger.value = budgetRes.data?.ledger || {}
 
-    if (rosterRes.optionalError) addLog(`名册数据暂不可用: ${rosterRes.optionalError.message}`)
-    if (budgetRes.optionalError) addLog(`预算数据暂不可用: ${budgetRes.optionalError.message}`)
+    if (rosterRes.optionalError) addLog(t('step3.logRosterUnavailable', { error: rosterRes.optionalError.message }))
+    if (budgetRes.optionalError) addLog(t('step3.logBudgetUnavailable', { error: budgetRes.optionalError.message }))
 
     selectDefaultScenario()
 
     if (statusRes.data?.status === 'completed') {
       phase.value = 2
       emit('update-status', 'completed')
-      addLog('九场景比赛推演完成，所有产物已写入数据库')
+      addLog(t('step3.logComplete'))
     } else if (statusRes.data?.status === 'failed') {
       phase.value = 0
       emit('update-status', 'error')
@@ -1001,7 +1009,7 @@ const loadPredictionArtifacts = async () => {
     errorMessage.value = err.message || 'unknown error'
     phase.value = 0
     emit('update-status', 'error')
-    addLog(`加载预测产物失败: ${errorMessage.value}`)
+    addLog(t('step3.logLoadArtifactsFailed', { error: errorMessage.value }))
   } finally {
     isLoadingArtifacts.value = false
   }
@@ -1013,7 +1021,7 @@ const loadPredictionConfigSnapshot = async () => {
     const response = await getPredictionConfig(currentPredictionConfigId.value)
     predictionConfigSnapshot.value = response.data || null
   } catch (err) {
-    addLog(`预测配置队名暂不可用: ${err.message}`)
+    addLog(t('step3.logTeamNamesUnavailable', { error: err.message }))
   }
 }
 
@@ -1031,17 +1039,17 @@ const selectScenario = (scenarioId) => {
 const handleNextStep = async () => {
   if (!currentPredictionRunId.value) return
   isGeneratingReport.value = true
-  addLog('开始从九场景预测产物生成赛事预测报告')
+  addLog(t('step3.logStartReport'))
   try {
     const response = await createPredictionReport(currentPredictionRunId.value)
     const reportId = response.data.report_id
-    addLog(`赛事预测报告已生成: ${reportId}`)
+    addLog(t('step3.logReportGenerated', { id: reportId }))
     emit('next-step', { reportId, predictionRunId: currentPredictionRunId.value, predictionConfigId: currentPredictionConfigId.value })
     router.push({ name: 'Report', params: { reportId } })
   } catch (err) {
     errorMessage.value = err.message || 'unknown error'
     emit('update-status', 'error')
-    addLog(`生成赛事预测报告失败: ${errorMessage.value}`)
+    addLog(t('step3.logReportFailed', { error: errorMessage.value }))
   } finally {
     isGeneratingReport.value = false
   }
@@ -1051,15 +1059,15 @@ const scenarioKey = (scenario) => scenario?.scenario_key || scenario?.metadata?.
 
 const phaseDisplayName = (phase) => {
   const labels = {
-    queued: 'Queued',
-    loading_config: 'Loading Config',
-    running_simulation: 'Running Simulation',
-    persisting_artifacts: 'Saving Artifacts',
-    completed: 'Completed',
-    failed: 'Failed',
-    running: 'Running',
+    queued: t('step3.phaseQueuedShort'),
+    loading_config: t('step3.phaseLoadingConfig'),
+    running_simulation: t('step3.phaseRunningSimulation'),
+    persisting_artifacts: t('step3.phaseSavingArtifacts'),
+    completed: t('common.completed'),
+    failed: t('common.failed'),
+    running: t('common.running'),
   }
-  return labels[phase] || phase || 'Running'
+  return labels[phase] || phase || t('common.running')
 }
 
 const scenarioScore = (scenarioCaseId) => (
@@ -1074,9 +1082,12 @@ const scenarioWeight = (scenario) => {
 
 const scenarioSampleLabel = (scenario) => {
   const nSims = Number(scenario?.n_sims || statusPayload.value?.n_sims || 0)
-  const nSimsLabel = nSims > 0 ? nSims.toLocaleString('zh-CN') : '-'
+  const nSimsLabel = nSims > 0 ? nSims.toLocaleString(locale.value === 'zh' ? 'zh-CN' : 'en-US') : '-'
   const firstGoal = scenario?.modal_trajectory_summary?.first_goal_minute
-  return `采样 ${nSimsLabel}${firstGoal ? ` · 首球 ${firstGoal}'` : ''}`
+  return t('step3.sampleLabel', {
+    nSims: nSimsLabel,
+    firstGoal: firstGoal ? t('step3.firstGoalSuffix', { minute: firstGoal }) : '',
+  })
 }
 
 const scenarioDrivers = (scenario) => (
@@ -1106,8 +1117,8 @@ const normalizeScoreDistribution = (input) => {
   return []
 }
 
-const roleLabel = (role) => roleLabelAdapter(role)
-const stateLabel = (state) => stateLabelAdapter(state)
+const roleLabel = (role) => roleLabelAdapter(role, t)
+const stateLabel = (state) => stateLabelAdapter(state, t)
 const formatXg = (value) => formatDecimal(value, 2)
 const openRosterDrawer = () => {
   rosterDrawerOpen.value = true
@@ -1152,7 +1163,7 @@ watch(() => props.predictionConfigId, (value) => {
 })
 
 onMounted(() => {
-  addLog('Step3 九场景比赛推演初始化')
+  addLog(t('step3.logInit'))
   loadPredictionConfigSnapshot()
   reconcileActiveWorkflow().then(async (hasActiveRun) => {
     await recoverPredictionConfigFromRun()
@@ -1161,7 +1172,7 @@ onMounted(() => {
       startStatusPolling()
     } else if (!currentPredictionConfigId.value) {
       emit('update-status', 'error')
-      errorMessage.value = '缺少 prediction_config_id，请先完成 Step2 配置准备。'
+      errorMessage.value = t('step3.missingConfigError')
     } else {
       emit('update-status', 'processing')
     }

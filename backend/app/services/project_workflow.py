@@ -59,6 +59,7 @@ class ProjectWorkflowService:
             if not project:
                 raise KeyError(f"project not found: {project_id}")
             state = self._ensure_workflow_state(session, project)
+            state = self._repair_workflow_state(session, project, state)
             return self._state_payload(project, state)
 
     def regenerate_step(
@@ -185,17 +186,18 @@ class ProjectWorkflowService:
                 raise KeyError("project or prediction config not found")
             state = self._ensure_workflow_state(session, project)
             active = self._normalize_active_artifacts(state.get("active_artifacts"))
+            same_config = active.get("prediction_config_id") == prediction_config_id
             active.update(
                 {
                     "graph_id": config.graph_id or active.get("graph_id") or project.graph_id,
                     "prediction_config_id": prediction_config_id,
-                    "prediction_run_id": None,
-                    "report_id": None,
+                    "prediction_run_id": active.get("prediction_run_id") if same_config else None,
+                    "report_id": active.get("report_id") if same_config else None,
                 }
             )
             state = {
                 **state,
-                "current_step": max(int(state.get("current_step") or 1), 3),
+                "current_step": max(int(state.get("current_step") or 1), self._current_step_from_active(active), 3),
                 "active_artifacts": active,
             }
             self._stamp_config(config, state, active=True)
@@ -392,6 +394,142 @@ class ProjectWorkflowService:
         self._stamp_legacy_active_artifacts(session, project, state)
         session.flush()
         return state
+
+    def _repair_workflow_state(self, session: Any, project: ProjectRecord, state: dict[str, Any]) -> dict[str, Any]:
+        """Keep active Step2/Step3 pointers on one valid artifact chain.
+
+        Older flows and failed retries can leave ``active_artifacts`` pointing at
+        a failed or stale Step2 config while a valid Step3 run still exists. The
+        UI treats this JSON as the source of truth, so repair it before exposing
+        workflow state.
+        """
+
+        active = self._normalize_active_artifacts(state.get("active_artifacts"))
+        original = dict(active)
+        config = session.get(PredictionConfigRecord, active["prediction_config_id"]) if active.get("prediction_config_id") else None
+        run = session.get(PredictionRunRecord, active["prediction_run_id"]) if active.get("prediction_run_id") else None
+
+        if run and self._is_run_usable(project, run):
+            run_config = session.get(PredictionConfigRecord, run.prediction_config_id) if run.prediction_config_id else None
+            if self._is_config_usable(project, run_config):
+                if active.get("prediction_config_id") != run_config.prediction_config_id:
+                    active["prediction_config_id"] = run_config.prediction_config_id
+                if active.get("graph_id") != (run.graph_id or run_config.graph_id or active.get("graph_id") or project.graph_id):
+                    active["graph_id"] = run.graph_id or run_config.graph_id or active.get("graph_id") or project.graph_id
+                config = run_config
+            else:
+                active["prediction_run_id"] = None
+                active["report_id"] = None
+                run = None
+        elif active.get("prediction_run_id"):
+            active["prediction_run_id"] = None
+            active["report_id"] = None
+            run = None
+
+        if not self._is_config_usable(project, config):
+            replacement = None
+            if run and run.prediction_config_id:
+                candidate = session.get(PredictionConfigRecord, run.prediction_config_id)
+                if self._is_config_usable(project, candidate):
+                    replacement = candidate
+            if not replacement:
+                replacement = self._latest_usable_config(session, project, active.get("graph_id"))
+            active["prediction_config_id"] = replacement.prediction_config_id if replacement else None
+            if replacement:
+                active["graph_id"] = replacement.graph_id or active.get("graph_id") or project.graph_id
+                config = replacement
+            else:
+                config = None
+
+        if not active.get("prediction_run_id") and config:
+            recovered_run = self._latest_usable_run(session, project, config.prediction_config_id)
+            if recovered_run:
+                active["prediction_run_id"] = recovered_run.prediction_run_id
+                active["graph_id"] = recovered_run.graph_id or active.get("graph_id") or config.graph_id or project.graph_id
+
+        if active != original or int(state.get("current_step") or 1) != self._current_step_from_active(active):
+            repaired = {
+                **state,
+                "current_step": self._current_step_from_active(active),
+                "active_artifacts": active,
+            }
+            self._write_workflow_state(project, repaired)
+            session.flush()
+            return repaired
+        return state
+
+    def _is_config_usable(self, project: ProjectRecord, config: PredictionConfigRecord | None) -> bool:
+        if not config or config.project_id != project.project_id or config.status != "ready":
+            return False
+        metadata = config.config_metadata or {}
+        if metadata.get("artifact_status") not in {None, ARTIFACT_ACTIVE}:
+            return False
+        return self._config_matches_project_identity(project, config)
+
+    def _is_run_usable(self, project: ProjectRecord, run: PredictionRunRecord | None) -> bool:
+        if not run or run.project_id != project.project_id or not run.prediction_config_id:
+            return False
+        if run.status in {"failed", "cancelled", "canceled"}:
+            return False
+        metadata = run.run_metadata or {}
+        return metadata.get("artifact_status") in {None, ARTIFACT_ACTIVE, "pending"}
+
+    def _latest_usable_config(
+        self,
+        session: Any,
+        project: ProjectRecord,
+        graph_id: str | None,
+    ) -> PredictionConfigRecord | None:
+        query = session.query(PredictionConfigRecord).filter_by(project_id=project.project_id, status="ready")
+        if graph_id:
+            query = query.filter_by(graph_id=graph_id)
+        rows = query.order_by(
+            PredictionConfigRecord.completed_at.desc().nullslast(),
+            PredictionConfigRecord.created_at.desc(),
+        ).limit(10).all()
+        for row in rows:
+            if self._is_config_usable(project, row):
+                return row
+        return None
+
+    def _latest_usable_run(
+        self,
+        session: Any,
+        project: ProjectRecord,
+        prediction_config_id: str,
+    ) -> PredictionRunRecord | None:
+        rows = (
+            session.query(PredictionRunRecord)
+            .filter_by(project_id=project.project_id, prediction_config_id=prediction_config_id)
+            .order_by(PredictionRunRecord.completed_at.desc().nullslast(), PredictionRunRecord.created_at.desc())
+            .limit(10)
+            .all()
+        )
+        for row in rows:
+            if self._is_run_usable(project, row):
+                return row
+        return None
+
+    def _config_matches_project_identity(self, project: ProjectRecord, config: PredictionConfigRecord) -> bool:
+        expected = self._project_identity_pair(project)
+        actual = self._config_identity_pair(config)
+        return not expected or not actual or expected == actual
+
+    def _project_identity_pair(self, project: ProjectRecord) -> tuple[str, str] | None:
+        metadata = project.project_metadata or {}
+        preview = metadata.get("step2_preview") if isinstance(metadata.get("step2_preview"), dict) else {}
+        home = str(preview.get("home_iso3") or "").strip().upper()
+        away = str(preview.get("away_iso3") or "").strip().upper()
+        return (home, away) if home and away else None
+
+    def _config_identity_pair(self, config: PredictionConfigRecord) -> tuple[str, str] | None:
+        snapshot = config.model_input_snapshot or {}
+        squads = snapshot.get("squads") if isinstance(snapshot.get("squads"), dict) else {}
+        home_squad = squads.get("home") if isinstance(squads.get("home"), dict) else {}
+        away_squad = squads.get("away") if isinstance(squads.get("away"), dict) else {}
+        home = str(snapshot.get("home_iso3") or home_squad.get("team_iso3") or "").strip().upper()
+        away = str(snapshot.get("away_iso3") or away_squad.get("team_iso3") or "").strip().upper()
+        return (home, away) if home and away else None
 
     def _legacy_state(self, session: Any, project: ProjectRecord, metadata: dict[str, Any]) -> dict[str, Any]:
         active = self._normalize_active_artifacts(metadata.get("active_artifacts"))

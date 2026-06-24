@@ -25,6 +25,7 @@ from ..db.models import (
 from ..db.session import get_session
 from .coach_jury import CoachJuryService, SCENARIO_TEMPLATE, resume_policy_summary
 from .coach_llm_panel import CoachLLMPanel, CoachPanelInputs, PANEL_VERSION, ROLE_BY_KEY
+from .content_language import build_content_language_instruction, detect_content_language
 from .external_data.team_name_normalizer import TeamNameNormalizer
 from .football_data_extractor import EXTRACTOR_VERSION, FootballDataExtractor, infer_2026_world_cup_host_country
 from .football_goal_model import ExternalDataPool, FitArtifacts, FootballGoalModelAdapter, extract_structured_match_inputs
@@ -35,6 +36,13 @@ from .llm_budget import LLMCallLedger, LLMBudgetProfile
 from .project_workflow import ProjectWorkflowService
 from .roster_loader import RosterLoader, TeamRoster, apply_graph_facts, apply_source_availability
 from .scenario_weight_applier import ScenarioWeightApplier
+from .team_localization import (
+    localize_coach_discussion_rows,
+    localize_resume_node_rows,
+    localize_scenario_case_rows,
+    localize_step2_payload,
+    localize_team_strength_rows,
+)
 from .team_strength_estimator import TeamStrengthEstimator
 
 
@@ -101,6 +109,9 @@ class PredictionConfigService:
         graph_snapshot = _load_graph_snapshot_for_config(graph_id, graph_entities or [])
         entities = graph_snapshot.get("entities") or []
         source_text = _combined_text(project_snapshot, entities, requirement)
+        primary_source_text = _primary_source_text(project_snapshot)
+        content_language = detect_content_language(source_text)
+        content_language_instruction = build_content_language_instruction(source_text)
 
         budget = _resolve_prepare_budget(llm_budget)
         ledger = LLMCallLedger(config_id=prediction_config_id, budget=budget)
@@ -108,6 +119,7 @@ class PredictionConfigService:
         home_iso3, away_iso3, home, away = _resolve_match_identity(
             requirement=requirement,
             source_text=source_text,
+            primary_source_text=primary_source_text,
             graph_entities=entities,
             graph_id=graph_id,
             home_team=home_team,
@@ -182,6 +194,14 @@ class PredictionConfigService:
                 llm_ledger=ledger,
             )
             extracted = extracted_context.to_dict()
+            identity_locked = _identity_locked_by_primary_source(
+                primary_source_text=primary_source_text,
+                current_home_iso3=home_iso3,
+                current_away_iso3=away_iso3,
+                normalizer=normalizer,
+                home_team=home_team,
+                away_team=away_team,
+            )
             identity_update = _identity_update_from_extracted(
                 current_home_iso3=home_iso3,
                 current_away_iso3=away_iso3,
@@ -191,7 +211,7 @@ class PredictionConfigService:
                 normalizer=normalizer,
                 dataset_id=dataset_id,
             )
-            if identity_update:
+            if identity_update and not identity_locked:
                 home_iso3, away_iso3, home, away = identity_update
                 home_roster, away_roster = loader.snapshot(dataset_id, home_iso3, away_iso3)
                 home_roster = _roster_with_display_name(home_roster, home)
@@ -329,7 +349,11 @@ class PredictionConfigService:
                     f"{_role_label(role_key)} 评审中...",
                     progress_percent=70,
                 )
-            verdicts = CoachLLMPanel(budget=budget, ledger=ledger).deliberate(panel_inputs)
+            verdicts = CoachLLMPanel(
+                budget=budget,
+                ledger=ledger,
+                content_language_instruction=content_language_instruction,
+            ).deliberate(panel_inputs)
 
             weighted_cases = ScenarioWeightApplier().apply(
                 template=SCENARIO_TEMPLATE,
@@ -372,6 +396,14 @@ class PredictionConfigService:
                 "graph_id": graph_id,
                 "graph_entities_count": len(entities),
                 "source_text_length": len(source_text),
+                "identity_locked_by_primary_source": identity_locked,
+                "content_language": {
+                    "code": content_language.code,
+                    "display_name_zh": content_language.display_name_zh,
+                    "display_name_en": content_language.display_name_en,
+                    "confidence": content_language.confidence,
+                },
+                "content_language_instruction": content_language_instruction,
                 "squads": loader.to_snapshot(home_roster, away_roster),
                 "extracted": extracted,
                 "structured_inputs": structured_inputs,
@@ -435,10 +467,15 @@ class PredictionConfigService:
                 status="ready",
             )
 
-            return {
+            result = {
                 "prediction_config_id": prediction_config_id,
                 "project_id": project_id,
                 "graph_id": graph_id,
+                "match_name": f"{home} vs {away}",
+                "home_team": home,
+                "away_team": away,
+                "home_iso3": home_iso3,
+                "away_iso3": away_iso3,
                 "status": "ready",
                 "current_phase": "ready",
                 "progress_percent": 100,
@@ -458,11 +495,13 @@ class PredictionConfigService:
                 "competition": competition_meta,
                 "warnings": model_input_snapshot.get("warnings") or [],
             }
+            return localize_step2_payload(result)
         except Exception as exc:
             self._mark_failed(prediction_config_id, exc)
             raise
 
     def find_ready_config(self, *, project_id: str, graph_id: str | None) -> str | None:
+        expected_pair = _primary_source_identity_pair(self._project_snapshot(project_id))
         try:
             active_config_id = ProjectWorkflowService().get_active_config_id(project_id)
         except KeyError:
@@ -475,6 +514,7 @@ class PredictionConfigService:
                     and active.status == "ready"
                     and (not graph_id or active.graph_id == graph_id)
                     and _is_reusable_ready_config(active)
+                    and _config_matches_primary_source_pair(active, expected_pair)
                 ):
                     return active.prediction_config_id
         with get_session() as session:
@@ -486,7 +526,7 @@ class PredictionConfigService:
             if graph_id:
                 query = query.filter_by(graph_id=graph_id)
             for row in query.limit(5).all():
-                if _is_reusable_ready_config(row):
+                if _is_reusable_ready_config(row) and _config_matches_primary_source_pair(row, expected_pair):
                     return row.prediction_config_id
             return None
 
@@ -503,14 +543,16 @@ class PredictionConfigService:
             agents_count = session.query(PredictionCoachAgentRecord).filter_by(prediction_config_id=prediction_config_id).count()
             scenario_cases_count = session.query(PredictionConfigScenarioCaseRecord).filter_by(prediction_config_id=prediction_config_id).count()
             resume_nodes_count = session.query(PredictionConfigResumeNodeRecord).filter_by(prediction_config_id=prediction_config_id).count()
-            return _config_to_dict(
-                config,
-                dataset=dataset,
-                counts={
-                    "coach_agents": agents_count,
-                    "scenario_cases": scenario_cases_count,
-                    "resume_nodes": resume_nodes_count,
-                },
+            return localize_step2_payload(
+                _config_to_dict(
+                    config,
+                    dataset=dataset,
+                    counts={
+                        "coach_agents": agents_count,
+                        "scenario_cases": scenario_cases_count,
+                        "resume_nodes": resume_nodes_count,
+                    },
+                )
             )
 
     def get_status(self, prediction_config_id: str) -> dict[str, Any]:
@@ -588,11 +630,12 @@ class PredictionConfigService:
             config = self._require_config(session, prediction_config_id)
             dataset = session.get(PredictionPlayerDatasetRecord, config.player_dataset_id) if config.player_dataset_id else None
             model_input = config.model_input_snapshot or {}
-            return _roster_contract(
+            roster = _roster_contract(
                 dataset_id=config.player_dataset_id,
                 dataset=dataset,
                 squads=model_input.get("squads") or {},
             )
+            return localize_step2_payload({"roster": roster, "model_input_snapshot": model_input})["roster"]
 
     def _existing_summary(self, prediction_config_id: str) -> dict[str, Any]:
         data = self.get_config(prediction_config_id)
@@ -883,7 +926,7 @@ class PredictionConfigService:
                 .order_by(PredictionCoachDiscussionRecord.round_index.asc(), PredictionCoachDiscussionRecord.created_at.asc())
                 .all()
             )
-            return [_discussion_to_dict(row) for row in rows]
+            return localize_coach_discussion_rows([_discussion_to_dict(row) for row in rows])
 
     def list_scenario_cases(self, prediction_config_id: str) -> list[dict[str, Any]]:
         with get_session() as session:
@@ -894,7 +937,7 @@ class PredictionConfigService:
                 .order_by(PredictionConfigScenarioCaseRecord.created_at.asc())
                 .all()
             )
-            return [_config_scenario_case_to_dict(row) for row in rows]
+            return localize_scenario_case_rows([_config_scenario_case_to_dict(row) for row in rows])
 
     def list_resume_nodes(self, prediction_config_id: str) -> list[dict[str, Any]]:
         with get_session() as session:
@@ -905,7 +948,7 @@ class PredictionConfigService:
                 .order_by(PredictionConfigResumeNodeRecord.sequence.asc())
                 .all()
             )
-            return [_resume_node_to_dict(row) for row in rows]
+            return localize_resume_node_rows([_resume_node_to_dict(row) for row in rows])
 
     def list_team_strengths(self, prediction_config_id: str) -> list[dict[str, Any]]:
         with get_session() as session:
@@ -916,7 +959,7 @@ class PredictionConfigService:
                 .order_by(PredictionTeamStrengthRecord.team_role.asc())
                 .all()
             )
-            return [
+            rows = [
                 {
                     "id": row.id,
                     "prediction_config_id": row.prediction_config_id,
@@ -944,6 +987,7 @@ class PredictionConfigService:
                 }
                 for row in rows
             ]
+            return localize_team_strength_rows(rows)
 
     def _require_config(self, session, prediction_config_id: str) -> PredictionConfigRecord:
         config = session.get(PredictionConfigRecord, prediction_config_id)
@@ -1015,6 +1059,12 @@ def _combined_text(project_snapshot: dict[str, Any], graph_entities: list[dict[s
             entity_text,
         ]
     )
+
+
+def _primary_source_text(project_snapshot: dict[str, Any]) -> str:
+    """Return uploaded document body text only, excluding filenames and graph text."""
+
+    return str(project_snapshot.get("extracted_text") or "")
 
 
 def _load_graph_snapshot_for_config(graph_id: str | None, supplied_entities: list[dict[str, Any]]) -> dict[str, Any]:
@@ -1130,6 +1180,8 @@ def _config_to_dict(
         "match_name": config.match_name,
         "home_team": config.home_team,
         "away_team": config.away_team,
+        "home_iso3": model_input.get("home_iso3") or (squads.get("home") or {}).get("team_iso3"),
+        "away_iso3": model_input.get("away_iso3") or (squads.get("away") or {}).get("team_iso3"),
         "competition": competition,
         "competition_label": config.competition,
         "kickoff_time": config.kickoff_time,
@@ -1233,10 +1285,40 @@ def _is_reusable_ready_config(config: PredictionConfigRecord) -> bool:
             and snapshot_home_iso3
             and snapshot_away_iso3
             and (extracted_home, extracted_away) != (snapshot_home_iso3, snapshot_away_iso3)
+            and not model_input.get("identity_locked_by_primary_source")
         ):
             return False
 
     return True
+
+
+def _primary_source_identity_pair(project_snapshot: dict[str, Any]) -> tuple[str, str] | None:
+    primary_source_text = _primary_source_text(project_snapshot)
+    if not primary_source_text:
+        return None
+    normalizer = TeamNameNormalizer()
+    extractor = FootballDataExtractor(normalizer=normalizer)
+    home_iso3, away_iso3 = _resolve_primary_source_pair(primary_source_text, extractor)
+    if not home_iso3 or not away_iso3:
+        return None
+    return _normalize_iso3(home_iso3), _normalize_iso3(away_iso3)
+
+
+def _config_matches_primary_source_pair(
+    config: PredictionConfigRecord,
+    expected_pair: tuple[str, str] | None,
+) -> bool:
+    if not expected_pair:
+        return True
+    model_input = config.model_input_snapshot or {}
+    squads = model_input.get("squads") if isinstance(model_input.get("squads"), dict) else {}
+    home_squad = squads.get("home") if isinstance(squads.get("home"), dict) else {}
+    away_squad = squads.get("away") if isinstance(squads.get("away"), dict) else {}
+    config_pair = (
+        _normalize_iso3(model_input.get("home_iso3") or home_squad.get("team_iso3")),
+        _normalize_iso3(model_input.get("away_iso3") or away_squad.get("team_iso3")),
+    )
+    return config_pair == expected_pair
 
 
 def _is_placeholder_team(value: Any) -> bool:
@@ -1558,6 +1640,7 @@ def _resolve_match_identity(
     *,
     requirement: str,
     source_text: str | None = None,
+    primary_source_text: str | None = None,
     graph_entities: list[dict[str, Any]],
     graph_id: str | None = None,
     home_team: str | None,
@@ -1565,7 +1648,9 @@ def _resolve_match_identity(
     normalizer: TeamNameNormalizer,
 ) -> tuple[str, str, str, str]:
     extractor = FootballDataExtractor(normalizer=normalizer)
-    declared_home, declared_away = _resolve_declared_source_pair(source_text or requirement, extractor)
+    declared_source_text = primary_source_text or source_text or requirement
+    declared_home, declared_away = _resolve_declared_source_pair(declared_source_text, extractor)
+    primary_home, primary_away = _resolve_primary_source_pair(primary_source_text, extractor)
     graph_home, graph_away = _resolve_graph_match_pair(
         graph_id=graph_id,
         normalizer=normalizer,
@@ -1581,6 +1666,7 @@ def _resolve_match_identity(
     home_iso3 = (
         _team_to_iso3(home_team, normalizer, extractor)
         or declared_home
+        or primary_home
         or graph_home
         or pair_home
         or _team_to_iso3(home_name, normalizer, extractor)
@@ -1589,6 +1675,7 @@ def _resolve_match_identity(
     away_iso3 = (
         _team_to_iso3(away_team, normalizer, extractor)
         or declared_away
+        or primary_away
         or graph_away
         or pair_away
         or _team_to_iso3(away_name, normalizer, extractor)
@@ -1597,6 +1684,165 @@ def _resolve_match_identity(
     home_display = home_team or (_canonical_zh(normalizer, home_iso3) if home_iso3 in normalizer.alias_map else None) or home_name
     away_display = away_team or (_canonical_zh(normalizer, away_iso3) if away_iso3 in normalizer.alias_map else None) or away_name
     return home_iso3, away_iso3, home_display or home_name, away_display or away_name
+
+
+def _resolve_primary_source_pair(
+    text: str | None,
+    extractor: FootballDataExtractor,
+) -> tuple[str | None, str | None]:
+    """Resolve the match being played from uploaded document body content.
+
+    Filenames, markdown titles, source lists and graph-derived text are noisy for
+    Step2. This parser only trusts high-signal body lines such as
+    ``Teams: A vs B`` or structured ``team_a``/``team_b`` fields.
+    """
+
+    source = str(text or "")
+    if not source:
+        return None, None
+
+    body = source[:80000]
+    structured_home, structured_away = _resolve_structured_primary_pair(body, extractor)
+    if structured_home and structured_away and structured_home != structured_away:
+        return structured_home, structured_away
+
+    candidates: list[tuple[int, int, tuple[str, str]]] = []
+    in_sources = False
+    in_match_overview = False
+    for index, raw_line in enumerate(body.splitlines()[:800]):
+        line = raw_line.strip()
+        if not line:
+            continue
+
+        lowered = line.casefold()
+        if re.match(r"^#{1,6}\s*", line):
+            in_match_overview = bool(
+                re.search(r"\bmatch\s+overview\b|比赛概览|比赛信息|赛事概览|基本信息", line, flags=re.I)
+            )
+            in_sources = False
+            continue
+        if re.match(r"^-{3,}$", line):
+            in_sources = False
+            continue
+        if re.match(r"^(?:main\s+sources?|sources?|参考来源|主要来源)\s*[:：]?\s*$", lowered, flags=re.I):
+            in_sources = True
+            continue
+        if in_sources:
+            continue
+        if _looks_like_non_content_source_line(line):
+            continue
+
+        pair = _resolve_primary_pair_from_line(line, extractor)
+        if pair == (None, None) or pair[0] == pair[1]:
+            continue
+
+        score = _primary_pair_line_score(line, in_match_overview=in_match_overview)
+        if score >= 35:
+            candidates.append((score, -index, pair))
+
+    if not candidates:
+        return None, None
+    return max(candidates)[2]
+
+
+def _identity_locked_by_primary_source(
+    *,
+    primary_source_text: str | None,
+    current_home_iso3: str,
+    current_away_iso3: str,
+    normalizer: TeamNameNormalizer,
+    home_team: str | None = None,
+    away_team: str | None = None,
+) -> bool:
+    extractor = FootballDataExtractor(normalizer=normalizer)
+    explicit_home = _team_to_iso3(home_team, normalizer, extractor)
+    explicit_away = _team_to_iso3(away_team, normalizer, extractor)
+    if explicit_home and explicit_away:
+        return (
+            _normalize_iso3(explicit_home),
+            _normalize_iso3(explicit_away),
+        ) == (_normalize_iso3(current_home_iso3), _normalize_iso3(current_away_iso3))
+
+    primary_home, primary_away = _resolve_primary_source_pair(primary_source_text, extractor)
+    if not primary_home or not primary_away:
+        return False
+    return (
+        _normalize_iso3(primary_home),
+        _normalize_iso3(primary_away),
+    ) == (_normalize_iso3(current_home_iso3), _normalize_iso3(current_away_iso3))
+
+
+def _resolve_structured_primary_pair(
+    text: str,
+    extractor: FootballDataExtractor,
+) -> tuple[str | None, str | None]:
+    team_a_patterns = (
+        r"\bteam\s*a\b\s*[：:]\s*\"?(?P<team>[^\"\n\r,，;；()]+)",
+        r'"team_a"\s*:\s*"(?P<team>[^"]+)"',
+        r"'team_a'\s*:\s*'(?P<team>[^']+)'",
+        r"球队\s*A\s*[：:]\s*(?P<team>[^\n\r,，;；()]+)",
+    )
+    team_b_patterns = (
+        r"\bteam\s*b\b\s*[：:]\s*\"?(?P<team>[^\"\n\r,，;；()]+)",
+        r'"team_b"\s*:\s*"(?P<team>[^"]+)"',
+        r"'team_b'\s*:\s*'(?P<team>[^']+)'",
+        r"球队\s*B\s*[：:]\s*(?P<team>[^\n\r,，;；()]+)",
+    )
+    team_a = _first_declared_team(text, team_a_patterns, extractor)
+    team_b = _first_declared_team(text, team_b_patterns, extractor)
+    return team_a, team_b
+
+
+def _resolve_primary_pair_from_line(
+    line: str,
+    extractor: FootballDataExtractor,
+) -> tuple[str | None, str | None]:
+    normalized = re.sub(r"\((?:\s*team\s*[ab]\s*|球队\s*[ab]\s*)\)", "", line, flags=re.I)
+    normalized = re.sub(r"^\s*[-*]\s*", "", normalized).strip()
+    variants = [
+        normalized,
+        re.sub(
+            r"^(?:teams?|match|fixture|target\s+match|main\s+match|比赛|比赛双方|对阵双方|参赛双方|本场双方|对阵|赛事)\s*[：:]\s*",
+            "",
+            normalized,
+            flags=re.I,
+        ),
+    ]
+    for candidate in variants:
+        home, away = extractor._resolve_team_pair(candidate)
+        if home and away and home != away:
+            return home, away
+    return None, None
+
+
+def _primary_pair_line_score(line: str, *, in_match_overview: bool) -> int:
+    lowered = line.casefold()
+    score = 0
+    if in_match_overview:
+        score += 45
+    if re.search(r"\bteams?\b|比赛双方|对阵双方|参赛双方|本场双方", line, flags=re.I):
+        score += 55
+    if re.search(r"\bteam\s*a\b|\bteam\s*b\b|球队\s*A|球队\s*B", line, flags=re.I):
+        score += 20
+    if re.search(r"\bmatch\b|fixture|比赛|对阵|vs\.?| v\.? ", line, flags=re.I):
+        score += 20
+    if re.search(r"this\s+report|this\s+match|本场|本报告", line, flags=re.I):
+        score += 15
+    if re.search(r"recent|first[- ]round|round\s+1|\br1\b|review|opponent|score|head[- ]to[- ]head", lowered, flags=re.I):
+        score -= 35
+    if re.search(r"\b\d+\s*[-:：]\s*\d+\b", line):
+        score -= 25
+    return score
+
+
+def _looks_like_non_content_source_line(line: str) -> bool:
+    lowered = line.casefold()
+    return bool(
+        "http://" in lowered
+        or "https://" in lowered
+        or "retrieved" in lowered
+        or re.search(r"\b(?:sources?|references?|citation|citations)\b", lowered)
+    )
 
 
 def _resolve_declared_source_pair(
@@ -2490,6 +2736,8 @@ def _external_sources_etag(external_pool: Any) -> dict[str, Any]:
                 payload[key] = fingerprint()
             except Exception as exc:
                 payload[key] = {"error": f"{type(exc).__name__}: {exc}"}
+    for key, error in (getattr(external_pool, "source_errors", None) or {}).items():
+        payload[key] = {**(payload.get(key) if isinstance(payload.get(key), dict) else {}), "error": str(error)}
     if getattr(external_pool, "sources", None):
         payload["sources"] = list(getattr(external_pool, "sources"))
     if not payload:

@@ -8,8 +8,8 @@
           <!-- Report Header -->
           <div class="report-header-block">
             <div class="report-meta">
-              <span class="report-tag">Prediction Report</span>
-              <span class="report-id">ID: {{ reportId || 'REF-2024-X92' }}</span>
+              <span class="report-tag">{{ t('step4.reportTag') }}</span>
+              <span class="report-id">{{ t('common.id') }}: {{ reportId || 'REF-2024-X92' }}</span>
             </div>
             <h1 class="main-title">{{ reportOutline.title }}</h1>
             <p class="sub-title">{{ reportOutline.summary }}</p>
@@ -55,7 +55,7 @@
                       :home="evidencePanel.widgets.lineup.home"
                       :away="evidencePanel.widgets.lineup.away"
                     />
-                    <div v-else class="lineup-widget-empty">暂无可渲染的预计首发阵型图</div>
+                    <div v-else class="lineup-widget-empty">{{ t('step4.lineupWidgetEmpty') }}</div>
                     <TacticsPanel
                       :home-team="evidencePanel.widgets.lineup.home?.team || evidencePanel.verdict.eyebrow"
                       :away-team="evidencePanel.widgets.lineup.away?.team || ''"
@@ -88,7 +88,7 @@
             <div class="waiting-ring"></div>
             <div class="waiting-ring"></div>
           </div>
-          <span class="waiting-text">Waiting for prediction report assistant...</span>
+          <span class="waiting-text">{{ t('step5.waitingReportAssistant') }}</span>
         </div>
       </div>
 
@@ -112,7 +112,7 @@
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M15 18l-6-6 6-6"></path>
               </svg>
-              <span>View Report</span>
+              <span>{{ t('step5.viewReport') }}</span>
             </button>
             <button
               v-if="reportProjectId && reportConversationId"
@@ -120,7 +120,7 @@
               :disabled="isRegeneratingQa"
               @click="regenerateStep5"
             >
-              <span>{{ isRegeneratingQa ? 'Resetting...' : '重新生成问答' }}</span>
+              <span>{{ isRegeneratingQa ? t('step5.resetting') : t('step5.regenerateQa') }}</span>
             </button>
           </div>
         </div>
@@ -209,7 +209,7 @@
               <div class="message-content">
                 <div class="message-header">
                   <span class="sender-name">
-                    {{ msg.role === 'user' ? 'You' : 'Prediction Q&A' }}
+                    {{ msg.role === 'user' ? t('step5.senderYou') : t('step5.senderPredictionQa') }}
                   </span>
                   <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
                 </div>
@@ -311,7 +311,7 @@ const chatMessages = ref(null)
 const chatInputRef = ref(null)
 const isRegeneratingQa = ref(false)
 const isStaticDemo = typeof window !== 'undefined' && window.__GOALFISH_STATIC_DEMO__ === true
-const staticDemoQuestion = '如果你是突尼斯新任主帅，如何对于战术和人员安排上做出合理的规划，打破赛前人们都不看好的颓势击败日本队？'
+const staticDemoQuestion = computed(() => t('step5.defaultDemoQuestion'))
 
 // Report Data
 const reportSnapshot = ref(null)
@@ -325,8 +325,9 @@ const evidencePanel = computed(() => buildStep4ReportEvidence({
   reportSnapshot: reportSnapshot.value,
   reportOutline: reportOutline.value,
   generatedSections: generatedSections.value,
+  t,
 }))
-const isTacticsSection = (section) => section?.title === '战术、阵型与预计首发'
+const isTacticsSection = (section) => /战术|阵型|首发|tactics|lineup/i.test(section?.title || '')
 const hasLineupWidget = computed(() => {
   const lineup = evidencePanel.value.widgets?.lineup || {}
   const home = Array.isArray(lineup.home?.players) ? lineup.home.players : []
@@ -370,17 +371,18 @@ const regenerateStep5 = async () => {
       projectId: reportProjectId.value,
       step: 5,
       reason: 'step5_qa_regenerate',
+      t,
       onBefore: () => {
         resetConversationState()
         emit('update-status', 'processing')
-        addLog('Step5 问答已重新生成，旧问答会话已失效')
+        addLog(t('step5.logStep5Regenerated'))
       },
     })
     if (!regenerated) return
     await loadReportAgentConversation({ force: true })
     emit('update-status', 'completed')
   } catch (err) {
-    addLog(`重新生成问答失败: ${err.message}`)
+    addLog(t('step5.logRegenerateQaFailed', { error: err.message }))
     emit('update-status', 'error')
   } finally {
     isRegeneratingQa.value = false
@@ -406,7 +408,7 @@ const loadReportAgentConversation = async ({ force = false } = {}) => {
     const conversationRes = await createReportConversation(props.reportId, {
       simulation_id: props.predictionRunId || props.simulationId,
       target_type: 'report_agent',
-      title: 'Prediction Q&A',
+      title: t('step5.senderPredictionQa'),
       metadata: { prediction_run_id: props.predictionRunId || props.simulationId }
     })
 
@@ -481,7 +483,7 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 const handleChatInputFocus = () => {
   if (isStaticDemo && !chatInput.value.trim()) {
-    chatInput.value = staticDemoQuestion
+    chatInput.value = staticDemoQuestion.value
   }
 }
 
@@ -519,7 +521,7 @@ const streamAssistantMessage = async (content) => {
 const sendMessage = async () => {
   if (!chatInput.value.trim() || isSending.value) return
   
-  const message = isStaticDemo ? staticDemoQuestion : chatInput.value.trim()
+  const message = isStaticDemo ? staticDemoQuestion.value : chatInput.value.trim()
   chatInput.value = ''
   
   // Add user message
@@ -594,7 +596,7 @@ const sendToReportAgent = async (message) => {
       throw new Error(res.error || t('step5.requestFailed'))
     }
   }
-  throw new Error('预测问答会读取已入库的足球预测证据，当前报告对话未能初始化')
+  throw new Error(t('step5.qaContextNotInitialized'))
 }
 
 const scrollToBottom = () => {

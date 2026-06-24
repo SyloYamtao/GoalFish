@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from .coach_llm_panel import ROLE_BY_KEY
+from .content_language import build_content_language_instruction
 from .llm_budget import BudgetExceeded, LLMCallLedger, LLMBudgetProfile
 
 
@@ -24,10 +25,12 @@ class CoachReviewWriter:
         budget: LLMBudgetProfile,
         ledger: LLMCallLedger,
         llm_client: Any | None = None,
+        content_language_instruction: str | None = None,
     ) -> None:
         self._budget = budget
         self._ledger = ledger
         self._llm_client = llm_client
+        self._content_language_instruction = content_language_instruction or build_content_language_instruction(None)
 
     def review(
         self,
@@ -107,7 +110,10 @@ class CoachReviewWriter:
         return [
             {
                 "role": "system",
-                "content": "你是足球预测 Step3 事后复核教练。只输出合法 JSON object。",
+                "content": (
+                    "你是足球预测 Step3 事后复核教练。只输出合法 JSON object。"
+                    f"\n\n{self._content_language_instruction}"
+                ),
             },
             {
                 "role": "user",

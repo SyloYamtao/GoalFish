@@ -9,6 +9,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
+from .content_language import build_content_language_instruction
 from .llm_budget import BudgetExceeded, LLMCallLedger, LLMBudgetProfile
 from .match_simulator import SimulationResult
 
@@ -24,10 +25,12 @@ class AnalystNotesWriter:
         budget: LLMBudgetProfile,
         ledger: LLMCallLedger,
         llm_client: Any | None = None,
+        content_language_instruction: str | None = None,
     ) -> None:
         self._budget = budget
         self._ledger = ledger
         self._llm_client = llm_client
+        self._content_language_instruction = content_language_instruction or build_content_language_instruction(None)
 
     def write_notes(
         self,
@@ -104,7 +107,10 @@ class AnalystNotesWriter:
         return [
             {
                 "role": "system",
-                "content": "你是足球预测分析师。只输出合法 JSON object，不得输出 Markdown。",
+                "content": (
+                    "你是足球预测分析师。只输出合法 JSON object，不得输出 Markdown。"
+                    f"\n\n{self._content_language_instruction}"
+                ),
             },
             {
                 "role": "user",

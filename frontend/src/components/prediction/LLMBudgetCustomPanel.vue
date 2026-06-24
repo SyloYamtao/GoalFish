@@ -3,16 +3,16 @@
     <div class="custom-row custom-row-wide">
       <div class="custom-row-label">
         <span>
-          角色启用
+          {{ t('prediction.roleEnable') }}
           <InfoTooltip
             align="left"
-            title="角色启用"
-            text="选择哪些教练角色参与 LLM 评审。角色越多，战术视角越完整，但调用数会上升；未启用角色仍会生成代理资料，只是不参与昂贵讨论。"
+            :title="t('prediction.roleEnable')"
+            :text="t('prediction.roleEnableTooltip')"
           />
         </span>
         <div class="custom-row-actions">
-          <button class="ghost-btn-xs" type="button" :disabled="disabled" @click="selectAll">全选</button>
-          <button class="ghost-btn-xs" type="button" :disabled="disabled" @click="selectCore">仅核心</button>
+          <button class="ghost-btn-xs" type="button" :disabled="disabled" @click="selectAll">{{ t('prediction.selectAll') }}</button>
+          <button class="ghost-btn-xs" type="button" :disabled="disabled" @click="selectCore">{{ t('prediction.coreOnly') }}</button>
         </div>
       </div>
       <div class="role-grid">
@@ -26,10 +26,10 @@
 
     <div class="custom-row">
       <span class="custom-row-label-text">
-        讨论轮数
+        {{ t('prediction.discussionRounds') }}
         <InfoTooltip
-          title="讨论轮数"
-          text="每个启用角色参与几轮教练讨论。1 轮用于快速形成观点；2-3 轮会加入反驳和修正，适合复杂或争议大的比赛。"
+          :title="t('prediction.discussionRounds')"
+          :text="t('prediction.discussionRoundsTooltip')"
         />
       </span>
       <div class="stepper">
@@ -37,27 +37,27 @@
         <span class="mono">{{ value.coach_deliberation_rounds }}</span>
         <button type="button" :disabled="disabled" @click="inc('coach_deliberation_rounds', 3)">+</button>
       </div>
-      <small>{{ value.coach_deliberation_rounds === 1 ? '单论' : '含反驳轮' }}</small>
+      <small>{{ value.coach_deliberation_rounds === 1 ? t('prediction.singleRound') : t('prediction.withRebuttalRound') }}</small>
     </div>
 
     <div class="custom-row">
       <span class="custom-row-label-text">
-        LLM 数据抽取
+        {{ t('prediction.llmDataExtraction') }}
         <InfoTooltip
-          title="LLM 数据抽取"
-          text="让 LLM 从图谱文本中补抽伤停、战术、天气、赛制等非结构化信号。关闭后更快，但更多依赖已有结构化字段和规则解析。"
+          :title="t('prediction.llmDataExtraction')"
+          :text="t('prediction.llmDataExtractionTooltip')"
         />
       </span>
       <Toggle :model-value="value.enable_llm_data_extraction" :disabled="disabled" @update:model-value="update({ enable_llm_data_extraction: $event })" />
-      <small>{{ value.enable_llm_data_extraction ? '启用' : '关闭' }}</small>
+      <small>{{ value.enable_llm_data_extraction ? t('prediction.enabled') : t('prediction.disabled') }}</small>
     </div>
 
     <div class="custom-row">
       <span class="custom-row-label-text">
-        场景叙述润色
+        {{ t('prediction.narrativePolish') }}
         <InfoTooltip
-          title="场景叙述润色"
-          text="选择多少个场景交给 LLM 写成更自然的赛事情境说明。数值越高，报告可读性越强；0 表示只保留模板化摘要。"
+          :title="t('prediction.narrativePolish')"
+          :text="t('prediction.narrativePolishTooltip')"
         />
       </span>
       <div class="stepper">
@@ -65,16 +65,16 @@
         <span class="mono">{{ value.narrative_polish_count }}</span>
         <button type="button" :disabled="disabled" @click="inc('narrative_polish_count', 9)">+</button>
       </div>
-      <small>0..9 场景</small>
+      <small>{{ t('prediction.scenarioCountRange') }}</small>
     </div>
 
     <div class="custom-row custom-row-wide">
       <div class="custom-row-label">
         <span>
-          分析师笔记空间
+          {{ t('prediction.analystNoteSpaces') }}
           <InfoTooltip
-            title="分析师笔记空间"
-            text="指定哪些不确定性场景需要额外分析师笔记。baseline 是基准判断，upside/error/volatility 用来解释上行、失误和高波动路径。"
+            :title="t('prediction.analystNoteSpaces')"
+            :text="t('prediction.analystNoteSpacesTooltip')"
           />
         </span>
         <div class="custom-row-actions">
@@ -84,9 +84,9 @@
             :disabled="disabled"
             @click="toggleAllSpaces(!allSpacesSelected)"
           >
-            全选
+            {{ t('prediction.selectAll') }}
           </button>
-          <button class="ghost-btn-xs" type="button" :disabled="disabled" @click="selectBaselineSpace">仅基准</button>
+          <button class="ghost-btn-xs" type="button" :disabled="disabled" @click="selectBaselineSpace">{{ t('prediction.baselineOnly') }}</button>
         </div>
       </div>
       <div class="space-grid">
@@ -111,10 +111,10 @@
 
     <div class="custom-row">
       <span class="custom-row-label-text">
-        教练事后复核
+        {{ t('prediction.postCoachReview') }}
         <InfoTooltip
-          title="教练事后复核"
-          text="预测事件生成后，再让少数教练角色检查结果是否和前面判断一致。可减少明显矛盾，但每个复核角色会增加一批调用。"
+          :title="t('prediction.postCoachReview')"
+          :text="t('prediction.postCoachReviewTooltip')"
         />
       </span>
       <div class="stepper">
@@ -122,15 +122,15 @@
         <span class="mono">{{ value.coach_review_roles.length }}</span>
         <button type="button" :disabled="disabled" @click="incReview">+</button>
       </div>
-      <small>0..3 角色</small>
+      <small>{{ t('prediction.roleCountRange') }}</small>
     </div>
 
     <div class="custom-row">
       <span class="custom-row-label-text">
-        MC 样本
+        {{ t('prediction.mcSamples') }}
         <InfoTooltip
-          title="Monte Carlo 样本"
-          text="比赛过程模拟次数。样本越多，比分分布和概率更稳定，但运行更慢；500 用于快速预览，2000-3000 通常足够稳定。"
+          :title="t('prediction.mcSamples')"
+          :text="t('prediction.mcSamplesTooltip')"
         />
       </span>
       <div class="stepper stepper-wide">
@@ -146,19 +146,19 @@
         StatsBomb
         <InfoTooltip
           title="StatsBomb"
-          text="尝试使用 StatsBomb 或本地可用 xG/事件数据补充机会质量。没有可用数据时会自动跳过，不会阻塞配置生成。"
+          :text="t('prediction.statsBombTooltip')"
         />
       </span>
       <Toggle :model-value="value.enable_statsbomb" :disabled="disabled" @update:model-value="update({ enable_statsbomb: $event })" />
-      <small>{{ value.enable_statsbomb ? '启用' : '跳过' }}</small>
+      <small>{{ value.enable_statsbomb ? t('prediction.enabled') : t('prediction.skip') }}</small>
     </div>
 
     <div class="custom-row">
       <span class="custom-row-label-text">
-        硬上限
+        {{ t('prediction.hardCap') }}
         <InfoTooltip
-          title="硬上限"
-          text="本次配置允许的最大 LLM 调用数，范围 1-130。深度档和最大自定义需要更高上限，否则后续 LLM 步骤会降级为模板或缓存结果。"
+          :title="t('prediction.hardCap')"
+          :text="t('prediction.hardCapTooltip')"
         />
       </span>
       <div class="stepper">
@@ -170,17 +170,18 @@
     </div>
 
     <div class="custom-preview">
-      <span>共 <b class="mono">{{ estimatedCalls }}</b> 次调用</span>
-      <span>硬上限 <b class="mono">{{ value.hard_cap_calls }}</b></span>
-      <span class="custom-preview-note">启用项越多，耗时和模型费用通常越高</span>
-      <button class="ghost-btn ghost-btn-sm" type="button" :disabled="disabled" @click="$emit('apply')">应用</button>
-      <button class="ghost-btn ghost-btn-sm" type="button" :disabled="disabled" @click="reset">重置</button>
+      <span>{{ t('prediction.totalCallsPreview', { count: estimatedCalls }) }}</span>
+      <span>{{ t('prediction.hardCapPreview', { count: value.hard_cap_calls }) }}</span>
+      <span class="custom-preview-note">{{ t('prediction.customPreviewNote') }}</span>
+      <button class="ghost-btn ghost-btn-sm" type="button" :disabled="disabled" @click="$emit('apply')">{{ t('prediction.apply') }}</button>
+      <button class="ghost-btn ghost-btn-sm" type="button" :disabled="disabled" @click="reset">{{ t('prediction.reset') }}</button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import InfoTooltip from './InfoTooltip.vue'
 import Toggle from './Toggle.vue'
 import { estimateLLMBudgetCalls, MAX_LLM_HARD_CAP_CALLS } from '../../utils/llmBudget.js'
@@ -191,26 +192,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'apply'])
+const { t } = useI18n()
 
-const roles = [
-  { key: 'head_coach', label: '主教练' },
-  { key: 'attack', label: '进攻' },
-  { key: 'defense', label: '防守' },
-  { key: 'transition', label: '转换' },
-  { key: 'set_piece', label: '定位球' },
-  { key: 'goalkeeper', label: '门将' },
-  { key: 'fitness', label: '体能' },
-  { key: 'risk', label: '风险' }
-]
-
-const spaces = [
-  { key: 'baseline', label: '基准' },
-  { key: 'home_upside', label: '主队上行' },
-  { key: 'away_upside', label: '客队上行' },
-  { key: 'home_error', label: '主队失误' },
-  { key: 'away_error', label: '客队失误' },
-  { key: 'volatility', label: '高波动' }
-]
+const roleKeys = ['head_coach', 'attack', 'defense', 'transition', 'set_piece', 'goalkeeper', 'fitness', 'risk']
+const spaceKeys = ['baseline', 'home_upside', 'away_upside', 'home_error', 'away_error', 'volatility']
+const roles = computed(() => roleKeys.map(key => ({ key, label: t(`prediction.role_${key}`) })))
+const spaces = computed(() => spaceKeys.map(key => ({ key, label: t(`prediction.space_${key}`) })))
 
 const value = computed(() => ({
   profile_key: 'custom',
@@ -227,7 +214,7 @@ const value = computed(() => ({
 }))
 
 const estimatedCalls = computed(() => estimateLLMBudgetCalls(value.value))
-const allSpacesSelected = computed(() => spaces.every(space => value.value.analyst_note_groups.includes(space.key)))
+const allSpacesSelected = computed(() => spaceKeys.every(key => value.value.analyst_note_groups.includes(key)))
 
 const update = (patch) => {
   if (props.disabled) return
@@ -255,9 +242,9 @@ const step = (field, delta, min, max) => {
   update({ [field]: next })
 }
 
-const selectAll = () => update({ coach_panel_roles: roles.map(role => role.key) })
+const selectAll = () => update({ coach_panel_roles: roleKeys })
 const selectCore = () => update({ coach_panel_roles: ['head_coach', 'attack', 'defense', 'risk'] })
-const toggleAllSpaces = (checked) => update({ analyst_note_groups: checked ? spaces.map(space => space.key) : [] })
+const toggleAllSpaces = (checked) => update({ analyst_note_groups: checked ? spaceKeys : [] })
 const selectBaselineSpace = () => update({ analyst_note_groups: ['baseline'] })
 
 const incReview = () => {
@@ -276,11 +263,11 @@ const incReview = () => {
 const decReview = () => update({ coach_review_roles: value.value.coach_review_roles.slice(0, -1) })
 
 const reset = () => update({
-  coach_panel_roles: roles.map(role => role.key),
+  coach_panel_roles: roleKeys,
   coach_deliberation_rounds: 3,
   enable_llm_data_extraction: true,
   narrative_polish_count: 9,
-  analyst_note_groups: spaces.map(space => space.key),
+  analyst_note_groups: spaceKeys,
   coach_review_roles: ['head_coach', 'risk', 'attack'],
   n_sims: 5000,
   enable_statsbomb: true,

@@ -2,14 +2,14 @@
   <div class="event-row" :class="rowClass">
     <div class="event-main">
       <span class="event-minute mono">{{ event.minute }}'</span>
-      <span class="event-type-pill" :style="pillStyle">{{ eventTypeLabel(event.event_type || event.type) }}</span>
+      <span class="event-type-pill" :style="pillStyle">{{ eventTypeLabel(event.event_type || event.type, t) }}</span>
       <span class="event-desc">{{ event.description }}</span>
       <span v-if="scoreText" class="event-score mono">{{ scoreText }}</span>
     </div>
 
     <div class="event-meta" v-if="event.confidence !== undefined || provenanceText">
       <span class="event-confidence" v-if="event.confidence !== undefined">
-        置信
+        {{ t('prediction.confidence') }}
         <ConfidenceBar :value="Number(event.confidence)" />
         <small class="mono">({{ Math.round(Number(event.confidence) || 0) }}%)</small>
       </span>
@@ -25,7 +25,7 @@
       @click="playerOpen = !playerOpen"
       :aria-expanded="playerOpen"
     >
-      球员卡 {{ playerOpen ? '▴' : '▾' }}
+      {{ t('prediction.playerCard', { caret: playerOpen ? '▴' : '▾' }) }}
     </button>
     <transition name="slide-down">
       <div v-if="playerOpen" class="event-player-card">
@@ -39,7 +39,7 @@
           </span>
         </div>
         <div v-if="event.assist_player" class="player-card-assist">
-          <small>助攻</small>
+          <small>{{ t('prediction.assist') }}</small>
           <b>{{ event.assist_player.name }}</b>
           <span class="mono">{{ event.assist_player.position }}</span>
         </div>
@@ -50,6 +50,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import ConfidenceBar from './ConfidenceBar.vue'
 import { eventTypeLabel, scoreAfterText, seedShortCode } from '../../utils/step3Adapters'
 
@@ -58,6 +59,7 @@ const props = defineProps({
 })
 
 const playerOpen = ref(false)
+const { t } = useI18n()
 
 const eventType = computed(() => props.event.event_type || props.event.type || '')
 const scoreText = computed(() => scoreAfterText(props.event.score_after) || props.event.score || '')
@@ -89,13 +91,13 @@ const pillStyle = computed(() => {
 })
 
 const ratingLabel = (key) => ({
-  overall: '总评',
-  finishing: '终结',
-  pace: '速度',
-  dribbling: '盘带',
-  passing: '传球',
-  defense: '防守',
-  gk: '门将',
+  overall: t('prediction.rating_overall'),
+  finishing: t('prediction.rating_finishing'),
+  pace: t('prediction.rating_pace'),
+  dribbling: t('prediction.rating_dribbling'),
+  passing: t('prediction.rating_passing'),
+  defense: t('prediction.rating_defense'),
+  gk: t('prediction.rating_gk'),
 }[key] || key)
 </script>
 

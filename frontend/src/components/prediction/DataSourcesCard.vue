@@ -1,11 +1,11 @@
 <template>
   <div class="ds-card">
     <div class="ds-card-title">
-      <span>外部数据源</span>
+      <span>{{ t('prediction.dataSourcesTitle') }}</span>
       <InfoTooltip
         align="left"
-        title="外部数据源"
-        text="显示 Step2 本次使用或尝试使用的数据快照。已同步的数据会参与球队强度估计；抓取失败或未启用时，模型会改用缓存、名册和图谱证据。点击每行可看 etag、抓取时间、URL 和错误信息。"
+        :title="t('prediction.dataSourcesTitle')"
+        :text="t('prediction.dataSourcesTooltip')"
       />
     </div>
     <div class="ds-list">
@@ -24,25 +24,26 @@
         </span>
         <span class="ds-row-meta mono">
           <span>{{ src.updatedAtShort }}</span>
-          <span v-if="src.rows"> · {{ src.rows.toLocaleString() }} 条</span>
+          <span v-if="src.rows"> · {{ t('prediction.rowsUnit', { count: src.rows.toLocaleString() }) }}</span>
         </span>
         <span v-if="expandedKey === src.key" class="ds-detail">
-          <span><b>etag</b><em class="mono">{{ src.etag || '-' }}</em></span>
-          <span><b>fetched</b><em class="mono">{{ src.fetchedAt || '-' }}</em></span>
-          <span v-if="src.url"><b>url</b><em>{{ src.url }}</em></span>
-          <span v-if="src.error"><b>error</b><em>{{ src.error }}</em></span>
+          <span><b>{{ t('prediction.fieldEtag') }}</b><em class="mono">{{ src.etag || '-' }}</em></span>
+          <span><b>{{ t('prediction.fieldFetched') }}</b><em class="mono">{{ src.fetchedAt || '-' }}</em></span>
+          <span v-if="src.url"><b>{{ t('prediction.fieldUrl') }}</b><em>{{ src.url }}</em></span>
+          <span v-if="src.error"><b>{{ t('prediction.fieldError') }}</b><em>{{ src.error }}</em></span>
         </span>
       </button>
-      <div v-if="normalizedSources.length === 0" class="ds-empty">暂无外部数据源快照</div>
+      <div v-if="normalizedSources.length === 0" class="ds-empty">{{ t('prediction.noDataSources') }}</div>
     </div>
     <div class="ds-actions">
-      <button class="ghost-btn ghost-btn-sm" type="button" @click="$emit('refresh')">立即刷新</button>
+      <button class="ghost-btn ghost-btn-sm" type="button" @click="$emit('refresh')">{{ t('prediction.refreshNow') }}</button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import InfoTooltip from './InfoTooltip.vue'
 
 const props = defineProps({
@@ -51,22 +52,23 @@ const props = defineProps({
 
 defineEmits(['refresh'])
 
+const { t } = useI18n()
 const expandedKey = ref(null)
 
 const statusLabels = {
-  synced: '已同步',
-  stale: '缓存过期',
-  error: '抓取失败',
-  skipped: '未启用'
+  synced: ['prediction.status_synced', 'Synced'],
+  stale: ['prediction.status_stale', 'Stale cache'],
+  error: ['prediction.status_error', 'Fetch failed'],
+  skipped: ['prediction.status_skipped', 'Skipped']
 }
 
 const sourceLabels = {
-  intl_results: '国际赛果',
-  elo: 'Elo 评分',
-  national_elo: 'Elo 评分',
-  fifa_ranking: 'FIFA 排名',
-  fifa_rankings: 'FIFA 排名',
-  statsbomb_xg: 'StatsBomb xG'
+  intl_results: ['prediction.source_intl_results', 'International results'],
+  elo: ['prediction.source_elo', 'Elo rating'],
+  national_elo: ['prediction.source_national_elo', 'Elo rating'],
+  fifa_ranking: ['prediction.source_fifa_ranking', 'FIFA ranking'],
+  fifa_rankings: ['prediction.source_fifa_rankings', 'FIFA ranking'],
+  statsbomb_xg: ['prediction.source_statsbomb_xg', 'StatsBomb xG']
 }
 
 const normalizedSources = computed(() => (props.sources || []).map(src => {
@@ -75,9 +77,9 @@ const normalizedSources = computed(() => (props.sources || []).map(src => {
   return {
     ...src,
     key: src.key,
-    label: src.label || sourceLabels[src.key] || src.key,
+    label: src.label || translateEntry(sourceLabels[src.key]) || src.key,
     status,
-    statusLabel: src.statusLabel || statusLabels[status] || status,
+    statusLabel: src.statusLabel || translateEntry(statusLabels[status]) || status,
     fetchedAt,
     updatedAtShort: src.updated_at_short || shortDate(fetchedAt),
     rows: Number(src.rows || 0) || null,
@@ -96,6 +98,13 @@ const shortDate = (value) => {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return String(value).slice(0, 10)
   return date.toISOString().slice(0, 10)
+}
+
+const translateEntry = (entry) => {
+  if (!entry) return ''
+  const [key, fallback] = entry
+  const translated = t(key)
+  return translated && translated !== key ? translated : fallback
 }
 </script>
 
