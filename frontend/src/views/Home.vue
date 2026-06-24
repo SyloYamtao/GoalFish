@@ -184,7 +184,7 @@
       </section>
 
       <!-- 历史项目数据库 -->
-      <HistoryDatabase />
+      <HistoryDatabase v-if="!isStaticDemo" />
     </div>
   </div>
 </template>
@@ -196,6 +196,7 @@ import HistoryDatabase from '../components/HistoryDatabase.vue'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 
 const router = useRouter()
+const isStaticDemo = typeof window !== 'undefined' && window.__GOALFISH_STATIC_DEMO__ === true
 
 // 文件列表
 const files = ref([])
