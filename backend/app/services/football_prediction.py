@@ -182,13 +182,7 @@ class FootballPredictionEngine:
                 warnings.append(warning)
         budget = _resolve_step3_budget(llm_budget_profile or model_input_snapshot.get("llm_budget"))
         ledger = LLMCallLedger(config_id=prediction_config_id, run_id=prediction_run_id, budget=budget)
-        content_language_instruction = model_input_snapshot.get("content_language_instruction") or instruction_for_project(
-            project_id,
-            fallback_materials=[
-                simulation_requirement,
-                json.dumps(model_input_snapshot.get("extracted") or {}, ensure_ascii=False, default=str),
-            ],
-        )
+        content_language_instruction = instruction_for_project(project_id)
         simulation_seed = int(_override_seed) if _override_seed is not None else self._generate_seed(
             prediction_config_id or prediction_run_id,
             utc_now(),
@@ -2292,7 +2286,7 @@ class PredictionReportAssembler:
                 "role": "user",
                 "content": (
                     "请严格输出 6 个章节，每章用“## 章节名”作为边界，并保持以下章节顺序。"
-                    "如果内容语言不是中文，可以把章节标题翻译为上传材料主要语言，但顺序必须一致：\n"
+                    "如果内容语言不是中文，可以把章节标题翻译为当前界面语言，但顺序必须一致：\n"
                     "- 比赛结论摘要\n"
                     "- 双方基本面与图谱证据\n"
                     "- 战术、阵型与预计首发\n"

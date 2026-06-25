@@ -219,6 +219,7 @@ def test_resume_api_marks_running_event_interrupted_before_requeue(workflow_serv
     response = app.test_client().post(
         f"/api/tasks/{task_id}/resume",
         json={"payload": {"project_id": "proj_resume"}},
+        headers={"Accept-Language": "zh"},
     )
 
     assert response.status_code == 200
@@ -232,3 +233,4 @@ def test_resume_api_marks_running_event_interrupted_before_requeue(workflow_serv
     assert captured["event_id"] == running_event["id"]
     assert captured["payload"]["workflow_task_id"] == task_id
     assert captured["payload"]["workflow_attempt_id"] == attempt_id
+    assert captured["payload"]["locale"] == "zh"

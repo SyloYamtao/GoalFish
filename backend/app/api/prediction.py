@@ -25,6 +25,7 @@ from ..services.task_workflow import CeleryJobStatus, TaskWorkflowService
 from ..tasks.workflow_tasks import enqueue_workflow_event
 from ..celery_app import celery_app
 from ..utils.logger import get_logger
+from ..utils.locale import get_locale
 
 
 logger = get_logger("goalfish.api.prediction")
@@ -283,6 +284,7 @@ def run_prediction(project_id: str):
                     "project_id": project_id,
                     "force_rerun": force_rerun,
                     "rerun_from_event_type": rerun_from_event_type,
+                    "locale": get_locale(),
                 },
                 task_id=None,
                 attempt_id=None,
@@ -296,6 +298,7 @@ def run_prediction(project_id: str):
                         "executor": "celery",
                         "celery_job_id": job["id"],
                         "celery_task_id": job["celery_task_id"],
+                        "locale": get_locale(),
                     })
                     run.run_metadata = metadata
             status = {

@@ -6,6 +6,7 @@ from typing import Any
 
 from ..models.project import ProjectManager
 from ..utils.logger import get_logger
+from ..utils.locale import set_locale
 from .football_prediction import PredictionPersistenceService, PredictionReportAssembler
 from .prediction_config import DEFAULT_PLAYER_DATASET_ID, PredictionConfigService
 from .task_workflow import EventStatus, TaskWorkflowService
@@ -44,6 +45,7 @@ class FootballPredictionWorkflowRunner:
     def run(self, event_type: str, payload: dict[str, Any]) -> dict[str, Any]:
         if event_type not in PREDICTION_EVENTS:
             raise ValueError(f"暂不支持的 football prediction workflow event: {event_type}")
+        set_locale(payload.get("locale") or "en")
 
         service = TaskWorkflowService()
         task_id = payload.get("workflow_task_id") or payload.get("task_id")

@@ -38,7 +38,11 @@ def set_locale(locale: str):
 
 def get_locale() -> str:
     if has_request_context():
-        return _normalize_locale(request.headers.get('Accept-Language', DEFAULT_LOCALE))
+        return _normalize_locale(
+            request.headers.get('X-UI-Locale')
+            or request.headers.get('X-Locale')
+            or request.headers.get('Accept-Language', DEFAULT_LOCALE)
+        )
     return _normalize_locale(getattr(_thread_local, 'locale', DEFAULT_LOCALE))
 
 
@@ -74,8 +78,5 @@ def t(key: str, **kwargs) -> str:
 
 
 def get_language_instruction() -> str:
-    """Deprecated: LLM content language is detected from project materials.
-
-    UI locale must not impose zh/en on model-generated content.
-    """
+    """Deprecated: UI locale now governs LLM output language."""
     return ""

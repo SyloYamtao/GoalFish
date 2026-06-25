@@ -10,6 +10,7 @@ from . import tasks_bp
 from ..services.task_workflow import WorkflowStateError
 from ..services.task_workflow import TaskWorkflowService
 from ..tasks.workflow_tasks import enqueue_workflow_event
+from ..utils.locale import get_locale
 from ..utils.logger import get_logger
 
 
@@ -198,6 +199,7 @@ def resume_prediction_task(task_id: str):
             {
                 "workflow_task_id": task_id,
                 "workflow_attempt_id": event["attempt_id"],
+                "locale": get_locale(),
             }
         )
         job = enqueue_workflow_event(

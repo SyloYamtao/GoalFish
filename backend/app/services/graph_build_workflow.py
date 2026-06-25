@@ -37,8 +37,7 @@ class GraphBuildWorkflowRunner:
         chunk_size = int(payload.get("chunk_size") or Config.DEFAULT_CHUNK_SIZE)
         chunk_overlap = int(payload.get("chunk_overlap") or Config.DEFAULT_CHUNK_OVERLAP)
         locale = payload.get("locale")
-        if locale:
-            set_locale(locale)
+        set_locale(locale or "en")
 
         build_logger = get_logger("goalfish.build")
         task_manager = TaskManager()

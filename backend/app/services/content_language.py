@@ -1,7 +1,7 @@
-"""Content-language detection and LLM output-language instructions.
+"""LLM output-language instructions.
 
-Frontend UI locale is intentionally separate from content language. LLM prompts
-should follow the uploaded/project materials, not the current zh/en UI setting.
+Model-generated natural language must follow the current UI locale selected by
+the user, not the uploaded/project materials language.
 """
 
 from __future__ import annotations
@@ -12,11 +12,12 @@ from typing import Iterable
 
 from sqlalchemy import select
 
-from ..db.models import PredictionRunRecord, ProjectRecord
+from ..db.models import ProjectRecord
 from ..db.session import get_session
+from ..utils.locale import get_locale
 
 
-CONTENT_LANGUAGE_INSTRUCTION_MARKER = "按上传材料主要语言输出"
+CONTENT_LANGUAGE_INSTRUCTION_MARKER = "按当前界面语言输出"
 
 _MAX_DETECTION_CHARS = 120_000
 
@@ -151,43 +152,49 @@ def detect_content_language(materials: str | Iterable[str] | None) -> ContentLan
     return _language(code, confidence=min(1.0, score / total))
 
 
-def build_content_language_instruction(materials: str | Iterable[str] | None) -> str:
-    language = detect_content_language(materials)
+def build_content_language_instruction(
+    materials: str | Iterable[str] | None,
+    *,
+    locale: str | None = None,
+) -> str:
+    del materials
+    language = current_content_language(locale)
     return content_language_instruction(language)
 
 
 def content_language_instruction(language: ContentLanguage | str | None) -> str:
     if isinstance(language, str):
-        language = _language(language, confidence=1.0)
+        language = current_content_language(language)
+    elif language is not None:
+        language = current_content_language(language.code)
     if language is None:
-        language = _language("en", confidence=0.0)
+        language = current_content_language()
     return (
         f"内容语言要求（{CONTENT_LANGUAGE_INSTRUCTION_MARKER}）："
-        "请根据上传材料/项目材料的主要语言输出，不要根据前端 UI 语言、浏览器语言或 Accept-Language 决定输出语言。"
-        f"当前检测到上传材料主要语言为：{language.display_name_zh}（{language.display_name_en}, {language.code}）。"
+        "请严格根据当前用户在系统界面中选择的语言输出，不要根据上传材料、项目材料内容来判断输出语言。"
+        f"当前用户选择的输出语言为：{language.display_name_zh}（{language.display_name_en}, {language.code}）。"
         f"所有面向用户的自然语言内容、报告段落、摘要、分析和问答回答应使用{language.display_name_zh}；"
+        "即使上传材料本身是其他语言，也必须以该语言输出。"
         "专有名词、球队/球员名称、引用、JSON key、schema 字段和代码标识按原文或格式要求保留。"
     )
 
 
 def instruction_for_project(project_id: str | None, fallback_materials: str | Iterable[str] | None = None) -> str:
-    materials = []
-    if fallback_materials:
-        materials.append(_combined_materials(fallback_materials))
-    materials.append(project_materials(project_id))
-    return build_content_language_instruction(materials)
+    del project_id, fallback_materials
+    return build_content_language_instruction(None)
 
 
 def instruction_for_prediction_run(
     prediction_run_id: str | None,
     fallback_materials: str | Iterable[str] | None = None,
 ) -> str:
-    project_id = None
-    if prediction_run_id:
-        with get_session() as session:
-            run = session.get(PredictionRunRecord, prediction_run_id)
-            project_id = run.project_id if run else None
-    return instruction_for_project(project_id, fallback_materials=fallback_materials)
+    del prediction_run_id, fallback_materials
+    return build_content_language_instruction(None)
+
+
+def current_content_language(locale: str | None = None) -> ContentLanguage:
+    code = _content_locale_code(locale)
+    return _language(code, confidence=1.0)
 
 
 def project_materials(project_id: str | None) -> str:
@@ -260,3 +267,10 @@ def _detect_latin_language(text: str) -> str:
 def _language(code: str, *, confidence: float) -> ContentLanguage:
     zh, en = _LANGUAGE_NAMES.get(code, (f"{code} 语言", code))
     return ContentLanguage(code=code, display_name_zh=zh, display_name_en=en, confidence=confidence)
+
+
+def _content_locale_code(locale: str | None = None) -> str:
+    raw = str(locale or get_locale() or "en").split(",", 1)[0].strip().lower()
+    if "-" in raw:
+        raw = raw.split("-", 1)[0]
+    return "zh" if raw == "zh" else "en"

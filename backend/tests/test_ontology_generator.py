@@ -11,7 +11,7 @@ class FakeLLMClient:
         return self.result
 
 
-def test_ontology_prompt_uses_ui_locale_for_display_labels_and_material_language_for_content():
+def test_ontology_prompt_uses_ui_locale_for_display_labels_and_content_language():
     fake_llm = FakeLLMClient({
         "entity_types": [],
         "edge_types": [],
@@ -27,7 +27,7 @@ def test_ontology_prompt_uses_ui_locale_for_display_labels_and_material_language
     system_prompt = fake_llm.messages[0]["content"]
     user_prompt = fake_llm.messages[1]["content"]
     assert "display_name" in system_prompt
-    assert "按上传材料主要语言输出" in system_prompt
+    assert "按当前界面语言输出" in system_prompt
     assert "英文" in system_prompt
     assert "Ontology UI locale: en" in system_prompt
     assert "display_name values should prefer Chinese" not in system_prompt
@@ -61,7 +61,7 @@ def test_ontology_display_names_follow_chinese_ui_locale_even_for_english_materi
     person = next(entity for entity in ontology["entity_types"] if entity["name"] == "Person")
     organization = next(entity for entity in ontology["entity_types"] if entity["name"] == "Organization")
 
-    assert "英文" in system_prompt
+    assert "中文" in system_prompt
     assert "Ontology UI locale: zh" in system_prompt
     assert person["display_name"] == "个人"
     assert organization["display_name"] == "组织"

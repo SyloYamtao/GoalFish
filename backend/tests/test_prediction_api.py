@@ -44,6 +44,7 @@ def _prepare_config(
     away_team="法国",
     player_dataset_id=None,
     competition=None,
+    headers=None,
 ):
     payload = {
         "graph_id": graph_id,
@@ -58,6 +59,7 @@ def _prepare_config(
     response = client.post(
         f"/api/prediction/{project_id}/prepare",
         json=payload,
+        headers=headers,
     )
     assert response.status_code == 200
     payload = response.get_json()
@@ -74,6 +76,7 @@ def _run_with_config(
     requirement="预测阿根廷 vs 法国的比分和关键事件",
     home_team="阿根廷",
     away_team="法国",
+    headers=None,
 ):
     prediction_config_id = config_id or _prepare_config(
         client,
@@ -82,10 +85,12 @@ def _run_with_config(
         requirement=requirement,
         home_team=home_team,
         away_team=away_team,
+        headers=headers,
     )
     response = client.post(
         f"/api/prediction/{project_id}/run",
         json={"prediction_config_id": prediction_config_id},
+        headers=headers,
     )
     assert response.status_code == 200
     payload = response.get_json()
@@ -459,6 +464,7 @@ def test_prediction_prepare_uses_project_text_for_generic_requirement(postgres_d
     app = _create_app()
     client = app.test_client()
     dataset_id = "wc2026_can_bih_v1"
+    zh_headers = {"Accept-Language": "zh"}
     _seed_player_dataset(dataset_id, [("CAN", "Canada", "加拿大"), ("BIH", "Bosnia And Herzegovina", "波黑")])
 
     with get_session() as session:
@@ -492,12 +498,13 @@ def test_prediction_prepare_uses_project_text_for_generic_requirement(postgres_d
             "player_dataset_id": dataset_id,
             "force_regenerate": True,
         },
+        headers=zh_headers,
     )
 
     assert response.status_code == 200
     config_id = response.get_json()["data"]["prediction_config_id"]
-    config_payload = client.get(f"/api/prediction/configs/{config_id}").get_json()["data"]
-    roster = client.get(f"/api/prediction/configs/{config_id}/roster").get_json()["data"]
+    config_payload = client.get(f"/api/prediction/configs/{config_id}", headers=zh_headers).get_json()["data"]
+    roster = client.get(f"/api/prediction/configs/{config_id}/roster", headers=zh_headers).get_json()["data"]
 
     assert config_payload["home_team"] == "加拿大"
     assert config_payload["away_team"] == "波黑"
@@ -652,6 +659,7 @@ def test_prediction_run_can_start_async_celery_job(monkeypatch, postgres_db):
     response = client.post(
         "/api/prediction/proj_async_run/run",
         json={"prediction_config_id": config_id, "async": True},
+        headers={"Accept-Language": "zh"},
     )
 
     assert response.status_code == 200
@@ -663,12 +671,14 @@ def test_prediction_run_can_start_async_celery_job(monkeypatch, postgres_db):
     assert captured["event_type"] == "run_prediction_from_config"
     assert captured["payload"]["prediction_run_id"] == payload["prediction_run_id"]
     assert captured["payload"]["prediction_config_id"] == config_id
+    assert captured["payload"]["locale"] == "zh"
 
     with get_session() as session:
         run = session.get(PredictionRunRecord, payload["prediction_run_id"])
         assert run.status == "queued"
         assert run.current_phase == "queued"
         assert run.run_metadata["celery_task_id"] == "celery_task_async"
+        assert run.run_metadata["locale"] == "zh"
 
 
 def test_prediction_status_marks_run_failed_when_async_celery_job_failed(postgres_db):
@@ -991,15 +1001,17 @@ def test_track6_step3_contract_exposes_roster_budget_events_and_modal_summary(po
 def test_prediction_artifact_endpoints_include_team_strengths_and_scorelines(postgres_db):
     app = _create_app()
     client = app.test_client()
+    zh_headers = {"Accept-Language": "zh"}
 
     _, run_id = _run_with_config(
         client,
         "proj_artifacts",
         requirement="预测阿根廷 vs 法国的胜平负、比分、控球和射门质量",
+        headers=zh_headers,
     )
 
-    strengths_response = client.get(f"/api/prediction/{run_id}/team-strengths")
-    scorelines_response = client.get(f"/api/prediction/{run_id}/scorelines")
+    strengths_response = client.get(f"/api/prediction/{run_id}/team-strengths", headers=zh_headers)
+    scorelines_response = client.get(f"/api/prediction/{run_id}/scorelines", headers=zh_headers)
 
     assert strengths_response.status_code == 200
     strengths_payload = strengths_response.get_json()

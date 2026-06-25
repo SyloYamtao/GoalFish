@@ -92,6 +92,7 @@ def test_workflow_task_dispatches_async_prediction_run(monkeypatch):
             captured["failed"] = {"prediction_run_id": prediction_run_id, "error": error}
 
     monkeypatch.setattr(workflow_tasks, "TaskWorkflowService", FakeService)
+    monkeypatch.setattr(workflow_tasks, "set_locale", lambda locale: captured.setdefault("locale", locale))
     monkeypatch.setattr(
         "app.services.football_prediction.PredictionPersistenceService",
         lambda: FakePredictionService(),
@@ -106,6 +107,7 @@ def test_workflow_task_dispatches_async_prediction_run(monkeypatch):
                 "prediction_config_id": "cfg_async",
                 "force_rerun": True,
                 "rerun_from_event_type": "scorelines",
+                "locale": "zh",
             },
         )
     finally:
@@ -118,6 +120,7 @@ def test_workflow_task_dispatches_async_prediction_run(monkeypatch):
         "force_rerun": True,
         "rerun_from_event_type": "scorelines",
     }
+    assert captured["locale"] == "zh"
     assert "failed" not in captured
     assert captured["started"]["metadata"]["event_type"] == "run_prediction_from_config"
     assert captured["finished"]["status"] == "succeeded"

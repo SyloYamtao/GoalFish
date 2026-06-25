@@ -13,6 +13,7 @@ from ..config import Config
 from ..services.graph_build_workflow import GraphBuildWorkflowRunner
 from ..services.task_workflow import CeleryJobStatus, TaskWorkflowService
 from ..utils.logger import get_logger
+from ..utils.locale import set_locale
 
 
 logger = get_logger("goalfish.tasks.workflow")
@@ -69,6 +70,7 @@ def enqueue_workflow_event(
 def execute_workflow_event(self, *, event_type: str, payload: dict[str, Any]) -> dict[str, Any]:
     service = TaskWorkflowService()
     celery_task_id = self.request.id
+    set_locale(payload.get("locale") or "en")
     service.start_celery_job(
         celery_task_id,
         metadata={"event_type": event_type, "retry": self.request.retries},

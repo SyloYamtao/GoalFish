@@ -25,7 +25,7 @@ from ..db.models import (
 from ..db.session import get_session
 from .coach_jury import CoachJuryService, SCENARIO_TEMPLATE, resume_policy_summary
 from .coach_llm_panel import CoachLLMPanel, CoachPanelInputs, PANEL_VERSION, ROLE_BY_KEY
-from .content_language import build_content_language_instruction, detect_content_language
+from .content_language import build_content_language_instruction, current_content_language
 from .external_data.team_name_normalizer import TeamNameNormalizer
 from .football_data_extractor import EXTRACTOR_VERSION, FootballDataExtractor, infer_2026_world_cup_host_country
 from .football_goal_model import ExternalDataPool, FitArtifacts, FootballGoalModelAdapter, extract_structured_match_inputs
@@ -110,8 +110,8 @@ class PredictionConfigService:
         entities = graph_snapshot.get("entities") or []
         source_text = _combined_text(project_snapshot, entities, requirement)
         primary_source_text = _primary_source_text(project_snapshot)
-        content_language = detect_content_language(source_text)
-        content_language_instruction = build_content_language_instruction(source_text)
+        content_language = current_content_language()
+        content_language_instruction = build_content_language_instruction(None, locale=content_language.code)
 
         budget = _resolve_prepare_budget(llm_budget)
         ledger = LLMCallLedger(config_id=prediction_config_id, budget=budget)

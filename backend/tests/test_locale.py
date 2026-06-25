@@ -21,3 +21,10 @@ def test_request_locale_only_allows_english_and_chinese():
 
     with app.test_request_context("/", headers={"Accept-Language": "ja"}):
         assert get_locale() == "en"
+
+
+def test_request_locale_prefers_ui_header_over_accept_language():
+    app = Flask(__name__)
+
+    with app.test_request_context("/", headers={"X-UI-Locale": "zh", "Accept-Language": "en"}):
+        assert get_locale() == "zh"

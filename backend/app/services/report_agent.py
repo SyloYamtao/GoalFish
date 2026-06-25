@@ -35,7 +35,6 @@ from ..utils.locale import t
 from .content_language import (
     build_content_language_instruction,
     instruction_for_project,
-    project_materials_by_graph_id,
 )
 from .graph_backend_factory import get_graph_tools
 from .simulation_domains import FOOTBALL_MATCH, normalize_simulation_domain
@@ -1297,12 +1296,7 @@ class ReportAgent:
         return "\n".join(desc_parts)
 
     def _content_language_instruction(self) -> str:
-        return build_content_language_instruction(
-            [
-                project_materials_by_graph_id(self.graph_id),
-                self.simulation_requirement,
-            ]
-        )
+        return build_content_language_instruction(None)
     
     def plan_outline(
         self, 
